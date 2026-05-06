@@ -19,7 +19,10 @@ Fazer engenharia reversa de uma procedure ou package PL/SQL e gerar spec.md tipo
 # Passos
 
 1. **Verificar guardrail**: confirmar que o caminho aponta para checkout CVS tag PRODUCAO
-2. **Usar skill SIGO** quando disponivel: `sigo-modernizacao-plsql` para extracao estruturada
+2. **Verificar RE cacheada**: se existe `.specs/reverse-engineering/<NOME>/rev-<TAG>/` com tag
+   batendo na PRODUCAO atual, usar como baseline (`[REF]`). Se ausente ou stale, disparar antes
+   o prompt [`baseline-reverse-engineering`](baseline-reverse-engineering.prompt.md) que invoca
+   a skill [`engenharia-reversa-sigo`](../skills/engenharia-reversa-sigo/SKILL.md).
 3. Identificar: regras de negocio implementadas, gargalos de performance, pontos de modernizacao
    `[MIGRACAO]`
 4. Aplicar Knowledge Verification Chain - citar ADRs aplicaveis (ADR 22 Padrao Repositorio,

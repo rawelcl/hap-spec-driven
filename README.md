@@ -1,6 +1,6 @@
 # Framework Spec-Driven Hapvida
 
-**Versao:** 0.2
+**Versao:** 0.3
 **Status:** Pronto para piloto
 **Base:** Adaptacao do framework [TLC Spec-Driven](https://github.com/tech-leads-club) (Tech Lead's Club)
 **Repositorio:** https://github.com/rawelcl/hapvida-spec-driven
@@ -19,17 +19,18 @@ artefato de primeira classe, ancorada no work item Azure DevOps existente.
 +----------+    +----------+   +---------+   +---------+
 | SPECIFY  | -> |  DESIGN  | ->|  TASKS  | ->| EXECUTE |
 +----------+    +----------+   +---------+   +---------+
-  obrigatorio    opcional*      opcional*    obrigatorio
+  obrigatorio    opcional*     obrigatorio**  obrigatorio
 
-* Auto-skip baseado em complexidade
+*  Auto-skip baseado em complexidade
+** Sempre obrigatorio + sync automatico ao ADO ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md))
 ```
 
 | Escopo | Specify | Design | Tasks | Execute |
 |---|---|---|---|---|
-| **Pequeno** (≤3 arquivos) | Spec inline | Skip | Skip | Sim |
-| **Medio** (feature clara) | Spec completa | Inline | Skip | Sim |
-| **Grande** (multi-componente) | Spec + traceability | Sim | Sim | Sim |
-| **Complexo** (ambiguidade, dominio novo) | Spec + Discuss | Pesquisa + arquitetura | Decomposicao paralela | Execute + UAT |
+| **Pequeno** (≤3 arquivos) | Spec inline | Skip | Tasks minimas + sync ADO | Sim |
+| **Medio** (feature clara) | Spec completa | Inline | Tasks padrao + sync ADO | Sim |
+| **Grande** (multi-componente) | Spec + traceability | Sim | Sim + sync ADO | Sim |
+| **Complexo** (ambiguidade, dominio novo) | Spec + Discuss | Pesquisa + arquitetura | Decomposicao paralela + sync ADO | Execute + UAT |
 
 > **Nota:** Quick Mode (atalho TLC para tarefas pequenas) **nao esta no escopo do piloto**. Veja [ADR 008](adr/008-quick-mode-fora-do-escopo-piloto.md).
 

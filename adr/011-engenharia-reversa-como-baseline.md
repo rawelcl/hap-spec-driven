@@ -1,0 +1,76 @@
+# ADR 011: Engenharia reversa por rotina como camada de baseline cacheada
+
+**Status:** Accepted
+**Data:** 2026-05-06
+
+## Contexto
+
+Boa parte do legado Hapvida sao monolitos PL/SQL de 5k a 20k linhas por package, com sub-rotinas
+encadeadas, dependencias dinamicas e regras de negocio embutidas em SQL (DECODE, CASE, WHERE
+correlacionados). Em cada nova demanda que toca essas rotinas, o agente IA precisa reler o codigo
+do CVS, estourando context window e desperdicando tokens em redescoberta.
+
+A skill `engenharia-reversa-sigo` ja extrai esse conhecimento de forma estruturada, mas hoje a saida
+da skill alimenta a spec descartavelmente - sem persistencia, sem reuso entre features.
+
+## Decisao
+
+`[GUARDRAIL]` Toda rotina PL/SQL com **mais de 2.000 linhas** ou **complexidade ciclomatica alta**
+(multiplas sub-rotinas encadeadas) deve ter sua engenharia reversa **persistida** como camada de
+baseline antes de qualquer spec que a toque.
+
+A camada de RE vive em:
+
+```
+.specs/reverse-engineering/
+  <NOME_OBJETO>/
+    rev-<TAG_CVS>/
+      reversa-<NOME_OBJETO>.md   # artefato canonico (template reverse-engineering-template.md)
+    README-rotina.md             # indice de revisoes da rotina
+```
+
+A `Knowledge Verification Chain` Step 1 e atualizada para priorizar a RE cacheada antes de ler o
+codigo cru no CVS. RE sera usada quando a tag CVS gravada em `rev-<TAG_CVS>` bate com a tag PRODUCAO
+atual; caso contrario, a RE e marcada `[REVISAO]` e refresh e disparado.
+
+## Justificativa
+
+- **Context window**: rotina de 20k linhas + sub-rotinas estoura limite; RE estruturada cabe em
+  3-8k tokens
+- **Reuso**: mesma rotina e tocada por multiplas demandas ao longo do tempo
+- **Auditoria**: artefato versionado (Git) + rastreavel a tag CVS especifica
+- **Velocidade**: pular re-extracao acelera Specify e Design
+- **Knowledge base viva**: RE serve tambem como onboarding e referencia para `[REF: arquivo:linha]`
+
+## Trade-offs
+
+| Beneficio | Custo |
+|---|---|
+| Reuso de extracao entre features | Manutencao do baseline RE quando CVS muda |
+| Menor consumo de contexto | Risco de RE stale ser usada como verdade |
+| Rastreabilidade auditavel | Esforco inicial de RE em rotinas grandes |
+
+Mitigacao do risco de stale: gate obrigatorio comparando tag CVS gravada vs PRODUCAO atual; divergente
+gera `[REVISAO]` automatico.
+
+## Skill responsavel
+
+`engenharia-reversa-sigo` (em [`skills/engenharia-reversa-sigo/SKILL.md`](../skills/engenharia-reversa-sigo/SKILL.md))
+e o produtor canonico do artefato. O prompt
+[`prompts/baseline-reverse-engineering.prompt.md`](../prompts/baseline-reverse-engineering.prompt.md)
+e o gatilho.
+
+## Relacao com outras ADRs
+
+- `[REF: ADR-006]` Knowledge Verification Chain - Step 1 ganha sub-niveis (1a RE cacheada, 1b CVS)
+- `[REF: ADR-007]` Guardrail acesso producao - emendado por esta ADR para liberar leitura
+  read-only do **dicionario Oracle** (dba_*) e codigo via `dba_source` durante a RE
+
+## Consequencias
+
+- Squads passam a investir em RE inicial das rotinas core do escopo (uma vez por rotina)
+- Specs do tipo Improvement+Tunning citam `[REF: .specs/reverse-engineering/<rotina>/rev-<TAG>/]`
+  como evidencia de baseline
+- `references/brownfield-mapping.md` ganha referencia a esta camada
+- `.specs/codebase/knowledge-base/` no projeto consumidor materializa catalogos compartilhados
+  (catalogo-conceitos-negocio, catalogo-objetos-plsql, riscos-ans, pendencias-abertas)

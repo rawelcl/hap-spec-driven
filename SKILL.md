@@ -3,7 +3,7 @@ name: hapvida-spec-driven
 description: Framework de desenvolvimento spec-driven adaptado ao Hapvida (Azure DevOps, WinCVS, ANS, GitHub Copilot Claude). Quatro fases adaptativas - Specify, Design, Tasks, Execute. Auto-sizing por complexidade. Spec versionada em ADO Repos com snapshot anexado ao work item via MCP do Azure DevOps. Camada fina sobre Agile Hapvida 2.0. Use quando (1) iniciando uma feature/incident/defect/user story standalone que exige spec, (2) trabalhando codigo legado PL/SQL com refatoracao (Improvement+Tunning), (3) implementando feature regulatoria (touche ANS), (4) precisando rastrear decisoes (STATE.md), (5) pausando/retomando trabalho. Triggers - "specify feature", "design feature", "break into tasks", "implement task", "validate feature", "map codebase", "initialize project", "pause work", "resume work". NAO usar para Quick Mode (fora do escopo do piloto). NAO acessar banco produtivo via MCP - sempre WinCVS tag PRODUCAO.
 license: CC-BY-4.0
 metadata:
-  versao: 0.2
+  versao: 0.4
   base: TLC Spec-Driven (Tech Lead's Club)
   area_piloto: Comercial - venda de planos
 ---
@@ -17,9 +17,11 @@ ancorado no Azure DevOps, respeitando regulacao ANS e a infraestrutura existente
 +----------+    +----------+    +---------+    +---------+
 | SPECIFY  | -> |  DESIGN  | -> |  TASKS  | -> | EXECUTE |
 +----------+    +----------+    +---------+    +---------+
-  obrigatorio    opcional*       opcional*     obrigatorio
+  obrigatorio    opcional*      obrigatorio**  obrigatorio
 
-* Auto-skip baseado em complexidade
+*  Auto-skip baseado em complexidade
+** Sempre obrigatorio + sync automatico ao Azure DevOps
+   ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md))
 ```
 
 ## Auto-Sizing - principio central
@@ -29,22 +31,25 @@ qualquer feature, avalie escopo e aplique apenas o necessario:
 
 | Escopo | Specify | Design | Tasks | Execute |
 |---|---|---|---|---|
-| **Pequeno** (≤3 arquivos, frase de escopo) | Spec inline (frontmatter + secoes minimas) | Skip | Skip | Implementar + verificar |
-| **Medio** (feature clara, <10 tasks) | Spec completa | Skip - design inline | Skip - tasks implicitas | Implementar + verificar |
-| **Grande** (multi-componente) | Spec + IDs de traceability | Arquitetura + componentes | Decomposicao + dependencias | Implementar por task + commit atomico |
-| **Complexo** (ambiguidade, dominio novo) | Spec + [Discuss](references/discuss.md) | Arquitetura + pesquisa via Knowledge Verification Chain | Decomposicao + paralelismo | Implementar + UAT interativo |
+| **Pequeno** (≤3 arquivos, frase de escopo) | Spec inline (frontmatter + secoes minimas) | Skip | Tasks minimas (1-3 itens, sem diagrama) + sync ADO | Implementar + verificar |
+| **Medio** (feature clara, <10 tasks) | Spec completa | Skip - design inline | Tasks padrao (3-10 itens, fases simples) + sync ADO | Implementar + verificar |
+| **Grande** (multi-componente) | Spec + IDs de traceability | Arquitetura + componentes | Decomposicao + dependencias + sync ADO | Implementar por task + commit atomico |
+| **Complexo** (ambiguidade, dominio novo) | Spec + [Discuss](references/discuss.md) | Arquitetura + pesquisa via Knowledge Verification Chain | Decomposicao + paralelismo + sync ADO | Implementar + UAT interativo |
 
 **Regras:**
 
-- Specify e Execute sao **sempre obrigatorios** - precisamos saber O QUE e FAZER.
-- Design e Tasks sao **auto-skip** quando a mudanca e direta.
+- Specify, Tasks e Execute sao **sempre obrigatorios** - precisamos saber O QUE, COMO QUEBRAR e FAZER.
+- **Tasks e sempre obrigatorio** - toda mudanca no Hapvida tem Task no Azure DevOps. `tasks.md` e
+  sincronizado 1:1 com work items Task no ADO via MCP, vinculados a User Story / Feature pai
+  ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md)).
+- Design e **auto-skip** quando a mudanca e direta (Pequeno / Medio).
 - Discuss e disparado **dentro de Specify** quando ha gray areas em comportamento user-facing.
 - UAT interativo e disparado **dentro de Execute** apenas para features user-facing complexas.
 - **Quick Mode (atalho TLC) NAO esta no escopo do piloto** - ver [ADR 008](adr/008-quick-mode-fora-do-escopo-piloto.md).
 
-**Valvula de seguranca:** mesmo quando Tasks e pulada, Execute SEMPRE comeca listando passos atomicos
-inline (ver [implement.md](references/implement.md)). Se essa listagem revelar >5 passos ou dependencias
-complexas, PARE e crie `tasks.md` formal - a fase Tasks foi indevidamente pulada.
+**Valvula de seguranca:** quando Design e pulado, Tasks SEMPRE comeca listando os passos atomicos.
+Se a decomposicao revelar >5 passos com dependencias complexas, PARE e crie `design.md` formal -
+a fase Design foi indevidamente pulada.
 
 ## Estrutura de pastas dos projetos
 
@@ -65,12 +70,23 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 │   ├── STRUCTURE.md
 │   ├── TESTING.md
 │   ├── INTEGRATIONS.md
-│   └── CONCERNS.md
+│   ├── CONCERNS.md
+│   └── knowledge-base/    # Catalogos vivos do dominio (PL/SQL legado)
+│       ├── indice.md
+│       ├── catalogo-conceitos-negocio.md
+│       ├── catalogo-objetos-plsql.md
+│       ├── pendencias-abertas.md
+│       └── riscos-ans.md
+├── reverse-engineering/   # Baseline cacheada por rotina (ADR-011)
+│   └── <NOME_OBJETO>/
+│       ├── README-rotina.md
+│       └── rev-<TAG_CVS>/
+│           └── reversa-<NOME_OBJETO>.md
 └── features/[feature]/
     ├── spec.md            # WHAT - sempre
     ├── context.md         # Decisoes de gray areas - quando Discuss e disparado
     ├── design.md          # HOW - para Grande/Complexo
-    └── tasks.md           # Decomposicao - para Grande/Complexo
+    └── tasks.md           # Decomposicao - SEMPRE (sync 1:1 com Tasks ADO)
 ```
 
 ## Fluxos de trabalho
@@ -88,8 +104,13 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 
 ### Refatoracao PL/SQL (Improvement + Tunning)
 
-1. **Engenharia reversa do baseline** a partir da tag `PRODUCAO` no WinCVS (NUNCA producao)
-2. `Specify` com template `spec-improvement-tunning` que carrega Ficha de Tunning
+1. **Engenharia reversa do baseline** - se a rotina nao tem RE cacheada em
+   `.specs/reverse-engineering/<X>/rev-<TAG>/` ou a tag esta stale, dispare o prompt
+   [`baseline-reverse-engineering`](prompts/baseline-reverse-engineering.prompt.md) que invoca
+   a skill [`engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md). Ver
+   [ADR-011](adr/011-engenharia-reversa-como-baseline.md).
+2. `Specify` com template `spec-improvement-tunning` referenciando
+   `[REF: .specs/reverse-engineering/<X>/rev-<TAG>/]` como baseline
 3. `Design` referencia ADRs aplicaveis da wiki Arquitetura-Referencia (ADR 22 Padrao Repositorio, ADR 74 DDD, etc)
 4. `Tasks` decomposto em refatoracoes atomicas
 5. `Execute` com convencao de cabecalho de procedure citando `WI-####` e `SPEC-####`
@@ -150,10 +171,12 @@ Passo 5: Flag uncertain
 | Uso | Autorizado? |
 |---|---|
 | Acessar/atualizar work items | Sim - via `@azure-devops/mcp` local |
+| **Criar Tasks ADO automaticamente a partir de `tasks.md`** | **Sim - obrigatorio** ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md)), via prompt `tasks-from-design` |
 | Anexar spec/design/tasks como snapshot ao work item | Sim - acionado pelo TL via prompt file |
 | Ler PRs, commits, builds | Sim |
 | Acessar wiki Arquitetura-Referencia | Sim |
-| **MCP de banco Oracle produtivo** | **PROIBIDO** - sempre WinCVS tag PRODUCAO |
+| **MCP Oracle - dicionario read-only** (`dba_*`, `dba_source`) | Sim - autorizado apenas para skills `engenharia-reversa-sigo` e `plsql-oracle-expert` ([REF: ADR-007](adr/007-guardrail-acesso-producao.md) emendada por [ADR-011](adr/011-engenharia-reversa-como-baseline.md)) |
+| **MCP Oracle - dados de negocio / DML / DDL** | **PROIBIDO** - sempre WinCVS tag PRODUCAO |
 
 Configuracao em [`references/mcp-integration.md`](references/mcp-integration.md).
 
@@ -166,6 +189,7 @@ Configuracao em [`references/mcp-integration.md`](references/mcp-integration.md)
 | Initialize project, setup project | [`references/project-init.md`](references/project-init.md) |
 | Create roadmap, plan features | [`references/roadmap.md`](references/roadmap.md) |
 | Map codebase, analyze existing code | [`references/brownfield-mapping.md`](references/brownfield-mapping.md) |
+| Reverse-engineer rotina, baseline RE, refresh RE | [`references/reverse-engineering.md`](references/reverse-engineering.md) / [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) |
 | Document concerns, find tech debt | [`references/concerns.md`](references/concerns.md) |
 | Record decision, log blocker, add todo | [`references/state-management.md`](references/state-management.md) |
 | Pause work, end session, Resume work | [`references/session-handoff.md`](references/session-handoff.md) |
@@ -213,6 +237,7 @@ A spec a aplicar e determinada pela combinacao de campos do work item:
 
 - Tom conversacional em portugues, sem emojis em artefatos formais
 - Use tokens textuais: `[ATENCAO]`, `[BLOQUEADO]`, `[REVISAO]`, `[ANS]`, `[REF: id]`, `[ADR-AUSENTE]`, `[MIGRACAO]`, `[GUARDRAIL]`, `[OK]`, `[PREMISSA]`
+- `[GUARDRAIL]` Toda mudanca no Hapvida exige Task no Azure DevOps. `tasks.md` -> Tasks ADO sincronizadas 1:1 ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md))
 - Encoding UTF-8 sem BOM em todo arquivo gerado
 - Para tarefas leves (validacao, handoff), comente uma vez que modelos mais rapidos cumprem bem - registre em STATE.md `Preferences` para nao repetir
 - Para tarefas pesadas (brownfield, refatoracao PL/SQL complexa), use Claude Opus
@@ -224,10 +249,15 @@ Ver [`references/code-analysis.md`](references/code-analysis.md). NUNCA acessar 
 
 ## Skill Integrations
 
-Quando disponiveis no ambiente do dev, prefira:
+O framework agora **carrega skills internas** da pasta [`skills/`](skills/):
 
-- **`sigo-modernizacao-plsql`** para engenharia reversa de PL/SQL e extracao de regras
-- **`sigo-refatoracao-workflow`** para fluxo completo de refatoracao
-- **`plsql-oracle-expert`** para code review PL/SQL com regras ANS
+- **[`engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md)** - engenharia reversa
+  forense de PL/SQL com persistencia em `.specs/reverse-engineering/` (ver ADR-011)
+- **[`plsql-oracle-expert`](skills/plsql-oracle-expert/SKILL.md)** - code review PL/SQL com
+  regras ANS aplicadas
 
-Estas skills foram desenvolvidas internamente e ja respeitam os guardrails Hapvida.
+Skills externas SIGO continuam compativeis quando disponiveis no ambiente do dev:
+
+- `sigo-refatoracao-workflow` - fluxo completo de refatoracao
+
+Todas as skills respeitam os guardrails Hapvida (ADR-007 emendada por ADR-011).

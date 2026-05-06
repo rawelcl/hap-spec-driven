@@ -7,6 +7,38 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.3.0] - 2026-05-06
+
+### Mudado (BREAKING)
+
+- Fase **Tasks deixa de ser auto-skip** e passa a ser **sempre obrigatoria** em todos os escopos
+  do Auto-Sizing (Pequeno -> Complexo). Granularidade proporcional - escopo Pequeno pode ter
+  apenas 1-3 tasks minimas e dispensar diagrama de fases. ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md))
+- Cada item de `tasks.md` passa a ser **sincronizado 1:1 com um work item Task no Azure DevOps**,
+  criado automaticamente pelo prompt `tasks-from-design` via MCP `@azure-devops/mcp`, vinculado
+  como filho da User Story / Feature pai.
+- Prefixo `WI-####` em commits de implementacao agora se refere ao **ID da Task ADO filha**, nao
+  ao ID da User Story / Feature. Commits de artefatos da spec continuam usando `wi_pai`.
+  ([REF: ADR-005](adr/005-conventional-commits-com-prefixo-wi.md))
+
+### Adicionado
+
+- ADR 010 - Tasks obrigatorias com sync automatico ao Azure DevOps
+- Campo `ADO Task ID` em `templates/tasks-template.md` e exemplos de `references/tasks.md`
+- Bloco `Sync ADO` (`wi_pai`, `ado_project`, `ado_area_path`) no template de `tasks.md`
+- Passos 9-11 em `prompts/tasks-from-design.prompt.md`: confirmar metadados, criar Tasks no
+  ADO via MCP, gravar IDs de volta em `tasks.md`
+- Guardrail: Execute nao inicia sem todos os `ADO Task ID` preenchidos em `tasks.md`
+- Cross-reference ADR 008 -> ADR 010 (veto a Quick Mode reforcado)
+
+### Removido
+
+- Bloco "Pular esta fase quando" de `references/tasks.md`
+- Step 0 de `references/implement.md` ("Listar passos atomicos quando fase Tasks foi pulada");
+  substituido por checklist de verificacao de IDs ADO
+
+---
+
 ## [0.2.0] - 2026-05-06
 
 ### Adicionado

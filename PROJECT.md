@@ -44,7 +44,7 @@
 - Brownfield Mapping (7 docs) para projetos com codigo existente
 - Catalogo de prompt files para GitHub Copilot
 - Knowledge Verification Chain explicita
-- 9 ADRs do framework consolidando decisoes
+- 10 ADRs do framework consolidando decisoes
 - Glossario de dominio Comercial + Regulatorio ANS + Mapeamento legado PL/SQL
 - Integracao MCP Azure DevOps para snapshot de spec ao work item
 - Camada fina sobre Agile Hapvida 2.0 (sem modificar processo default)

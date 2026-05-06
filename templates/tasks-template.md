@@ -1,7 +1,13 @@
 # [Feature] Tasks
 
-**Design:** `.specs/features/[feature]/design.md`
+**Design:** `.specs/features/[feature]/design.md` (quando aplicavel)
 **Status:** Draft
+
+**Sync ADO** ([REF: ADR-010](../../adr/010-tasks-obrigatorias-com-sync-ado.md)):
+
+- `wi_pai`: <ID da User Story / Feature pai>
+- `ado_project`: <projeto ADO>
+- `ado_area_path`: <area path do squad>
 
 ---
 
@@ -38,6 +44,7 @@ T8 -> T9
 **Depende de:**
 **Reutiliza:**
 **Requirement:** FEAT-01
+**ADO Task ID:** <preenchido apos sync via MCP>
 
 **Ferramentas:**
 - MCP:
@@ -49,7 +56,7 @@ T8 -> T9
 
 **Tests:** unit | integration | e2e | none
 **Gate:** quick | full | build
-**Commit:** `WI-<id>: feat(<scope>): <description>`
+**Commit:** `WI-<ADO Task ID>: feat(<scope>): <description>`
 
 ---
 

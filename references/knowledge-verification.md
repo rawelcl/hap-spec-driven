@@ -7,7 +7,11 @@ DEVE percorrer esta cadeia EM ORDEM. **Nunca pular passos.**
 
 ```
 Passo 1: Codebase
-  ├── PL/SQL: WinCVS tag PRODUCAO         [GUARDRAIL] NUNCA banco produtivo
+  ├── PL/SQL
+  │   ├── 1a. .specs/reverse-engineering/<rotina>/rev-<TAG>/  (RE cacheada - se TAG bate com PRODUCAO)
+  │   └── 1b. WinCVS tag PRODUCAO                              (se RE ausente/stale)
+  │       [GUARDRAIL] NUNCA banco produtivo para dados de negocio
+  │       [GUARDRAIL] MCP Oracle so para dicionario (dba_*) e dba_source - ver ADR-007 emendada
   └── Java/.NET: ADO Repos branch main
 
 Passo 2: Project docs
@@ -40,7 +44,7 @@ Passo 5: Flag uncertain
 
 | Step | TLC | Hapvida (adaptacao) |
 |---|---|---|
-| 1 - Codebase | Generico (codebase do projeto) | Bi-VCS explicito: WinCVS tag PRODUCAO (PL/SQL) ou ADO Repos main (Java/.NET) com `[GUARDRAIL]` proibindo banco produtivo |
+| 1 - Codebase | Generico (codebase do projeto) | Bi-VCS explicito: WinCVS tag PRODUCAO (PL/SQL) ou ADO Repos main (Java/.NET). Para PL/SQL: priorizar RE cacheada em `.specs/reverse-engineering/` (ADR-011) antes de ler CVS bruto. MCP Oracle autorizado apenas para dicionario (ADR-007 emendada) |
 | 2 - Project docs | `.specs/`, README, docs/ | Adiciona Wiki Arquitetura-Referencia como RAG primario (>96 ADRs corporativas) |
 | 3 - Context7 MCP | Idem | Idem - so adiciona que MCP do ADO local complementa para metadados ADO |
 | 4 - Web search | Sources reputadas | Inclui explicitamente sites oficiais ANS (gov.br/ans), Lei 9.656/98, RNs |

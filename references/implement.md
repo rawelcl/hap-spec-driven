@@ -36,36 +36,30 @@ spec/design. Todos os passos abaixo se aplicam identicamente seja em contexto pr
 sub-agent. A unica diferenca: sub-agents reportam resultados ao orquestrador em vez de continuar
 para a proxima task.
 
-### 0. Listar passos atomicos (OBRIGATORIO quando fase Tasks foi pulada)
+### 0. Verificar tasks.md e IDs ADO (OBRIGATORIO)
 
-Se nao ha `tasks.md` para esta feature, voce DEVE listar passos atomicos antes de escrever qualquer
-codigo. Nao-negociavel - previne perder foco e fazer demais coisas ao mesmo tempo.
+`tasks.md` e **sempre obrigatorio** ([REF: ADR-010](../adr/010-tasks-obrigatorias-com-sync-ado.md))
+e deve ter cada task com `ADO Task ID` preenchido antes de iniciar Execute.
 
-```
-## Plano de Execucao
+Checklist nao-negociavel:
 
-1. [Passo] -> arquivos: [lista] -> verificar: [como] -> commit: [mensagem]
-2. [Passo] -> arquivos: [lista] -> verificar: [como] -> commit: [mensagem]
-3. [Passo] -> arquivos: [lista] -> verificar: [como] -> commit: [mensagem]
-```
+- [ ] `tasks.md` existe na pasta da feature
+- [ ] Status do `tasks.md` esta `Synced` (ou `In Progress`)
+- [ ] Toda task tem `ADO Task ID` preenchido (nao `<preenchido apos sync via MCP>`)
+- [ ] Campo `Commit` de cada task usa `WI-<ADO Task ID>`, nao placeholder
 
-**Cada passo deve ser:**
-
-- UM deliverable (um componente, uma funcao, um endpoint, uma alteracao de arquivo)
-- Verificavel independentemente
-- Comitavel independentemente
-
-Se listar passos revela >5 passos ou dependencias complexas, **PARE** e crie `tasks.md` formal -
-a fase Tasks foi indevidamente pulada.
+Se algum item falhar: **PARE** e rode [`prompts/tasks-from-design.prompt.md`](../prompts/tasks-from-design.prompt.md)
+antes de prosseguir. Nao improvise plano inline - o processo Hapvida exige Task no ADO para
+toda mudanca.
 
 ### 1. Escolher Task
 
-Do tasks.md (se existir) ou do plano inline acima. Usuario especifica ("implementar T3") ou voce
-sugere a proxima disponivel.
+Do `tasks.md` da feature em foco. Usuario especifica ("implementar T3") ou voce sugere a proxima
+disponivel cujas dependencias estao satisfeitas.
 
 ### 2. Verificar Dependencias
 
-Se tasks.md existe, cheque dependencias. Se usando plano inline, siga a ordem listada.
+Cheque dependencias declaradas em `tasks.md`.
 
 X Se bloqueada: "T3 depende de T2 que nao esta feita. Faco T2 primeiro?"
 
@@ -166,12 +160,17 @@ em um commit.
 **Formato Hapvida ([Conventional Commits 1.0.0](https://www.conventionalcommits.org/) + prefixo WI):**
 
 ```
-WI-<id>: <type>(<scope>): <description>
+WI-<ADO Task ID>: <type>(<scope>): <description>
 
 [optional body]
 
 [optional footer(s)]
 ```
+
+**Importante:** o `<ADO Task ID>` no prefixo e o ID da **Task ADO filha** (criada via
+`tasks-from-design`), nao o ID da User Story / Feature pai. Ver
+[ADR 010](../adr/010-tasks-obrigatorias-com-sync-ado.md) e
+[ADR 005](../adr/005-conventional-commits-com-prefixo-wi.md).
 
 **Tipos:**
 

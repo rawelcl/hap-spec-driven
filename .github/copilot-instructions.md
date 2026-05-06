@@ -19,7 +19,10 @@ framework. O framework esta em https://github.com/rawelcl/hapvida-spec-driven.
 
 ## Guardrails inegociaveis
 
-- `[GUARDRAIL]` NUNCA acessar banco produtivo via MCP - sempre WinCVS tag PRODUCAO para PL/SQL
+- `[GUARDRAIL]` NUNCA acessar dados de beneficiario via MCP Oracle - codigo PL/SQL sempre via
+  WinCVS tag PRODUCAO
+- `[GUARDRAIL]` MCP Oracle autorizado APENAS para dicionario read-only (`dba_*`, `dba_source`)
+  pelas skills `engenharia-reversa-sigo` e `plsql-oracle-expert` ([ADR-007](../adr/007-guardrail-acesso-producao.md) emendada por [ADR-011](../adr/011-engenharia-reversa-como-baseline.md))
 - `[GUARDRAIL]` MCP do Azure DevOps autorizado para metadados (work items, attachments, repos)
 - `[GUARDRAIL]` Anonimizacao obrigatoria de PII de beneficiario
 - `[GUARDRAIL]` Toque em area regulada exige `[ANS]` + citacao de norma
@@ -27,8 +30,14 @@ framework. O framework esta em https://github.com/rawelcl/hapvida-spec-driven.
 
 ## Skills SIGO disponiveis
 
-- `sigo-modernizacao-plsql` - engenharia reversa PL/SQL
-- `sigo-refatoracao-workflow` - fluxo refatoracao
+Internas ao framework (em `skills/`):
+
+- `engenharia-reversa-sigo` - engenharia reversa PL/SQL com persistencia em
+  `.specs/reverse-engineering/` (ver [ADR-011](../adr/011-engenharia-reversa-como-baseline.md))
 - `plsql-oracle-expert` - code review PL/SQL com regras ANS
+
+Externas (quando disponiveis no ambiente):
+
+- `sigo-refatoracao-workflow` - fluxo refatoracao
 
 Quando relevante, **prefira skills SIGO** sobre solucoes ad-hoc.
