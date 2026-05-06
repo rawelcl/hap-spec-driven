@@ -1,0 +1,40 @@
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Editor
+.idea/
+.vscode/*
+!.vscode/mcp.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Logs e temporarios
+*.log
+*.tmp
+*.bak
+*.orig
+
+# Saidas geradas
+/dist/
+/build/
+/out/
+
+# Snapshots locais antes de upload via MCP (evita versionar binarios temporarios)
+/.specs/snapshots/
+*.snapshot.zip
+
+# Rascunhos de spec ainda nao aprovados
+/.specs/draft/
+
+# Credenciais - NUNCA commitar
+.env
+.env.local
+*.pat
+*.token
+secrets/
+
+# Arquivos do MCP local com PAT inline
+.vscode/mcp.local.json
