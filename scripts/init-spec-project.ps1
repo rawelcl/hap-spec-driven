@@ -37,6 +37,16 @@
 .PARAMETER Brownfield
   Cria esqueleto de .specs/codebase/ e .specs/codebase/knowledge-base/.
 
+.PARAMETER FrameworkRepo
+  URL do repositorio do framework (default: https://github.com/rawelcl/hap-spec-driven.git).
+  Adicionado como git submodule em .specs/framework/ conforme ADR-012.
+
+.PARAMETER FrameworkRef
+  Branch ou tag do framework para pinagem inicial (default: main).
+
+.PARAMETER NoSubmodule
+  Pula o passo de adicionar o git submodule (uso em testes ou ambientes sem rede).
+
 .PARAMETER Force
   Sobrescreve arquivos existentes. Sem essa flag, arquivos existentes sao
   preservados e o script avisa.
@@ -58,6 +68,9 @@ param(
   [switch] $WithProject,
   [switch] $WithRoadmap,
   [switch] $Brownfield,
+  [string] $FrameworkRepo = 'https://github.com/rawelcl/hap-spec-driven.git',
+  [string] $FrameworkRef = 'main',
+  [switch] $NoSubmodule,
   [switch] $Force
 )
 
@@ -170,8 +183,12 @@ Este projeto usa o **Framework Spec-Driven Hapvida v0.2**.
 
 ## Regra fundamental
 
-Quando criar specs, designs, tasks ou implementar codigo, siga as instrucoes em
-[SKILL.md do framework](https://github.com/rawelcl/hapvida-spec-driven/blob/main/SKILL.md).
+Quando criar specs, designs, tasks ou implementar codigo, siga as instrucoes do framework
+disponivel em ``.specs/framework/SKILL.md`` (vinculado como git submodule, ver ADR-012).
+
+Se o submodule nao estiver populado, rode: ``git submodule update --init --recursive``.
+
+Versao pinada do framework: ver ``.specs/.framework.json``.
 
 ## Contexto do squad
 
@@ -246,10 +263,111 @@ if ($Brownfield) {
   }
 }
 
+# 6. .vscode/settings.json - paths fixos para o framework (ADR-012)
+$settingsContent = @"
+{
+  `"chat.promptFiles`": true,
+  `"chat.promptFilesLocations`": {
+    `".specs/framework/prompts`": true
+  },
+  `"chat.instructionsFilesLocations`": {
+    `".specs/framework/instructions`": true,
+    `".github/instructions`": true
+  },
+  `"files.encoding`": `"utf8`",
+  `"files.eol`": `"`\n`"
+}
+"@
+Write-FileSafe -Path '.vscode/settings.json' -Content $settingsContent
+
+# 7. .vscode/extensions.json
+$extensionsContent = @"
+{
+  `"recommendations`": [
+    `"github.copilot`",
+    `"github.copilot-chat`",
+    `"ms-azure-devops.azure-pipelines`",
+    `"oracle.sql-developer-for-vscode`"
+  ]
+}
+"@
+Write-FileSafe -Path '.vscode/extensions.json' -Content $extensionsContent
+
+# 8. .github/pull_request_template.md
+$prTemplate = @"
+# WI-<id>: <titulo curto>
+
+## Contexto
+
+<!-- Link para work item ADO e resumo do problema -->
+
+## Mudancas
+
+- [ ] Spec atualizada em ``.specs/features/WI-<id>-<slug>/spec.md``
+- [ ] Design atualizado em ``.specs/features/WI-<id>-<slug>/design.md``
+- [ ] Tasks marcadas em ``.specs/features/WI-<id>-<slug>/tasks.md``
+- [ ] Codigo implementado
+- [ ] Testes
+
+## Checklist Spec-Driven
+
+- [ ] Knowledge Verification Chain executada (ADR-006)
+- [ ] ADR aplicavel referenciada (ou ``[ADR-AUSENTE]`` registrado)
+- [ ] ``[ANS]`` + norma citada se area regulada
+- [ ] Anonimizacao de PII de beneficiario verificada
+- [ ] Conventional Commits + WI prefix em todos os commits
+- [ ] Snapshot da spec anexado ao work item (ADR-002)
+- [ ] Versao do framework em ``.specs/.framework.json`` adequada
+
+## Riscos
+
+<!-- Areas reguladas, dados de beneficiario, integracoes criticas -->
+"@
+Write-FileSafe -Path '.github/pull_request_template.md' -Content $prTemplate
+
+# 9. Git submodule do framework + .framework.json (ADR-012)
+if (-not $NoSubmodule) {
+  $isGitRepo = (Test-Path '.git') -or ((git rev-parse --is-inside-work-tree 2>$null) -eq 'true')
+  if (-not $isGitRepo) {
+    Write-Host "[SKIP] Submodule: diretorio nao e repositorio Git. Rode 'git init' antes ou use -NoSubmodule." -ForegroundColor Yellow
+  }
+  elseif (Test-Path '.specs/framework') {
+    Write-Host "[SKIP] .specs/framework ja existe (use -Force para remover e re-adicionar)" -ForegroundColor Yellow
+  }
+  else {
+    Write-Host "[..]   git submodule add $FrameworkRepo .specs/framework" -ForegroundColor Cyan
+    & git submodule add -b $FrameworkRef $FrameworkRepo .specs/framework
+    if ($LASTEXITCODE -eq 0) {
+      & git submodule update --init --recursive .specs/framework | Out-Null
+      Write-Host "[OK]   submodule .specs/framework ($FrameworkRef)" -ForegroundColor Green
+      Push-Location .specs/framework
+      $fwCommit = (& git rev-parse HEAD).Trim()
+      Pop-Location
+      $manifestContent = @"
+{
+  `"framework`": `"hap-spec-driven`",
+  `"repo`": `"$FrameworkRepo`",
+  `"ref`": `"$FrameworkRef`",
+  `"commit`": `"$fwCommit`",
+  `"pinned_at`": `"$today`",
+  `"adr`": `"ADR-012`"
+}
+"@
+      Write-FileSafe -Path '.specs/.framework.json' -Content $manifestContent
+    } else {
+      Write-Host "[ERRO] git submodule add falhou. Verifique acesso a $FrameworkRepo" -ForegroundColor Red
+    }
+  }
+}
+else {
+  Write-Host "[INFO] -NoSubmodule definido: framework nao foi vinculado em .specs/framework/" -ForegroundColor Cyan
+}
+
 Write-Host ""
 Write-Host "[OK] Scaffold criado para squad '$SquadName' (stack=$Stack)" -ForegroundColor Green
 Write-Host "Proximos passos:" -ForegroundColor Cyan
 Write-Host "  1. Revisar .github/copilot-instructions.md e ajustar contexto"
 Write-Host "  2. Validar .vscode/mcp.json - autenticar no Azure DevOps"
-Write-Host "  3. Commit inicial: git add .specs .vscode .github; git commit -m 'WI-XXXX: chore(spec-driven): scaffold inicial'"
-Write-Host "  4. Para a primeira feature, use o prompt 'spec-from-workitem'"
+Write-Host "  3. Commit inicial: git add .specs .vscode .github .gitmodules; git commit -m 'WI-XXXX: chore(spec-driven): scaffold inicial v0.2 (ADR-012)'"
+Write-Host "  4. Para atualizar o framework no futuro: scripts/update-framework.ps1"
+Write-Host "  5. Para a primeira feature, use o prompt 'spec-from-workitem'"

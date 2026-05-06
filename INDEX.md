@@ -91,7 +91,9 @@ Leitura obrigatoria:
 - Templates da matriz Demand Type x Value Area
 
 Configuracao no projeto:
-- Copiar `.github/copilot-instructions.md` para o repo do squad
+- Rodar `init-spec-project.ps1` no repo do squad - vincula framework como submodule em
+  `.specs/framework/` ([ADR-012](adr/012-framework-como-submodule.md))
+- Para atualizar versao do framework: `scripts/update-framework.ps1`
 - Configurar `.vscode/mcp.json` conforme [`references/mcp-integration.md`](references/mcp-integration.md)
 
 ### Dev / QA (Onda 2)
@@ -121,7 +123,7 @@ Leitura recomendada:
 | Prompts Copilot | `prompts/` | prompt files acionaveis em Agent Mode |
 | Skills internas | `skills/` | `engenharia-reversa-sigo`, `plsql-oracle-expert` |
 | Glossario | `glossario/` | Termos canonicos + mapeamento legado |
-| ADRs do framework | `adr/` | 11 decisoes arquiteturais do framework |
+| ADRs do framework | `adr/` | 12 decisoes arquiteturais do framework |
 | Exemplos | `examples/.specs/` | Projeto, codebase, feature end-to-end |
 | Config Copilot | `.github/` | copilot-instructions + instructions especificas |
 
