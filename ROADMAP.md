@@ -1,7 +1,23 @@
 # Roadmap
 
-**Current Milestone:** v0.2 - Piloto Comercial
-**Status:** In Progress
+**Current Milestone:** v0.3 - Tasks obrigatorias + sync ADO
+**Status:** Released
+
+---
+
+## v0.3 - Tasks obrigatorias + sync ADO
+
+**Goal:** Alinhar o framework ao processo Hapvida 2.0 - toda mudanca tem Task no ADO,
+sincronizada 1:1 a partir de `tasks.md`.
+
+### Features
+
+**Tasks sempre obrigatorio + sync automatico** - DONE
+
+- [ADR 010](adr/010-tasks-obrigatorias-com-sync-ado.md) - decisao registrada
+- `tasks.md` deixa de ser auto-skip; cada item vira 1 Task no ADO via MCP
+- Prefixo `WI-####` em commits de implementacao = ID da Task ADO filha
+- Reverse sync (ADO -> tasks.md) fica para v0.4+
 
 ---
 
@@ -48,7 +64,7 @@
 
 ---
 
-## v0.3 - Ajustes pos-piloto
+## v0.4 - Ajustes pos-piloto
 
 **Goal:** Incorporar aprendizados do piloto e preparar materiais para Onda 2.
 
@@ -77,7 +93,7 @@
 
 ---
 
-## v0.4 - Escala Onda 2
+## v0.5 - Escala Onda 2
 
 **Goal:** Distribuir framework para todas as 30+ squads (~120 devs e QAs).
 

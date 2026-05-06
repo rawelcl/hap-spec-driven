@@ -18,6 +18,14 @@ WI-12345: refactor(plsql): extrair logica de calculo de proposta
 WI-12345: fix(auth): corrigir refresh de token expirado
 ```
 
+**Identidade do `<id>`** ([REF: ADR-010](010-tasks-obrigatorias-com-sync-ado.md)):
+
+- Em commits de **implementacao** (`feat`, `fix`, `refactor`, `test`, `perf`, etc.): `<id>` e o
+  ID da **Task ADO filha** criada via `tasks-from-design`. Cada task de `tasks.md` tem 1 Task
+  ADO 1:1.
+- Em commits de **artefatos da spec** (`docs` para `spec.md`, `design.md`, `tasks.md` em si):
+  `<id>` e o ID da User Story / Feature pai (campo `wi_pai`).
+
 Para PL/SQL no CVS (cuja commit message e fraca), a convencao e replicada no **cabecalho de
 comentario** do procedure ou package:
 

@@ -1,20 +1,23 @@
 # Tasks
 
-**Goal:** Quebrar em tasks GRANULARES e ATOMICAS. Dependencias claras. Ferramentas certas. Plano de execucao paralela.
+**Goal:** Quebrar em tasks GRANULARES e ATOMICAS. Dependencias claras. Ferramentas certas. Plano de execucao paralela. **Cada task de `tasks.md` vira 1 work item Task no Azure DevOps**, vinculada a User Story / Feature pai.
 
-**Pular esta fase quando:** Existem ≤3 passos obvios. Nesse caso, tasks sao implicitas - va direto
-para Execute e liste-os inline no plano de implementacao.
+**Sempre obrigatorio no piloto Hapvida.** [REF: ADR-010](../adr/010-tasks-obrigatorias-com-sync-ado.md) -
+toda mudanca, pequena ou complexa, exige Task no ADO. Para escopo Pequeno o `tasks.md` pode ter
+1-3 tasks minimas e dispensar diagrama de fases - mas existe e sincroniza ao ADO.
 
 ## Adaptacoes Hapvida em relacao ao TLC original
 
 | Item | TLC | Hapvida |
 |---|---|---|
 | Local | `.specs/[feature]/tasks.md` | Idem |
+| Obrigatoriedade | Auto-skip para escopo direto | `[ADAPTACAO]` **Sempre obrigatorio** ([REF: ADR-010](../adr/010-tasks-obrigatorias-com-sync-ado.md)) |
+| Sync com tracker | Nao se aplica | `[ADAPTACAO]` **Cada task vira 1 work item Task no ADO** (1:1, parent = User Story / Feature) via MCP |
 | Test Coverage Matrix | TLC tem em `.specs/codebase/TESTING.md` | Idem - mas para PL/SQL no piloto adaptado (sem CI/CD) |
 | Parallelism Assessment | TLC tem | Idem - mas Java/.NET geralmente parallel-safe; PL/SQL legado pode nao ser |
 | Sub-agent delegation | TLC sugere Task tool | `[ADAPTACAO]` GitHub Copilot Agent Mode com tools restritas |
-| Conventional Commits | TLC obriga | `[ADAPTACAO]` Mantem + adiciona prefixo `WI-####:` antes do tipo |
-| Convencao para CVS | Nao se aplica TLC | `[ADAPTACAO]` Cabecalho de comentario no procedure cita `WI-####` e `SPEC-####` |
+| Conventional Commits | TLC obriga | `[ADAPTACAO]` Mantem + adiciona prefixo `WI-####:` (ID da Task ADO filha) antes do tipo |
+| Convencao para CVS | Nao se aplica TLC | `[ADAPTACAO]` Cabecalho de comentario no procedure cita `WI-####` (Task ADO) e `SPEC-####` |
 
 ## Por que tasks granulares?
 
@@ -116,6 +119,38 @@ X significa que voce DEVE reestruturar antes de apresentar.
 > **MCPs disponiveis:** [listar - tipicamente: `@azure-devops/mcp`, Context7]
 > **Skills disponiveis:** [listar - tipicamente: `sigo-modernizacao-plsql`, `sigo-refatoracao-workflow`, `plsql-oracle-expert`]
 
+### 7. Sincronizar tasks.md com Azure DevOps (OBRIGATORIO)
+
+Apos aprovacao das tasks pelo TL, criar 1 work item Task no ADO por item de `tasks.md`,
+via MCP `@azure-devops/mcp`.
+
+**Pre-requisitos:**
+
+- Spec aprovada com `wi_pai` declarado no frontmatter (ID da User Story ou Feature pai).
+- `tasks.md` com todos os 3 checks pre-aprovacao verdes.
+- MCP `@azure-devops/mcp` conectado.
+
+**Acao automatizada (ver [`prompts/tasks-from-design.prompt.md`](../prompts/tasks-from-design.prompt.md)):**
+
+Para cada task `T<n>`:
+
+1. Chamar `mcp_azure-devops_create_work_item` com:
+   - `type`: `Task`
+   - `title`: `T<n> - <titulo da task>`
+   - `parent`: `wi_pai` (User Story / Feature da spec)
+   - `description`: bloco com link ao `tasks.md` no ADO Repos + secao "Done when" da task
+   - `area_path` / `iteration_path`: herdados da spec
+2. Receber o ID do work item retornado.
+3. Gravar de volta em `tasks.md` no campo `**ADO Task ID:**` da task correspondente.
+4. Ao final, apresentar tabela `T<n> <-> ADO Task #<id>` ao TL.
+
+**Fonte da verdade:** `tasks.md`. ADO e espelho operacional. Se TL editar Task direto no ADO,
+e responsabilidade do TL refletir em `tasks.md`.
+
+**Fallback (MCP indisponivel):** TL cria as Tasks manualmente no ADO e preenche `ADO Task ID`
+em `tasks.md` antes de iniciar Execute. `[GUARDRAIL]` **Execute nao pode iniciar sem todos os
+IDs preenchidos.**
+
 ---
 
 ## Template: `.specs/[feature]/tasks.md`
@@ -123,8 +158,14 @@ X significa que voce DEVE reestruturar antes de apresentar.
 ```markdown
 # [Feature] Tasks
 
-**Design:** `.specs/[feature]/design.md`
-**Status:** Draft | Approved | In Progress | Done
+**Design:** `.specs/[feature]/design.md` (quando aplicavel)
+**Status:** Draft | Approved | Synced | In Progress | Done
+
+**Sync ADO:**
+
+- `wi_pai`: <ID da User Story / Feature pai>
+- `ado_project`: <projeto ADO>
+- `ado_area_path`: <area path do squad>
 
 ---
 
@@ -168,6 +209,7 @@ T8 -> T9
 **Depende de:** Nenhuma
 **Reutiliza:** `src/existing/BaseInterface.ts` ou `[REF: ADR-22]`
 **Requirement:** FEAT-01
+**ADO Task ID:** <preenchido apos sync via MCP>
 
 **Ferramentas:**
 
@@ -183,7 +225,7 @@ T8 -> T9
 
 **Tests:** unit
 **Gate:** quick
-**Commit:** `WI-12345: feat(comercial): criar interface de servico de cotacao`
+**Commit:** `WI-<ADO Task ID>: feat(comercial): criar interface de servico de cotacao`
 
 ---
 

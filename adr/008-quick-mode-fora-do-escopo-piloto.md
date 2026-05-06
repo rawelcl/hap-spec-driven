@@ -28,6 +28,13 @@ Para v0.3+, considerar Quick Mode se:
 - Padronizar criterios objetivos para entrar em Quick Mode (ex: <3 arquivos, <1 dia de trabalho,
   sem mudanca regulatoria)
 
+## Relacao com ADR 010
+
+[ADR 010](010-tasks-obrigatorias-com-sync-ado.md) tornou `tasks.md` **sempre obrigatorio** com
+sync 1:1 ao Azure DevOps. Isso reforca o veto a Quick Mode: nao ha mais como burlar a Task ADO
+via atalho - toda mudanca, por menor que seja, exige Task no ADO. Eventual reintroducao de
+Quick Mode em v0.4+ tera de respeitar essa obrigatoriedade.
+
 ## Consequencias
 
 **Positivas no piloto:**

@@ -78,5 +78,30 @@
 - Para PL/SQL: STACK.md identifica versao Oracle, packages corporativos, DBMS_*/UTL_* usados
 - Para Java/.NET: STACK.md identifica versoes, frameworks, libraries da ADR 24 homologadas
 - INTEGRATIONS.md cobre obrigatoriamente: ServiceNow (Incidents), Lecom (BPM), GMUD (CHG), SACTI
+
+## Camada complementar - Knowledge base e RE por rotina
+
+Alem dos 7 docs de mapeamento macro, projetos com legado PL/SQL devem materializar:
+
+```
+.specs/codebase/knowledge-base/
+  indice.md                          # navegacao
+  catalogo-conceitos-negocio.md      # CN-XX canonicos do dominio
+  catalogo-objetos-plsql.md          # objetos PL/SQL ja analisados + tags CVS
+  pendencias-abertas.md              # ambiguidades em revisao com PO/DBA
+  riscos-ans.md                      # riscos regulatorios consolidados
+
+.specs/reverse-engineering/
+  <NOME_OBJETO>/                     # uma pasta por rotina mapeada
+    README-rotina.md                 # indice de revisoes
+    rev-<TAG_CVS>/
+      reversa-<NOME_OBJETO>.md       # artefato canonico (template)
+```
+
+Esta camada e produzida pela skill
+[`engenharia-reversa-sigo`](../skills/engenharia-reversa-sigo/SKILL.md) - ver
+[`references/reverse-engineering.md`](reverse-engineering.md) e
+[ADR-011](../adr/011-engenharia-reversa-como-baseline.md). Substitui releitura de monolitos
+PL/SQL a cada nova spec.
 - CONCERNS.md alinha com `[ADR-AUSENTE]` markers - decisoes nao formalizadas viram items de
   CONCERNS

@@ -27,10 +27,14 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 
 ### "Vou refatorar uma procedure PL/SQL legada"
 
-1. Use o template: [`templates/spec-improvement-tunning.md`](templates/spec-improvement-tunning.md)
-2. Use o prompt file especifico: [`prompts/spec-from-baseline-plsql.prompt.md`](prompts/spec-from-baseline-plsql.prompt.md)
-3. Aproveite skills SIGO existentes: `sigo-modernizacao-plsql`, `sigo-refatoracao-workflow`, `plsql-oracle-expert`
-4. Veja exemplo end-to-end: [`examples/.specs/features/exemplo-cotacao-pme/`](examples/.specs/features/exemplo-cotacao-pme/)
+1. **Antes da spec**: garantir RE cacheada em `.specs/reverse-engineering/<X>/rev-<TAG>/`. Se
+   ausente ou stale, dispare [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) - ver
+   [ADR-011](adr/011-engenharia-reversa-como-baseline.md) e [`references/reverse-engineering.md`](references/reverse-engineering.md)
+2. Use o template: [`templates/spec-improvement-tunning.md`](templates/spec-improvement-tunning.md)
+3. Use o prompt file especifico: [`prompts/spec-from-baseline-plsql.prompt.md`](prompts/spec-from-baseline-plsql.prompt.md)
+4. Skills internas do framework: [`skills/engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md), [`skills/plsql-oracle-expert`](skills/plsql-oracle-expert/SKILL.md)
+5. Skill externa complementar quando disponivel: `sigo-refatoracao-workflow`
+6. Veja exemplo end-to-end: [`examples/.specs/features/exemplo-cotacao-pme/`](examples/.specs/features/exemplo-cotacao-pme/)
 
 ### "Vou desenhar arquitetura para uma feature"
 
@@ -41,8 +45,9 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 
 ### "Vou quebrar em tasks"
 
-1. Pre-requisito: design aprovado
-2. Use: [`prompts/tasks-from-design.prompt.md`](prompts/tasks-from-design.prompt.md)
+1. Pre-requisito: design aprovado (quando aplicavel) ou spec aprovada
+2. Use: [`prompts/tasks-from-design.prompt.md`](prompts/tasks-from-design.prompt.md) - **cria
+   automaticamente 1 work item Task no Azure DevOps por item de `tasks.md`** ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md))
 3. Template: [`templates/tasks-template.md`](templates/tasks-template.md)
 4. Referencia: [`references/tasks.md`](references/tasks.md)
 
@@ -111,16 +116,17 @@ Leitura recomendada:
 | Categoria | Pasta | Conteudo |
 |---|---|---|
 | Raiz | `/` | README, SKILL, PROJECT, ROADMAP, CHANGELOG, LICENSE |
-| Referencias TLC adaptadas | `references/` | 17 docs do fluxo (specify, design, tasks, implement, validate, etc) |
-| Templates de spec | `templates/` | 10 templates por tipo de demanda |
-| Prompts Copilot | `prompts/` | 7 prompt files acionaveis em Agent Mode |
+| Referencias TLC adaptadas | `references/` | docs do fluxo (specify, design, tasks, implement, validate, reverse-engineering, etc) |
+| Templates de spec/RE | `templates/` | templates por tipo de demanda + reverse-engineering |
+| Prompts Copilot | `prompts/` | prompt files acionaveis em Agent Mode |
+| Skills internas | `skills/` | `engenharia-reversa-sigo`, `plsql-oracle-expert` |
 | Glossario | `glossario/` | Termos canonicos + mapeamento legado |
-| ADRs do framework | `adr/` | 9 decisoes arquiteturais do framework |
+| ADRs do framework | `adr/` | 11 decisoes arquiteturais do framework |
 | Exemplos | `examples/.specs/` | Projeto, codebase, feature end-to-end |
 | Config Copilot | `.github/` | copilot-instructions + instructions especificas |
 
 ---
 
-**Versao:** 0.2.0 (piloto Onda 1 - area Comercial)
+**Versao:** 0.4.0 (piloto Onda 1 - area Comercial)
 **Repositorio:** https://github.com/rawelcl/hapvida-spec-driven
 **Base:** TLC Spec-Driven 2.0.0 (CC-BY-4.0)
