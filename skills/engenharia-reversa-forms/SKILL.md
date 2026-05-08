@@ -1,6 +1,6 @@
 ---
 name: engenharia-reversa-forms
-description: Engenharia reversa forense de modulos Oracle Forms (.fmb) - converte binario para XML via frmf2xml, extrai 12 relatorios estruturados (canvases, blocks, items, triggers, LOVs, program units, etc), mapeia dependencias com packages do banco, identifica smells e riscos ANS. Produz artefato canonico em .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/ que serve de baseline cacheado para specs de modernizacao. Use quando (1) primeira analise de modulo Forms legado, (2) refresh de RE stale, (3) analise de impacto antes de migracao para web (ADF, APEX, web stack moderna). Triggers - "engenharia reversa Forms", "extrai as regras desse Forms", "o que esse modulo .fmb faz", "analisa esse Forms". NAO acessar dados de beneficiario; .fmb sempre lido a partir do CVS tag PRODUCAO.
+description: Engenharia reversa forense de modulos Oracle Forms (.fmb) - converte binario para XML via frmf2xml, extrai 12 relatorios estruturados (canvases, blocks, items, triggers, LOVs, program units, etc), mapeia dependencias com packages do banco, identifica smells e riscos ANS. Produz artefato canonico em .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/ (versao CVS do .fmb + numero sequencial da analise) que serve de baseline cacheado para specs de modernizacao. Use quando (1) primeira analise de modulo Forms legado, (2) refresh de RE stale, (3) analise de impacto antes de migracao para web (ADF, APEX, web stack moderna). Triggers - "engenharia reversa Forms", "extrai as regras desse Forms", "o que esse modulo .fmb faz", "analisa esse Forms". NAO acessar dados de beneficiario; .fmb sempre lido a partir do CVS tag PRODUCAO.
 license: CC-BY-4.0
 metadata:
   versao: 0.1
@@ -84,7 +84,7 @@ erro silencioso e provavel.
 ```powershell
 tools/forms-extractor/Convert-FmbToXml.ps1 `
   -FmbPath <path-cvs-PRODUCAO>/<MODULO>.fmb `
-  -OutputDir .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/raw/
+  -OutputDir .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-<NNN>/raw/
 ```
 
 Saida: `<MODULO>.xml` - representacao XML completa do form (Forms2XML).
@@ -93,8 +93,8 @@ Saida: `<MODULO>.xml` - representacao XML completa do form (Forms2XML).
 
 ```powershell
 tools/forms-extractor/Extract-FormsMetadata.ps1 `
-  -XmlPath .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/raw/<MODULO>.xml `
-  -OutputDir .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/parsed/ `
+  -XmlPath .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-<NNN>/raw/<MODULO>.xml `
+  -OutputDir .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-<NNN>/parsed/ `
   -Format md
 ```
 
@@ -124,11 +124,35 @@ Saida: 12 relatorios estruturados consumiveis pela LLM:
 Identificar nome do modulo, dominio funcional, area de atuacao, tag CVS, criticidade.
 
 ### Passo 1 - Pipeline de extracao (tool)
-Determinar `NNN` (sequencial zero-padded - listar `rev-*` existentes em
-`.specs/reverse-engineering/forms/<MODULO>/`, somar 1; primeira analise = `001`).
+
+Determinar `VERSAO_CVS` (revisao numerica do .fmb na tag PRODUCAO, ex: `1.23`) e `NNN`
+(sequencial zero-padded):
+
+- `[GUARDRAIL]` Se a revisao CVS NAO puder ser determinada: PARAR e pedir ao usuario
+  que informe o numero de revisao antes de criar qualquer pasta. NUNCA usar "PRODUCAO",
+  "TAG" ou qualquer palavra no lugar do numero de revisao.
+- Listar pastas `v*-rev-*` existentes em `.specs/reverse-engineering/forms/<MODULO>/`,
+  NNN = (maior NNN existente + 1), ou `001` se for a primeira.
+
+`[GUARDRAIL]` Estrutura de pastas OBRIGATORIA (nao inverter posicoes):
+
+```
+.specs/reverse-engineering/forms/<MODULO>/
+  README-modulo.md                              <- nivel do modulo (NAO dentro da versao)
+  v<VERSAO_CVS>-rev-<NNN>/                      <- pasta da versao (formato v<numero>-rev-NNN)
+    raw/<MODULO>.xml
+    parsed/<MODULO>_*.txt
+    reversa-<MODULO>.md
+```
+
+Erros comuns a EVITAR:
+- `README-modulo.md` dentro da pasta de versao               [ERRADO]
+- Pasta nomeada `rev-001-PRODUCAO` sem numero CVS real       [ERRADO]
+- Pasta nomeada `PRODUCAO-rev-001` ou `rev-NNN-TAG`         [ERRADO]
+- Qualquer pasta sem prefixo `v<numero>`                     [ERRADO]
 
 Disparar `Convert-FmbToXml.ps1` + `Extract-FormsMetadata.ps1`. Materializar os 12 arquivos em
-`.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/parsed/`. Validar que o RESUMO foi gerado
+`.specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-<NNN>/parsed/`. Validar que o RESUMO foi gerado
 sem erros.
 
 ### Passo 2 - Inventario de UI
@@ -165,11 +189,13 @@ Resumo executivo com:
 
 ## Output
 
-Artefato canonico em `.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/reversa-<MODULO>.md`,
-seguindo template (a criar). Atualizacao dos catalogos
-em `.specs/codebase/knowledge-base/`.
+Artefato canonico em `.specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-<NNN>/reversa-<MODULO>.md`,
+seguindo template (a criar). Atualizacao dos catalogos em `.specs/codebase/knowledge-base/`.
 
-Os 12 relatorios `.txt` da Etapa 2 ficam em `parsed/` no mesmo diretorio - sao **rastreio
+Atualizar tambem:
+- `.specs/reverse-engineering/forms/<MODULO>/README-modulo.md` (indice de revisoes do modulo)
+
+Os 12 relatorios `.txt` da Etapa 2 ficam em `v<VERSAO_CVS>-rev-<NNN>/parsed/` - sao **rastreio
 fechado** (auditavel), nao apagar.
 
 ## Status

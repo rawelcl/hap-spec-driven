@@ -85,16 +85,35 @@ A skill espera encontrar (ou criar se ausente) os seguintes catalogos em
 [ ] Verificar status do objeto via MCP:
       SELECT status FROM dba_objects WHERE object_name = UPPER('[OBJETO]')
 [ ] Obter a revisao numerica do objeto no CVS (ex: 1.23):
-      -> Consultar a revisao exata do arquivo do objeto na tag PRODUCAO
+      -> Consultar a revisao exata do arquivo do objeto na tag PRODUCAO (ex: cvs log, header do arquivo)
       -> Registrar no frontmatter (campo revisao_cvs, ex: "1.23")
+      -> `[GUARDRAIL]` Se a revisao numerica NAO puder ser determinada: PARAR e pedir ao
+         usuario que informe o numero de revisao CVS antes de criar qualquer pasta.
+         NUNCA usar "PRODUCAO", "TAG", "LATEST" ou qualquer palavra como substituto do
+         numero de revisao - a pasta DEVE comecar com "v<numero>", ex: "v1.23-rev-001".
 [ ] Determinar numero de analise (NNN) - sequencial zero-padded:
       -> Listar pastas v*-rev-* existentes em .specs/reverse-engineering/plsql/[NOME]/
       -> NNN = (maior NNN existente + 1), ou 001 se for a primeira
 [ ] Criar estrutura de pastas (segregada por tipo - ADR-011):
-      .specs/reverse-engineering/plsql/[NOME]/README-rotina.md
-      .specs/reverse-engineering/plsql/[NOME]/v[REVISAO_CVS]-rev-NNN/reversa-[NOME].md
-      (a partir de templates/reverse-engineering-template.md)
-      Exemplo: .specs/reverse-engineering/plsql/PRC_CALCULAR_CARENCIA/v1.23-rev-001/reversa-PRC_CALCULAR_CARENCIA.md
+
+      `[GUARDRAIL]` A estrutura OBRIGATORIA e (nao inverter posicoes):
+
+      .specs/reverse-engineering/plsql/[NOME]/
+        README-rotina.md                               <- nivel do objeto (NAO dentro da versao)
+        v[REVISAO_CVS]-rev-[NNN]/                      <- pasta da versao (formato v<numero>-rev-NNN)
+          reversa-[NOME].md                            <- artefato canonico
+
+      Exemplo correto:
+        .specs/reverse-engineering/plsql/PRC_CALCULAR_CARENCIA/
+          README-rotina.md
+          v1.23-rev-001/
+            reversa-PRC_CALCULAR_CARENCIA.md
+
+      Erros comuns a EVITAR:
+        - README-rotina.md dentro da pasta de versao      [ERRADO]
+        - Pasta nomeada "rev-001-PRODUCAO" sem numero CVS [ERRADO]
+        - Pasta nomeada "PRODUCAO-rev-001"               [ERRADO]
+        - Qualquer pasta sem prefixo "v<numero>"          [ERRADO]
 ```
 
 ### Passo 1 - Leitura estrutural
