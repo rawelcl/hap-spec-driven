@@ -94,6 +94,13 @@ $absPath = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) '.specs/.fram
 [System.IO.File]::WriteAllText($absPath, $manifestContent, $utf8NoBom)
 Write-Host "[OK] .specs/.framework.json atualizado" -ForegroundColor Green
 
+# Sincroniza .claude/commands/ para Claude Code (se prompts foram atualizados)
+$syncScript = '.specs/framework/scripts/sync-claude-commands.ps1'
+if (Test-Path $syncScript) {
+  Write-Host "[..] Sincronizando .claude/commands/ para Claude Code..." -ForegroundColor Cyan
+  & $syncScript -SourceDir '.specs/framework/prompts' -DestDir '.claude/commands'
+}
+
 Write-Host ""
 Write-Host "Diff resumido (commits novos):" -ForegroundColor Cyan
 & git -C .specs/framework log --oneline "$oldCommit..$newCommit" | Select-Object -First 20

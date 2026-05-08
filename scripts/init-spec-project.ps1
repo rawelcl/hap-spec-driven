@@ -505,11 +505,31 @@ else {
   Write-Host "[INFO] -NoSubmodule definido: framework nao foi vinculado em .specs/framework/" -ForegroundColor Cyan
 }
 
+# 10. .gitignore do projeto consumidor (Claude Code commands sao gerados localmente)
+$gitignorePath = '.gitignore'
+$claudeIgnoreEntry = "`n# Claude Code slash commands (gerados pelo framework - nao versionar)`n/.claude/commands/`n"
+if (Test-Path $gitignorePath) {
+  $existing = Get-Content $gitignorePath -Raw
+  if ($existing -notmatch '\.claude/commands') {
+    Add-Content -Path $gitignorePath -Value $claudeIgnoreEntry
+    Write-Host "[OK]   .gitignore: adicionada entrada /.claude/commands/" -ForegroundColor Green
+  }
+} else {
+  Write-FileSafe -Path $gitignorePath -Content $claudeIgnoreEntry
+}
+
+# 11. Sincroniza .claude/commands/ (Claude Code) se o submodule foi adicionado
+$syncScript = '.specs/framework/scripts/sync-claude-commands.ps1'
+if ((Test-Path $syncScript) -and -not $NoSubmodule) {
+  Write-Host "[..] Sincronizando .claude/commands/ para Claude Code..." -ForegroundColor Cyan
+  & $syncScript -SourceDir '.specs/framework/prompts' -DestDir '.claude/commands'
+}
+
 Write-Host ""
 Write-Host "[OK] Scaffold criado para squad '$SquadName' (stack=$Stack)" -ForegroundColor Green
 Write-Host "Proximos passos:" -ForegroundColor Cyan
 Write-Host "  1. Revisar .github/copilot-instructions.md e ajustar contexto"
 Write-Host "  2. Validar .vscode/mcp.json - autenticar no Azure DevOps"
-Write-Host "  3. Commit inicial: git add .specs .vscode .github .gitmodules; git commit -m 'WI-XXXX: chore(spec-driven): scaffold inicial v0.2 (ADR-012)'"
-Write-Host "  4. Para atualizar o framework no futuro: scripts/update-framework.ps1"
-Write-Host "  5. Para a primeira feature, use o prompt 'spec-from-workitem'"
+Write-Host "  3. Commit inicial: git add .specs .vscode .github .gitmodules .gitignore; git commit -m 'WI-XXXX: chore(spec-driven): scaffold inicial (ADR-012)'"
+Write-Host "  4. Para atualizar o framework no futuro: .specs/framework/scripts/update-framework.ps1"
+Write-Host "  5. Slash commands disponiveis no VS Code Copilot Chat e no Claude Code (/hap-sd-*)"
