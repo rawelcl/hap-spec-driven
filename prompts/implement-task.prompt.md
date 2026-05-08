@@ -3,17 +3,12 @@ mode: 'agent'
 description: 'Implementar uma task - ciclo planejar > implementar > verificar > commit'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Implementar UMA task por vez do `tasks.md` da feature em foco. Mudancas cirurgicas.
 Verificar. Commit. Repetir.
-
-Referencias canonicas:
-
-- [references/implement.md](../references/implement.md)
-- [references/coding-principles.md](../references/coding-principles.md)
 
 # Input esperado
 
@@ -67,9 +62,7 @@ Se algum item falhar: PARE e rode `/tasks-from-design` antes de prosseguir.
 # Guardrails
 
 - `[GUARDRAIL]` NUNCA acessar ou modificar dados de producao diretamente
-- `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica em qualquer log ou comentario
-- `[GUARDRAIL]` Toque em area regulada exige `[ANS]` no commit message e revisao de TL
-- `[GUARDRAIL]` Para PL/SQL: codigo-fonte baseline e WinCVS tag PRODUCAO - nunca banco produtivo
+- `[GUARDRAIL]` Para PL/SQL: cabecalho de comentario com `WI-####` e `SPEC-####` no procedure
 
 # Output
 

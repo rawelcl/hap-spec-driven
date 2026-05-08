@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Gerar tasks.md a partir de design.md aprovado e criar Tasks ADO automaticamente'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.3.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 

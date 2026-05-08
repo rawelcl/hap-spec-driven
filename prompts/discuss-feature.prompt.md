@@ -3,17 +3,13 @@ mode: 'agent'
 description: 'Capturar gray areas de uma feature - produz context.md com decisoes de comportamento user-facing'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Capturar COMO o usuario imagina a feature nas areas ambiguas, produzindo
 `.specs/features/[feature]/context.md`. Normalmente disparado automaticamente durante Specify,
 mas pode ser invocado diretamente via "discuss feature" ou "capture context".
-
-Referencias canonicas:
-
-- [references/discuss.md](../references/discuss.md)
 
 # Quando usar
 
@@ -70,7 +66,6 @@ Referencias canonicas:
 
 - `[GUARDRAIL]` Decisoes de `context.md` alimentam Design e Tasks - nao improvise alem do que
   o usuario expressou
-- `[GUARDRAIL]` Anonimizar PII de beneficiario se mencionado durante a discussao
 
 # Output
 

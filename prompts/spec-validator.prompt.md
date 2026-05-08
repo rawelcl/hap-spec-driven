@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Validar spec.md contra checklist do framework'
 ---
 
-Voce e o validador do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 

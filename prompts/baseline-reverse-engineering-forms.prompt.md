@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Disparar engenharia reversa de modulo Oracle Forms (.fmb) e persistir em .specs/reverse-engineering/forms/ como baseline cacheado'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.4.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
@@ -44,7 +44,6 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
    - `[GUARDRAIL]` `.fmb` lido do checkout CVS tag PRODUCAO - nunca de copia local nao versionada
    - `[GUARDRAIL]` Pipeline `tools/forms-extractor/` exige Oracle Forms Developer instalado;
      se ausente, bloquear e instruir o TL
-   - `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de saude) em hard-coded values, comentarios, exemplos de massa
 
 2. **Resolver tag CVS PRODUCAO** do `.fmb` e gravar no frontmatter do artefato
 
@@ -118,8 +117,6 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
 - `[GUARDRAIL]` LLM **nao** le XML bruto - sempre via os 12 relatorios da Etapa 2
 - `[GUARDRAIL]` PL/SQL embutido em triggers segue regras de `engenharia-reversa-sigo`
   (tabelas de negocio proibidas; somente dba_* autorizados via MCP - dba_source proibido como fonte de codigo)
-- `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de saude) em comentarios, hard-coded values, exemplos de massa
-- `[GUARDRAIL]` Toda regra que tocar area regulada (ANS, LGPD) exige `[ANS]` + citacao da norma
 - `[GUARDRAIL]` Cada pasta e **imutavel** - nunca editar `v<VERSAO_CVS>-rev-NNN` existente; sempre
   criar nova quando a versao CVS divergir
 

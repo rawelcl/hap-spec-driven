@@ -3,15 +3,16 @@ mode: 'agent'
 description: 'Disparar engenharia reversa de objeto PL/SQL e persistir em .specs/reverse-engineering/ como baseline cacheado'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.3.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Produzir o **artefato canonico de engenharia reversa** de uma rotina PL/SQL Oracle, persistido
-em `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/` para servir de baseline cacheado em
+em `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/` para servir de baseline cacheado em
 futuras specs (ver [ADR-011](../adr/011-engenharia-reversa-como-baseline.md)).
 
-`NNN` e numero sequencial zero-padded (`001`, `002`, ...) - calcular listando revs existentes
+`VERSAO_CVS` e a revisao numerica do objeto na tag PRODUCAO (ex: `1.23`).
+`NNN` e numero sequencial zero-padded (`001`, `002`, ...) - calcular listando `v*-rev-*` existentes
 no diretorio do objeto e incrementando 1.
 
 # Quando usar
@@ -37,11 +38,11 @@ no diretorio do objeto e incrementando 1.
    - `indice.md`, `catalogo-conceitos-negocio.md`, `catalogo-objetos-plsql.md`,
      `pendencias-abertas.md`, `riscos-ans.md`
 4. **Resolver tag CVS PRODUCAO** e gravar no frontmatter do artefato
-5. **Calcular NNN** - sequencial zero-padded da revisao (listar `rev-*` em
+5. **Calcular NNN** - sequencial zero-padded (listar `v*-rev-*` em
    `.specs/reverse-engineering/plsql/<NOME>/`, incrementar 1; primeira analise = `001`)
 6. **Gerar artefato** a partir de
    [`templates/reverse-engineering-template.md`](../templates/reverse-engineering-template.md)
-   em `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/reversa-<NOME>.md`
+   em `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/reversa-<NOME>.md`
 7. **Atualizar indice** `.specs/reverse-engineering/plsql/<NOME>/README-rotina.md`
 8. **Atualizar catalogos** em `.specs/codebase/knowledge-base/`
 9. **Apresentar para aprovacao** o Painel de Decisao (secao 11 do artefato)
@@ -56,5 +57,5 @@ no diretorio do objeto e incrementando 1.
 # Handoff
 
 Apos aprovacao no Painel de Decisao, a RE pode ser referenciada por specs Improvement+Tunning
-via `[REF: .specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/]` - elimina necessidade de
+via `[REF: .specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/]` - elimina necessidade de
 releitura do codigo bruto na fase Specify.

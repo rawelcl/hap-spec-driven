@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Gerar design.md a partir de spec.md aprovada'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
@@ -30,7 +30,6 @@ Gerar `.specs/features/[feature]/design.md` a partir da spec.md ja aprovada (est
 
 - `[GUARDRAIL]` ADR aplicavel ausente -> `[ADR-AUSENTE]` + bloquear ate ADR ser proposta
 - `[GUARDRAIL]` Decisoes locked em context.md sao invioleis
-- `[GUARDRAIL]` Para PL/SQL: nunca consultar banco produtivo - sempre tag PRODUCAO
 
 # Output
 

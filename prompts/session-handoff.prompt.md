@@ -3,17 +3,12 @@ mode: 'agent'
 description: 'Pausar ou retomar sessao de trabalho - gerencia HANDOFF.md para continuidade entre sessoes'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Pausar o trabalho atual preservando o contexto (cria `HANDOFF.md`), ou retomar uma sessao
 pausada anteriormente (le `HANDOFF.md` e reconstroi contexto).
-
-Referencias canonicas:
-
-- [references/session-handoff.md](../references/session-handoff.md)
-- [references/state-management.md](../references/state-management.md)
 
 # Input esperado
 

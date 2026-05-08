@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Publicar snapshot da spec aprovada como anexo no work item ADO via MCP'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2 para publicacao de snapshot.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
@@ -64,7 +64,6 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
 
 # Guardrails
 
-- `[GUARDRAIL]` MCP do Azure DevOps autorizado para metadados - **nao** para banco produtivo
 - `[GUARDRAIL]` Conteudo deve estar anonimizado antes de upload - se houver `[REVISAO]` em campo
   de PII, ABORTAR e pedir correcao
 - `[GUARDRAIL]` Idempotencia - re-execucao na mesma versao da spec NAO duplica anexo (verificar

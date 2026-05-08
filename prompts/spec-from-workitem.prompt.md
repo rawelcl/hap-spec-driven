@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Criar spec.md a partir de um work item ADO existente'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
@@ -31,10 +31,6 @@ Criar `.specs/features/[feature]/spec.md` a partir do work item ADO especificado
 
 # Guardrails
 
-- `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de
-  saude) extraidos do work item. Dados comerciais (razao social, numero de contrato, CNPJ de
-  empresa contratante) podem ser mantidos sem anonimizacao.
-- `[GUARDRAIL]` Marcar `[ANS]` em qualquer regra que toca regulacao
 - `[GUARDRAIL]` Citar ADRs aplicaveis via `[REF: ADR-XX]` - se decisao sem ADR, marcar `[ADR-AUSENTE]`
 
 # Output

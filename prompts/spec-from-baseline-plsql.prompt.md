@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Engenharia reversa de procedure/package PL/SQL para gerar spec.md (Improvement+Tunning)'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
@@ -19,8 +19,8 @@ Fazer engenharia reversa de uma procedure ou package PL/SQL e gerar spec.md tipo
 # Passos
 
 1. **Verificar guardrail**: confirmar que o caminho aponta para checkout CVS tag PRODUCAO
-2. **Verificar RE cacheada**: se existe `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/` com tag
-   batendo na PRODUCAO atual, usar como baseline (`[REF]`). Se ausente ou stale, disparar antes
+2. **Verificar RE cacheada**: se existe `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/` com
+   tag batendo na PRODUCAO atual, usar como baseline (`[REF]`). Se ausente ou stale, disparar antes
    o prompt [`baseline-reverse-engineering`](baseline-reverse-engineering.prompt.md) que invoca
    a skill [`engenharia-reversa-sigo`](../skills/engenharia-reversa-sigo/SKILL.md).
 3. Identificar: regras de negocio implementadas, gargalos de performance, pontos de modernizacao
@@ -32,9 +32,7 @@ Fazer engenharia reversa de uma procedure ou package PL/SQL e gerar spec.md tipo
 
 # Guardrails
 
-- `[GUARDRAIL]` NUNCA acessar banco produtivo - sempre checkout CVS tag PRODUCAO
 - `[GUARDRAIL]` Comportamento funcional NAO pode mudar (vira outro Demand Type se mudar)
-- `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de saude) em comentarios ou massa de teste
 
 # Output
 

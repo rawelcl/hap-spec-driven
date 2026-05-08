@@ -3,17 +3,12 @@ mode: 'agent'
 description: 'Registrar decisao, blocker ou todo no STATE.md do squad'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Atualizar `.specs/project/STATE.md` com uma nova decisao local (AD-NNN), blocker (B-NNN),
 licao aprendida (L-NNN) ou item de acompanhamento.
-
-Referencias canonicas:
-
-- [references/state-management.md](../references/state-management.md)
-- [ADR-009](../adr/009-state-md-obrigatorio-projeto-individual.md) - STATE.md obrigatorio
 
 # Input esperado
 
@@ -70,11 +65,6 @@ Diga o que quer registrar - o agente identifica o tipo automaticamente:
    - Se decisao tecnica sem ADR existente → incluir `[ADR-AUSENTE]` e orientar sobre proposta
 
 6. **Confirmar** ao TL: "Registrado como [AD/B/L]-NNN em STATE.md."
-
-# Guardrails
-
-- `[GUARDRAIL]` Anonimizar PII de beneficiario se mencionado no contexto da decisao
-- `[GUARDRAIL]` Decisao que toca regulacao ANS → incluir `[ANS]` + citacao da norma
 
 # Output
 

@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Inicializar a estrutura .specs/ + .vscode/ + .github/ no repo do squad'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
@@ -11,13 +11,6 @@ Criar o scaffold padrao de adocao do framework no repositorio atual do squad,
 preenchendo apenas o que e responsabilidade do squad. NAO copie artefatos do
 framework (SKILL.md, prompts, templates, ADRs); esses ficam no repo central
 [hap-spec-driven](https://github.com/rawelcl/hap-spec-driven).
-
-Referencias canonicas:
-
-- [references/project-init.md](../references/project-init.md)
-- [references/state-management.md](../references/state-management.md)
-- [references/mcp-integration.md](../references/mcp-integration.md)
-- [ADR-009](../adr/009-state-md-obrigatorio-projeto-individual.md) - STATE.md obrigatorio
 
 # Input esperado (peca ao TL antes de criar arquivos)
 
@@ -82,8 +75,6 @@ Referencias canonicas:
 
 # Guardrails
 
-- `[GUARDRAIL]` UTF-8 sem BOM em todos os arquivos gerados
-- `[GUARDRAIL]` Sem emojis em artefatos formais
 - `[GUARDRAIL]` NAO copiar SKILL.md/prompts/templates/ADRs do framework para o repo do squad
 - `[GUARDRAIL]` Se ja existir `.specs/` populado, confirmar antes de sobrescrever
 

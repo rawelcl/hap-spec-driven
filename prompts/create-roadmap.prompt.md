@@ -3,17 +3,12 @@ mode: 'agent'
 description: 'Criar ou atualizar o roadmap do squad em .specs/project/ROADMAP.md'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Criar ou atualizar `.specs/project/ROADMAP.md` com a visao de medio prazo do squad:
 milestones, features no horizonte e status de execucao.
-
-Referencias canonicas:
-
-- [references/roadmap.md](../references/roadmap.md)
-- [references/state-management.md](../references/state-management.md)
 
 # Quando usar
 
@@ -83,11 +78,6 @@ como roadmap; ROADMAP.md e complementar, nao obrigatorio.
 5. **Atualizar STATE.md** → `Last Updated` se houver mudancas relevantes
 
 6. **Confirmar ao TL** com resumo das atualizacoes feitas.
-
-# Guardrails
-
-- `[GUARDRAIL]` Anonimizar PII de beneficiario se mencionado como contexto
-- `[GUARDRAIL]` Features que tocam regulacao ANS → marcar `[ANS]` no roadmap
 
 # Output
 

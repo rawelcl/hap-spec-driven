@@ -3,17 +3,12 @@ mode: 'agent'
 description: 'Especificar uma feature - criar spec.md com requisitos testaveis e rastreaveis'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Criar `.specs/features/[feature]/spec.md` especificando O QUE construir, com requisitos
 testaveis e rastreaveis, seguindo o fluxo adaptativo (auto-sizing por complexidade).
-
-Referencias canonicas:
-
-- [references/specify.md](../references/specify.md)
-- [references/discuss.md](../references/discuss.md) (disparado automaticamente se gray areas)
 
 # Input esperado
 

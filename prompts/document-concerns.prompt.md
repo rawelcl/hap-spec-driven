@@ -3,17 +3,12 @@ mode: 'agent'
 description: 'Documentar tech debt, areas frageis, gaps de cobertura e ADRs ausentes em CONCERNS.md'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Analisar o codebase e produzir ou atualizar `.specs/codebase/CONCERNS.md` com tech debt,
 areas frageis, gaps de testes e ADRs ausentes.
-
-Referencias canonicas:
-
-- [references/concerns.md](../references/concerns.md)
-- [references/code-analysis.md](../references/code-analysis.md)
 
 # Input esperado
 
@@ -77,8 +72,6 @@ Referencias canonicas:
 
 # Guardrails
 
-- `[GUARDRAIL]` NUNCA acessar banco produtivo - analise via WinCVS tag PRODUCAO para PL/SQL
-- `[GUARDRAIL]` Marcar `[ANS]` em toda regra que toca regulacao ANS/Lei 9.656/98
 - `[GUARDRAIL]` Nao inventar comportamentos - prefira `[REVISAO] confirmar com DBA/Arquiteto`
 
 # Output

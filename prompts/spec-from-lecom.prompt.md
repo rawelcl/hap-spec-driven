@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Criar spec.md a partir de um documento Lecom (BPM corporativo)'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
@@ -24,7 +24,6 @@ Criar spec.md a partir de um documento Lecom anexado pelo TL.
 
 # Guardrails
 
-- `[GUARDRAIL]` Documento Lecom pode ter PII de beneficiario pessoa fisica - anonimizar CPF, nome, matricula e dados de saude antes de incluir em spec
 - `[GUARDRAIL]` Marcar `[REVISAO]` em interpretacoes que nao estao explicitas no Lecom
 
 # Output

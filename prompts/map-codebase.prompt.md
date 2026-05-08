@@ -3,18 +3,12 @@ mode: 'agent'
 description: 'Mapear codebase existente em 7 documentos em .specs/codebase/ (brownfield mapping)'
 ---
 
-Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
+> **[HAP-SDD]** Hapvida Desenvolvimento Spec-Driven · [`SKILL.md`](../SKILL.md)
 
 # Tarefa
 
 Executar o brownfield mapping do codebase atual, produzindo os 7 documentos canônicos em
 `.specs/codebase/` para que o framework opere com contexto real do projeto.
-
-Referencias canonicas:
-
-- [references/brownfield-mapping.md](../references/brownfield-mapping.md)
-- [references/code-analysis.md](../references/code-analysis.md)
-- [ADR-011](../adr/011-engenharia-reversa-como-baseline.md) - baseline WinCVS tag PRODUCAO
 
 # Input esperado (peca ao TL antes de analisar)
 
@@ -22,12 +16,6 @@ Referencias canonicas:
 2. **Raiz do codebase** - caminho ou repo a analisar (padrao: workspace atual)
 3. **Para PL/SQL**: confirmar qual TAG DE PRODUCAO usar no WinCVS (`cvs log` ou explicita)
 4. **Areas de foco** - modulos, packages ou servicos prioritarios (opcional)
-
-# Guardrails obrigatorios
-
-> `[GUARDRAIL]` Para PL/SQL e Oracle Forms, a analise e o mapeamento devem ser baseados
-> **exclusivamente na ultima versao com TAG DE PRODUCAO no WinCVS**. NUNCA usar banco
-> produtivo, sandbox ou branches nao tagueadas como fonte de codigo.
 
 # Passos
 
