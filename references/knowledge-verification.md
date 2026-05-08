@@ -8,7 +8,7 @@ DEVE percorrer esta cadeia EM ORDEM. **Nunca pular passos.**
 ```
 Passo 1: Codebase
   ├── PL/SQL
-  │   ├── 1a. .specs/reverse-engineering/<rotina>/rev-<TAG>/  (RE cacheada - se TAG bate com PRODUCAO)
+  │   ├── 1a. .specs/reverse-engineering/plsql|forms/<obj>/rev-NNN-<TAG>/  (RE cacheada - rev mais recente, se TAG bate com PRODUCAO)
   │   └── 1b. WinCVS tag PRODUCAO                              (se RE ausente/stale)
   │       [GUARDRAIL] NUNCA banco produtivo para dados de negocio
   │       [GUARDRAIL] MCP Oracle so para dicionario (dba_*) e dba_source - ver ADR-007 emendada

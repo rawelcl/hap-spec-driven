@@ -92,10 +92,19 @@ Alem dos 7 docs de mapeamento macro, projetos com legado PL/SQL devem materializ
   riscos-ans.md                      # riscos regulatorios consolidados
 
 .specs/reverse-engineering/
-  <NOME_OBJETO>/                     # uma pasta por rotina mapeada
-    README-rotina.md                 # indice de revisoes
-    rev-<TAG_CVS>/
-      reversa-<NOME_OBJETO>.md       # artefato canonico (template)
+  README.md                          # convencao de naming
+  plsql/                             # segregacao por tipo (ADR-011)
+    <NOME_OBJETO>/                   # uma pasta por rotina mapeada
+      README-rotina.md               # indice de revisoes
+      rev-001-<TAG_CVS>/             # numeracao sequencial zero-padded
+        reversa-<NOME_OBJETO>.md     # artefato canonico
+  forms/                             # modulos Oracle Forms
+    <MODULO>/
+      README-modulo.md
+      rev-001-<TAG_CVS>/
+        raw/<MODULO>.xml             # Forms2XML
+        parsed/<MODULO>_*.txt        # 12 relatorios (forms-extractor)
+        reversa-<MODULO>.md
 ```
 
 Esta camada e produzida pela skill

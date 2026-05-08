@@ -1,6 +1,6 @@
 ---
 name: engenharia-reversa-sigo
-description: Engenharia reversa forense de objetos PL/SQL Oracle (procedure, function, package, trigger) - extracao de regras de negocio, mapeamento de dependencias, identificacao de smells e riscos ANS, com evidencia de codigo. Produz artefato canonico em .specs/reverse-engineering/<objeto>/rev-<TAG>/ que serve de baseline cacheado para specs Improvement+Tunning. Use quando (1) primeira analise de rotina PL/SQL legada com >2k linhas, (2) refresh de RE stale (tag CVS divergente), (3) analise de impacto antes de refatoracao. Triggers - "engenharia reversa", "extrai as regras", "o que essa rotina faz", "analisa esse objeto", "RE da procedure X". NAO acessar dados de beneficiario; leitura via MCP Oracle restrita ao dicionario (dba_*) e dba_source.
+description: Engenharia reversa forense de objetos PL/SQL Oracle (procedure, function, package, trigger) - extracao de regras de negocio, mapeamento de dependencias, identificacao de smells e riscos ANS, com evidencia de codigo. Produz artefato canonico em .specs/reverse-engineering/plsql/<objeto>/rev-NNN-<TAG>/ (revisoes numeradas sequenciais) que serve de baseline cacheado para specs Improvement+Tunning. Use quando (1) primeira analise de rotina PL/SQL legada com >2k linhas, (2) refresh de RE stale (tag CVS divergente), (3) analise de impacto antes de refatoracao. Triggers - "engenharia reversa", "extrai as regras", "o que essa rotina faz", "analisa esse objeto", "RE da procedure X". NAO acessar dados de beneficiario; leitura via MCP Oracle restrita ao dicionario (dba_*) e dba_source.
 license: CC-BY-4.0
 metadata:
   versao: 0.3
@@ -82,9 +82,12 @@ A skill espera encontrar (ou criar se ausente) os seguintes catalogos em
       -> Se nao: prosseguir
 [ ] Verificar status do objeto via MCP:
       SELECT status FROM dba_objects WHERE object_name = UPPER('[OBJETO]')
-[ ] Criar estrutura de pastas:
-      .specs/reverse-engineering/[NOME]/README-rotina.md
-      .specs/reverse-engineering/[NOME]/rev-[TAG]/reversa-[NOME].md
+[ ] Determinar numero de revisao (NNN) - sequencial zero-padded:
+      -> Listar revs existentes em .specs/reverse-engineering/plsql/[NOME]/
+      -> NNN = (maior rev existente + 1), ou 001 se for a primeira
+[ ] Criar estrutura de pastas (segregada por tipo - ADR-011):
+      .specs/reverse-engineering/plsql/[NOME]/README-rotina.md
+      .specs/reverse-engineering/plsql/[NOME]/rev-NNN-[TAG]/reversa-[NOME].md
       (a partir de templates/reverse-engineering-template.md)
 ```
 
@@ -234,12 +237,15 @@ Artefato unico seguindo
 salvo em:
 
 ```
-.specs/reverse-engineering/<NOME_OBJETO>/rev-<TAG_CVS>/reversa-<NOME_OBJETO>.md
+.specs/reverse-engineering/plsql/<NOME_OBJETO>/rev-NNN-<TAG_CVS>/reversa-<NOME_OBJETO>.md
 ```
+
+Onde `NNN` e numero sequencial zero-padded da revisao (`001`, `002`, ...). Ver
+`.specs/reverse-engineering/README.md` no projeto consumidor para a convencao completa.
 
 Atualizar tambem:
 
-- `.specs/reverse-engineering/<NOME_OBJETO>/README-rotina.md` (indice de revisoes)
+- `.specs/reverse-engineering/plsql/<NOME_OBJETO>/README-rotina.md` (indice de revisoes)
 - `.specs/codebase/knowledge-base/catalogo-objetos-plsql.md` (registro do objeto + tag analisada)
 - `.specs/codebase/knowledge-base/pendencias-abertas.md` (se houver `[ATENCAO]`)
 - `.specs/codebase/knowledge-base/riscos-ans.md` (se houver `[ANS]`)
@@ -247,4 +253,5 @@ Atualizar tambem:
 ## Handoff
 
 Apos aprovacao do PO no Painel de Decisao (secao 11 do artefato), a RE pode ser usada como
-baseline em specs Improvement+Tunning via `[REF: .specs/reverse-engineering/<NOME>/rev-<TAG>/]`.
+baseline em specs Improvement+Tunning via
+`[REF: .specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/]`.

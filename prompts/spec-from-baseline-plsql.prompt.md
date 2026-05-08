@@ -19,7 +19,7 @@ Fazer engenharia reversa de uma procedure ou package PL/SQL e gerar spec.md tipo
 # Passos
 
 1. **Verificar guardrail**: confirmar que o caminho aponta para checkout CVS tag PRODUCAO
-2. **Verificar RE cacheada**: se existe `.specs/reverse-engineering/<NOME>/rev-<TAG>/` com tag
+2. **Verificar RE cacheada**: se existe `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/` com tag
    batendo na PRODUCAO atual, usar como baseline (`[REF]`). Se ausente ou stale, disparar antes
    o prompt [`baseline-reverse-engineering`](baseline-reverse-engineering.prompt.md) que invoca
    a skill [`engenharia-reversa-sigo`](../skills/engenharia-reversa-sigo/SKILL.md).

@@ -23,7 +23,8 @@
   Stack predominante: PLSQL | Java | DotNet | Mista.
 
 .PARAMETER AdoOrg
-  Slug da organizacao no Azure DevOps (default: hapvida).
+  Slug da organizacao no Azure DevOps (default: hapvidalabs).
+  URL completa: https://dev.azure.com/hapvidalabs/
 
 .PARAMETER AreaAtuacao
   Area de negocio (Comercial, Autorizacao, etc).
@@ -63,7 +64,7 @@
 param(
   [Parameter(Mandatory)] [string] $SquadName,
   [ValidateSet('PLSQL','Java','DotNet','Mista')] [string] $Stack = 'Mista',
-  [string] $AdoOrg = 'hapvida',
+  [string] $AdoOrg = 'hapvidalabs',
   [string] $AreaAtuacao = 'Comercial',
   [switch] $WithProject,
   [switch] $WithRoadmap,
@@ -254,12 +255,153 @@ if ($Brownfield) {
     }
   }
   Write-Host "[INFO] Brownfield: rode o prompt 'Map codebase' para preencher os 7 docs em .specs/codebase/" -ForegroundColor Cyan
-  if ($Stack -eq 'PLSQL') {
-    if (-not (Test-Path '.specs/reverse-engineering')) {
-      New-Item -ItemType Directory -Force -Path '.specs/reverse-engineering' | Out-Null
-      Write-Host "[OK]   dir .specs/reverse-engineering" -ForegroundColor Green
+
+  # Reverse-engineering segregada por tipo de objeto (ADR-011)
+  # Estrutura: .specs/reverse-engineering/<tipo>/<NOME_OBJETO>/rev-NNN-<TAG_CVS>/
+  if ($Stack -eq 'PLSQL' -or $Stack -eq 'Mista') {
+    $reDirs = @(
+      '.specs/reverse-engineering',
+      '.specs/reverse-engineering/plsql',
+      '.specs/reverse-engineering/forms'
+    )
+    foreach ($d in $reDirs) {
+      if (-not (Test-Path $d)) {
+        New-Item -ItemType Directory -Force -Path $d | Out-Null
+        Write-Host "[OK]   dir $d" -ForegroundColor Green
+      }
     }
-    Write-Host "[INFO] PL/SQL: rode 'baseline-reverse-engineering' antes de criar specs de refatoracao (ADR-011)" -ForegroundColor Cyan
+
+    # README raiz da pasta reverse-engineering - convencao de naming
+    $reReadmeContent = @"
+# Reverse Engineering - $SquadName
+
+Baselines cacheados de objetos legados (ADR-011). A LLM usa esses artefatos como
+``[REF]`` em specs Improvement+Tunning para evitar releitura do codigo bruto.
+
+## Estrutura
+
+``````
+.specs/reverse-engineering/
++-- plsql/                          # procedures, functions, packages, triggers
+|   +-- <NOME_OBJETO>/
+|   |   +-- README-rotina.md        # indice das revisoes desta rotina
+|   |   +-- rev-001-<TAG_CVS>/      # primeira revisao
+|   |   |   +-- reversa-<NOME_OBJETO>.md
+|   |   +-- rev-002-<TAG_CVS>/      # refresh quando tag CVS divergir
+|   |       +-- reversa-<NOME_OBJETO>.md
++-- forms/                          # modulos Oracle Forms (.fmb)
+    +-- <MODULO>/
+        +-- README-modulo.md        # indice das revisoes deste modulo
+        +-- rev-001-<TAG_CVS>/
+            +-- raw/                # XML bruto (Forms2XML)
+            |   +-- <MODULO>.xml
+            +-- parsed/             # 12 relatorios estruturados (forms-extractor)
+            |   +-- <MODULO>_RESUMO.txt
+            |   +-- <MODULO>_BLOCKS.txt
+            |   +-- <MODULO>_TRIGGERS.txt
+            |   +-- ...
+            +-- reversa-<MODULO>.md
+``````
+
+## Convencao de revisao
+
+- ``rev-NNN-<TAG_CVS>`` onde ``NNN`` e numero sequencial zero-padded (001, 002, ...)
+- ``<TAG_CVS>`` e a tag PRODUCAO no momento da extracao (ex.: ``PRODUCAO-2026-05-08``)
+- Ordenacao alfabetica = ordem cronologica das revisoes
+- Cada revisao e **imutavel** - nunca editar uma rev existente; sempre criar nova
+
+## Quando criar nova revisao
+
+1. Tag CVS PRODUCAO divergiu da que esta no ``baseline_cvs_tag`` da revisao mais recente
+2. Skill ``engenharia-reversa-sigo`` ou ``engenharia-reversa-forms`` foi atualizada e gera
+   conteudo melhor
+3. Marcadores ``[REVISAO]`` na revisao anterior foram resolvidos com novo material
+
+## Skills consumidoras
+
+- [skills/engenharia-reversa-sigo](../framework/skills/engenharia-reversa-sigo/SKILL.md) - PL/SQL
+- [skills/engenharia-reversa-forms](../framework/skills/engenharia-reversa-forms/SKILL.md) - Forms
+
+## Tools usados
+
+- [tools/forms-extractor](../framework/tools/forms-extractor/) - pipeline ``.fmb`` -> 12 relatorios
+"@
+    Write-FileSafe -Path '.specs/reverse-engineering/README.md' -Content $reReadmeContent
+
+    # README especifico de plsql/
+    $rePlsqlReadmeContent = @"
+# Reverse Engineering - PL/SQL
+
+Baselines de objetos PL/SQL Oracle (procedures, functions, packages, triggers).
+
+## Naming
+
+``````
+plsql/<NOME_OBJETO>/rev-NNN-<TAG_CVS>/reversa-<NOME_OBJETO>.md
+``````
+
+Exemplo:
+
+``````
+plsql/PKG_COTACAO_PME/
++-- README-rotina.md
++-- rev-001-PRODUCAO-2026-05-08/
+|   +-- reversa-PKG_COTACAO_PME.md
++-- rev-002-PRODUCAO-2026-09-15/
+    +-- reversa-PKG_COTACAO_PME.md
+``````
+
+## Como produzir
+
+Use o prompt ``/baseline-reverse-engineering`` que invoca a skill
+``engenharia-reversa-sigo``. Tag CVS PRODUCAO obrigatoria; banco produtivo proibido (ADR-007).
+"@
+    Write-FileSafe -Path '.specs/reverse-engineering/plsql/README.md' -Content $rePlsqlReadmeContent
+
+    # README especifico de forms/
+    $reFormsReadmeContent = @"
+# Reverse Engineering - Oracle Forms
+
+Baselines de modulos Oracle Forms (.fmb).
+
+## Naming
+
+``````
+forms/<MODULO>/rev-NNN-<TAG_CVS>/
++-- raw/<MODULO>.xml                  # Forms2XML (Etapa 1)
++-- parsed/<MODULO>_*.txt (12 arqs)   # forms-extractor (Etapa 2)
++-- reversa-<MODULO>.md               # artefato canonico (Passo 6 da skill)
+``````
+
+Exemplo:
+
+``````
+forms/T229BCON/
++-- README-modulo.md
++-- rev-001-PRODUCAO-2026-05-08/
+    +-- raw/
+    |   +-- T229BCON.xml
+    +-- parsed/
+    |   +-- T229BCON_RESUMO.txt
+    |   +-- T229BCON_BLOCKS.txt
+    |   +-- T229BCON_TRIGGERS.txt
+    |   +-- ... (mais 9)
+    +-- reversa-T229BCON.md
+``````
+
+## Como produzir
+
+Use a skill ``engenharia-reversa-forms`` que orquestra o pipeline em duas etapas:
+
+1. ``tools/forms-extractor/Convert-FmbToXml.ps1`` (.fmb -> .xml)
+2. ``tools/forms-extractor/Extract-FormsMetadata.ps1`` (.xml -> 12 relatorios)
+
+Pre-requisito: Oracle Forms Developer 10g+ instalado no ambiente do TL.
+"@
+    Write-FileSafe -Path '.specs/reverse-engineering/forms/README.md' -Content $reFormsReadmeContent
+
+    Write-Host "[INFO] PL/SQL: rode 'baseline-reverse-engineering' antes de specs de refatoracao (ADR-011)" -ForegroundColor Cyan
+    Write-Host "[INFO] Forms: use a skill 'engenharia-reversa-forms' + tools/forms-extractor para modulos .fmb" -ForegroundColor Cyan
   }
 }
 

@@ -27,7 +27,7 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 
 ### "Vou refatorar uma procedure PL/SQL legada"
 
-1. **Antes da spec**: garantir RE cacheada em `.specs/reverse-engineering/<X>/rev-<TAG>/`. Se
+1. **Antes da spec**: garantir RE cacheada em `.specs/reverse-engineering/plsql/<X>/rev-NNN-<TAG>/`. Se
    ausente ou stale, dispare [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) - ver
    [ADR-011](adr/011-engenharia-reversa-como-baseline.md) e [`references/reverse-engineering.md`](references/reverse-engineering.md)
 2. Use o template: [`templates/spec-improvement-tunning.md`](templates/spec-improvement-tunning.md)
@@ -35,6 +35,14 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 4. Skills internas do framework: [`skills/engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md), [`skills/plsql-oracle-expert`](skills/plsql-oracle-expert/SKILL.md)
 5. Skill externa complementar quando disponivel: `sigo-refatoracao-workflow`
 6. Veja exemplo end-to-end: [`examples/.specs/features/exemplo-cotacao-pme/`](examples/.specs/features/exemplo-cotacao-pme/)
+
+### "Vou analisar um modulo Oracle Forms legado"
+
+1. **Pre-requisito**: modulo `.fmb` versionado em CVS tag PRODUCAO; Oracle Forms Developer 10g+ instalado
+2. **Prompt**: [`prompts/baseline-reverse-engineering-forms.prompt.md`](prompts/baseline-reverse-engineering-forms.prompt.md) - orquestra tool + skill end-to-end
+3. Skill: [`skills/engenharia-reversa-forms`](skills/engenharia-reversa-forms/SKILL.md) (experimental v0.1)
+4. Tool de extracao: [`tools/forms-extractor/`](tools/forms-extractor/) - pipeline 2 etapas (.fmb -> .xml -> 12 relatorios .txt/.md). Ver [`tools/README.md`](tools/README.md)
+5. Saida: artefato canonico em `.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/reversa-<MODULO>.md`
 
 ### "Vou desenhar arquitetura para uma feature"
 
@@ -121,7 +129,8 @@ Leitura recomendada:
 | Referencias TLC adaptadas | `references/` | docs do fluxo (specify, design, tasks, implement, validate, reverse-engineering, etc) |
 | Templates de spec/RE | `templates/` | templates por tipo de demanda + reverse-engineering |
 | Prompts Copilot | `prompts/` | prompt files acionaveis em Agent Mode |
-| Skills internas | `skills/` | `engenharia-reversa-sigo`, `plsql-oracle-expert` |
+| Skills internas | `skills/` | `engenharia-reversa-sigo`, `plsql-oracle-expert`, `engenharia-reversa-forms` (experimental) |
+| Tools executaveis | `tools/` | utilitarios consumidos por skills (parsing, extracao) - ver [`tools/README.md`](tools/README.md) |
 | Glossario | `glossario/` | Termos canonicos + mapeamento legado |
 | ADRs do framework | `adr/` | 12 decisoes arquiteturais do framework |
 | Exemplos | `examples/.specs/` | Projeto, codebase, feature end-to-end |

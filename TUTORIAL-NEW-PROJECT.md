@@ -10,7 +10,7 @@
 - Git 2.30+
 - PowerShell 5.1+ (Windows)
 - VS Code com extensoes **GitHub Copilot** e **GitHub Copilot Chat**
-- Acesso ao Azure DevOps `dev.azure.com/hapvida` (PAT ou login interativo)
+- Acesso ao Azure DevOps `https://dev.azure.com/hapvidalabs/` (PAT ou login interativo)
 - Acesso a `https://github.com/rawelcl/hap-spec-driven.git` (ou mirror em ADO)
 
 ---
@@ -29,7 +29,7 @@ No portal ADO da Hapvida:
 
 ```powershell
 cd C:\Users\<voce>\Documents\Repos
-git clone https://dev.azure.com/hapvida/Hapvida-Comercial/_git/sigo-comercial-cotacao-pme
+git clone https://dev.azure.com/hapvidalabs/Hapvida-Comercial/_git/sigo-comercial-cotacao-pme
 cd sigo-comercial-cotacao-pme
 ```
 
@@ -44,7 +44,7 @@ iwr https://raw.githubusercontent.com/rawelcl/hap-spec-driven/main/scripts/init-
   -SquadName "Comercial - Cotacao PME" `
   -Stack PLSQL `
   -AreaAtuacao "Comercial - venda de planos PME" `
-  -AdoOrg hapvida `
+  -AdoOrg hapvidalabs `
   -Brownfield `
   -WithProject `
   -WithRoadmap
@@ -138,7 +138,7 @@ git push
    (que vive em `.specs/framework/prompts/baseline-reverse-engineering.prompt.md`)
 2. Informe a rotina-alvo (ex.: `PKG_COTACAO.calcular_premio`)
 3. O Copilot usa a skill `engenharia-reversa-sigo` (MCP Oracle so para `dba_*` read-only)
-4. Resultado em `.specs/reverse-engineering/<rotina>/rev-<TAG>/`
+4. Resultado em `.specs/reverse-engineering/plsql/<rotina>/rev-NNN-<TAG>/` (NNN sequencial). Para Forms: `.specs/reverse-engineering/forms/<modulo>/rev-NNN-<TAG>/`
 5. Commit:
    ```powershell
    git add .specs/reverse-engineering
@@ -203,7 +203,7 @@ git commit -m "WI-XXXX: chore(framework): bump para v0.5.0"
 ## Para outros devs do squad clonarem depois
 
 ```powershell
-git clone --recurse-submodules https://dev.azure.com/hapvida/Hapvida-Comercial/_git/sigo-comercial-cotacao-pme
+git clone --recurse-submodules https://dev.azure.com/hapvidalabs/Hapvida-Comercial/_git/sigo-comercial-cotacao-pme
 ```
 
 Ou se ja clonaram sem `--recurse-submodules`:

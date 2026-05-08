@@ -24,7 +24,7 @@ Referencias canonicas:
 1. **Squad / projeto** - nome curto
 2. **Stack predominante** - PLSQL | Java | DotNet | Mista
 3. **Area de atuacao** - Comercial, Autorizacao, etc
-4. **AdoOrg** - slug da organizacao no Azure DevOps (default `hapvida`)
+4. **AdoOrg** - slug da organizacao no Azure DevOps (default `hapvidalabs`, URL `https://dev.azure.com/hapvidalabs/`)
 5. **Brownfield?** - existe codigo legado a mapear? (sim/nao)
 6. **Criar PROJECT.md / ROADMAP.md locais?** - geralmente nao (delegar ao ADO)
 
@@ -43,7 +43,7 @@ Referencias canonicas:
    - Em `Preferences`: stack, area de atuacao, `MCP do ADO configurado: yes`,
      `Skills SIGO availability` conforme contexto
 
-4. **Criar `.vscode/mcp.json`**
+4. **Criar `.vscode/mcp.json`** (default `AdoOrg = hapvidalabs` → URL `https://dev.azure.com/hapvidalabs/`)
 
    ```json
    {

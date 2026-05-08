@@ -19,19 +19,35 @@ da skill alimenta a spec descartavelmente - sem persistencia, sem reuso entre fe
 (multiplas sub-rotinas encadeadas) deve ter sua engenharia reversa **persistida** como camada de
 baseline antes de qualquer spec que a toque.
 
-A camada de RE vive em:
+A camada de RE vive em estrutura **segregada por tipo de objeto** com revisoes numeradas:
 
 ```
 .specs/reverse-engineering/
-  <NOME_OBJETO>/
-    rev-<TAG_CVS>/
-      reversa-<NOME_OBJETO>.md   # artefato canonico (template reverse-engineering-template.md)
-    README-rotina.md             # indice de revisoes da rotina
+  README.md                          # convencao + indice
+  plsql/                             # procedures, functions, packages, triggers
+    <NOME_OBJETO>/
+      README-rotina.md               # indice de revisoes da rotina
+      rev-001-<TAG_CVS>/             # numeracao sequencial zero-padded
+        reversa-<NOME_OBJETO>.md     # artefato canonico
+      rev-002-<TAG_CVS>/             # nova rev quando tag PRODUCAO divergir
+        reversa-<NOME_OBJETO>.md
+  forms/                             # modulos Oracle Forms (.fmb)
+    <MODULO>/
+      README-modulo.md
+      rev-001-<TAG_CVS>/
+        raw/<MODULO>.xml             # Forms2XML (Etapa 1 do tools/forms-extractor)
+        parsed/<MODULO>_*.txt        # 12 relatorios (Etapa 2)
+        reversa-<MODULO>.md
 ```
 
+**Convencao da revisao:** `rev-NNN-<TAG_CVS>` onde `NNN` e numero sequencial zero-padded
+(`001`, `002`, ...). A skill calcula `NNN` listando `rev-*` existentes do objeto e somando 1.
+Cada revisao e **imutavel** - nunca editar; sempre criar nova rev quando a tag CVS divergir.
+
 A `Knowledge Verification Chain` Step 1 e atualizada para priorizar a RE cacheada antes de ler o
-codigo cru no CVS. RE sera usada quando a tag CVS gravada em `rev-<TAG_CVS>` bate com a tag PRODUCAO
-atual; caso contrario, a RE e marcada `[REVISAO]` e refresh e disparado.
+codigo cru no CVS. RE sera usada quando a tag CVS gravada em `rev-NNN-<TAG_CVS>` (mais recente)
+bate com a tag PRODUCAO atual; caso contrario, a RE e marcada `[REVISAO]` e refresh e disparado
+gerando `rev-(NNN+1)`.
 
 ## Justificativa
 
@@ -69,7 +85,8 @@ e o gatilho.
 ## Consequencias
 
 - Squads passam a investir em RE inicial das rotinas core do escopo (uma vez por rotina)
-- Specs do tipo Improvement+Tunning citam `[REF: .specs/reverse-engineering/<rotina>/rev-<TAG>/]`
+- Specs do tipo Improvement+Tunning citam
+  `[REF: .specs/reverse-engineering/plsql/<rotina>/rev-NNN-<TAG>/]` (ou `forms/<modulo>/...`)
   como evidencia de baseline
 - `references/brownfield-mapping.md` ganha referencia a esta camada
 - `.specs/codebase/knowledge-base/` no projeto consumidor materializa catalogos compartilhados

@@ -22,6 +22,10 @@ Thumbs.db
 /build/
 /out/
 
+# Saidas de tools (dados de exemplo nao devem ir ao repo)
+/tools/*/output/
+/tools/forms-extractor/output/
+
 # Snapshots locais antes de upload via MCP (evita versionar binarios temporarios)
 /.specs/snapshots/
 *.snapshot.zip

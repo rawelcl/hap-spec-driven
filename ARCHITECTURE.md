@@ -62,7 +62,9 @@ flowchart TB
     subgraph L4["L4 - Agente IA"]
         direction LR
         COP["GitHub Copilot<br/>Claude Opus / Sonnet"]
-        SKILLS_SIGO["Skills SIGO<br/>(modernizacao-plsql / refatoracao-workflow /<br/>plsql-oracle-expert)"]
+        SKILLS_SIGO["Skills internas<br/>(engenharia-reversa-sigo /<br/>plsql-oracle-expert /<br/>engenharia-reversa-forms)"]
+        TOOLS_LOCAL["Tools executaveis<br/>(tools/ - parsers, extracoes)"]
+        SKILLS_SIGO -.invoca.-> TOOLS_LOCAL
     end
 
     subgraph L5["L5 - Integracoes (MCP)"]
@@ -250,6 +252,9 @@ flowchart LR
         TEMPL2["templates/*<br/>(6 specs por matriz<br/>+ design/tasks/ADR/context)"]
         ADRS2["adr/*<br/>(9 decisoes do framework)"]
         GLOSS2["glossario/*<br/>(comercial / ANS / legado)"]
+        SKILLS2["skills/*<br/>(engenharia-reversa-sigo,<br/>plsql-oracle-expert,<br/>engenharia-reversa-forms)"]
+        TOOLS2["tools/*<br/>(parsers/extracoes invocados<br/>pelas skills)"]
+        SKILLS2 -.invoca.-> TOOLS2
     end
 
     subgraph SQUAD["repo do squad (.specs/)"]
@@ -267,6 +272,8 @@ flowchart LR
     TEMPL2 -->|estrutura de saida| AGT
     ADRS2 -->|decisoes vinculantes| AGT
     GLOSS2 -->|termos canonicos| AGT
+    SKILLS2 -->|carregadas por trigger| AGT
+    TOOLS2 -.disparados pela skill.-> AGT
 
     AGT <-->|le/grava| STATE
     AGT <-->|gera/atualiza| FEAT2

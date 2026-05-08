@@ -77,11 +77,22 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 │       ├── catalogo-objetos-plsql.md
 │       ├── pendencias-abertas.md
 │       └── riscos-ans.md
-├── reverse-engineering/   # Baseline cacheada por rotina (ADR-011)
-│   └── <NOME_OBJETO>/
-│       ├── README-rotina.md
-│       └── rev-<TAG_CVS>/
-│           └── reversa-<NOME_OBJETO>.md
+├── reverse-engineering/   # Baselines cacheados (ADR-011) - segregados por tipo
+│   ├── README.md          # Convencao de naming + indice
+│   ├── plsql/             # procedures, functions, packages, triggers
+│   │   └── <NOME_OBJETO>/
+│   │       ├── README-rotina.md
+│   │       ├── rev-001-<TAG_CVS>/   # numeracao sequencial zero-padded
+│   │       │   └── reversa-<NOME_OBJETO>.md
+│   │       └── rev-002-<TAG_CVS>/   # nova rev quando tag PRODUCAO divergir
+│   │           └── reversa-<NOME_OBJETO>.md
+│   └── forms/             # modulos Oracle Forms (.fmb)
+│       └── <MODULO>/
+│           ├── README-modulo.md
+│           └── rev-001-<TAG_CVS>/
+│               ├── raw/<MODULO>.xml          # Forms2XML
+│               ├── parsed/<MODULO>_*.txt      # 12 relatorios (forms-extractor)
+│               └── reversa-<MODULO>.md
 └── features/[feature]/
     ├── spec.md            # WHAT - sempre
     ├── context.md         # Decisoes de gray areas - quando Discuss e disparado
@@ -105,12 +116,12 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 ### Refatoracao PL/SQL (Improvement + Tunning)
 
 1. **Engenharia reversa do baseline** - se a rotina nao tem RE cacheada em
-   `.specs/reverse-engineering/<X>/rev-<TAG>/` ou a tag esta stale, dispare o prompt
+   `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/` ou a tag esta stale, dispare o prompt
    [`baseline-reverse-engineering`](prompts/baseline-reverse-engineering.prompt.md) que invoca
    a skill [`engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md). Ver
    [ADR-011](adr/011-engenharia-reversa-como-baseline.md).
 2. `Specify` com template `spec-improvement-tunning` referenciando
-   `[REF: .specs/reverse-engineering/<X>/rev-<TAG>/]` como baseline
+   `[REF: .specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/]` como baseline
 3. `Design` referencia ADRs aplicaveis da wiki Arquitetura-Referencia (ADR 22 Padrao Repositorio, ADR 74 DDD, etc)
 4. `Tasks` decomposto em refatoracoes atomicas
 5. `Execute` com convencao de cabecalho de procedure citando `WI-####` e `SPEC-####`
@@ -189,7 +200,8 @@ Configuracao em [`references/mcp-integration.md`](references/mcp-integration.md)
 | Initialize project, setup project | [`references/project-init.md`](references/project-init.md) |
 | Create roadmap, plan features | [`references/roadmap.md`](references/roadmap.md) |
 | Map codebase, analyze existing code | [`references/brownfield-mapping.md`](references/brownfield-mapping.md) |
-| Reverse-engineer rotina, baseline RE, refresh RE | [`references/reverse-engineering.md`](references/reverse-engineering.md) / [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) |
+| Reverse-engineer rotina PL/SQL, baseline RE, refresh RE | [`references/reverse-engineering.md`](references/reverse-engineering.md) / [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) |
+| Reverse-engineer modulo Oracle Forms (.fmb) | [`prompts/baseline-reverse-engineering-forms.prompt.md`](prompts/baseline-reverse-engineering-forms.prompt.md) (skill `engenharia-reversa-forms` + tool `forms-extractor`) |
 | Document concerns, find tech debt | [`references/concerns.md`](references/concerns.md) |
 | Record decision, log blocker, add todo | [`references/state-management.md`](references/state-management.md) |
 | Pause work, end session, Resume work | [`references/session-handoff.md`](references/session-handoff.md) |
@@ -255,9 +267,24 @@ O framework agora **carrega skills internas** da pasta [`skills/`](skills/):
   forense de PL/SQL com persistencia em `.specs/reverse-engineering/` (ver ADR-011)
 - **[`plsql-oracle-expert`](skills/plsql-oracle-expert/SKILL.md)** - code review PL/SQL com
   regras ANS aplicadas
+- **[`engenharia-reversa-forms`](skills/engenharia-reversa-forms/SKILL.md)** - engenharia
+  reversa forense de modulos Oracle Forms (.fmb -> XML), produzindo artefato em
+  `.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/` **(experimental v0.1)**
 
 Skills externas SIGO continuam compativeis quando disponiveis no ambiente do dev:
 
 - `sigo-refatoracao-workflow` - fluxo completo de refatoracao
 
 Todas as skills respeitam os guardrails Hapvida (ADR-007 emendada por ADR-011).
+
+## Tools executaveis
+
+A pasta [`tools/`](tools/) hospeda utilitarios disparados por skills durante sua execucao -
+parsing de formatos densos, extracao estruturada, normalizacao. Diferente de `scripts/`
+(executados pelo TL no terminal), os tools sao invocados pela LLM durante o protocolo de uma
+skill. Ver [`tools/README.md`](tools/README.md) para a convencao.
+
+Tools registrados:
+
+- [`tools/forms-extractor/`](tools/forms-extractor/) - pipeline `.fmb` -> `.xml` -> 12 relatorios
+  estruturados; consumido pela skill `engenharia-reversa-forms` (experimental v0.1)

@@ -20,28 +20,45 @@ de 3-8k tokens** que substitui a leitura bruta nas fases Specify e Design.
 |---|---|
 | Rotina alvo com >2.000 linhas | RE obrigatoria antes da spec |
 | Rotina alvo com sub-rotinas encadeadas (>3 niveis) | RE obrigatoria antes da spec |
-| Rotina ja com RE em `.specs/reverse-engineering/<X>/rev-<TAG>/` e tag bate com PRODUCAO atual | Usar RE direto - pular leitura de codigo |
+| Rotina ja com RE em `.specs/reverse-engineering/plsql/<X>/rev-NNN-<TAG>/` e tag bate com PRODUCAO atual | Usar RE direto - pular leitura de codigo |
 | RE existente com tag divergente da PRODUCAO atual | Marcar `[REVISAO]`, disparar refresh via prompt baseline-reverse-engineering |
 | Rotina pequena (<500 linhas, sem sub-rotinas) | Skip RE - leitura inline na spec |
 
 ## Estrutura no projeto consumidor
 
+A pasta `reverse-engineering/` e segregada por **tipo de objeto** e cada revisao recebe
+**numero sequencial zero-padded** (`001`, `002`, ...) prefixando a tag CVS:
+
 ```
 <repo-do-projeto>/
 .specs/
-??? codebase/
-?   ??? knowledge-base/                          # Catalogos compartilhados (vivo)
-?       ??? indice.md
-?       ??? catalogo-conceitos-negocio.md        # CN-XX
-?       ??? catalogo-objetos-plsql.md            # objetos analisados + tags
-?       ??? pendencias-abertas.md                # ambiguidades em revisao
-?       ??? riscos-ans.md                        # riscos consolidados
-??? reverse-engineering/
-    ??? <NOME_OBJETO>/
-        ??? README-rotina.md                     # indice de revisoes da rotina
-        ??? rev-<TAG_CVS>/
-            ??? reversa-<NOME_OBJETO>.md         # artefato canonico (template)
++-- codebase/
+|   +-- knowledge-base/                          # Catalogos compartilhados (vivo)
+|       +-- indice.md
+|       +-- catalogo-conceitos-negocio.md        # CN-XX
+|       +-- catalogo-objetos-plsql.md            # objetos analisados + tags
+|       +-- pendencias-abertas.md                # ambiguidades em revisao
+|       +-- riscos-ans.md                        # riscos consolidados
++-- reverse-engineering/
+    +-- README.md                                # convencao de naming + indice
+    +-- plsql/                                   # procedures, functions, packages, triggers
+    |   +-- <NOME_OBJETO>/
+    |       +-- README-rotina.md                 # indice de revisoes
+    |       +-- rev-001-<TAG_CVS>/
+    |       |   +-- reversa-<NOME_OBJETO>.md
+    |       +-- rev-002-<TAG_CVS>/               # nova rev quando tag PRODUCAO divergir
+    |           +-- reversa-<NOME_OBJETO>.md
+    +-- forms/                                   # modulos Oracle Forms (.fmb)
+        +-- <MODULO>/
+            +-- README-modulo.md
+            +-- rev-001-<TAG_CVS>/
+                +-- raw/<MODULO>.xml             # Forms2XML (Etapa 1 do tool)
+                +-- parsed/<MODULO>_*.txt        # 12 relatorios (Etapa 2 do tool)
+                +-- reversa-<MODULO>.md          # artefato canonico
 ```
+
+**Convencao da revisao:** `rev-NNN-<TAG_CVS>` onde `NNN` e sequencial zero-padded.
+A skill calcula `NNN` listando revs existentes e incrementando 1. Revisao = imutavel.
 
 ## Pipeline
 
@@ -60,7 +77,7 @@ A fase BASELINE (RE) **nao e nova fase do framework** - e pre-requisito condicio
 
 ## Gate de staleness
 
-Toda spec/design que cite `[REF: .specs/reverse-engineering/<X>/rev-<TAG>/]` deve verificar:
+Toda spec/design que cite `[REF: .specs/reverse-engineering/plsql/<X>/rev-NNN-<TAG>/]` (ou `forms/<X>/...`) deve verificar:
 
 ```
 tag_cvs_no_artefato == tag_PRODUCAO_atual_no_CVS
@@ -90,8 +107,9 @@ Step 1 do [knowledge-verification](knowledge-verification.md) ganha sub-niveis p
 
 ```
 Passo 1: Codebase
-  1a. .specs/reverse-engineering/<rotina>/rev-<TAG>/   <- PRIMEIRO se TAG bate
-  1b. WinCVS tag PRODUCAO                               <- se RE ausente ou stale
+  1a. .specs/reverse-engineering/plsql/<rotina>/rev-NNN-<TAG>/  <- PRIMEIRO se TAG bate
+      .specs/reverse-engineering/forms/<modulo>/rev-NNN-<TAG>/  <- idem para Forms
+  1b. WinCVS tag PRODUCAO                                        <- se RE ausente ou stale
   [GUARDRAIL] NUNCA banco produtivo para dados de negocio
   [GUARDRAIL] MCP Oracle so para dicionario (dba_*) e dba_source
 ```
@@ -104,7 +122,7 @@ A RE complementa os 7 documentos de [brownfield-mapping](brownfield-mapping.md):
 |---|---|---|
 | 7 docs em `.specs/codebase/` | Sistema inteiro | Uma vez no onboarding do squad |
 | Catalogos `knowledge-base/` | Dominio do squad | Vivo - atualizado por cada RE |
-| RE em `.specs/reverse-engineering/<X>/` | Por rotina | Sob demanda quando rotina e tocada |
+| RE em `.specs/reverse-engineering/plsql\|forms/<X>/` | Por rotina ou modulo | Sob demanda quando objeto e tocado |
 
 ## Exemplo de uso
 
@@ -127,5 +145,5 @@ Agent (apos refresh):
 
 - `[REVISAO]` Automatizar deteccao de tag stale via hook (compara HEAD do CVS vs `tag_cvs` do
   frontmatter) - hoje manual
-- `[REVISAO]` Definir politica de retencao - manter todas as `rev-<TAG>` ou so as ultimas N
+- `[REVISAO]` Definir politica de retencao - manter todas as `rev-NNN-<TAG>` ou so as ultimas N
 - `[REVISAO]` Cross-reference automatico entre RE de rotinas que se chamam (grafo)

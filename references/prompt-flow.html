@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluxo dos Prompts — Framework Spec-Driven Hapvida</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --primary: #0f4c81;
+    --primary-light: #1e6fb8;
+    --primary-dark: #0a3358;
+    --accent: #00a99d;
+    --accent-light: #4dd0c4;
+    --bg: #f4f7fb;
+    --bg-card: #ffffff;
+    --bg-code: #1e293b;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
+    --shadow-md: 0 4px 6px -1px rgba(15,23,42,.06), 0 2px 4px -2px rgba(15,23,42,.04);
+    --shadow-lg: 0 10px 15px -3px rgba(15,23,42,.08), 0 4px 6px -4px rgba(15,23,42,.05);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  /* ---------------- Layout ---------------- */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    background: var(--primary-dark);
+    color: #fff;
+    padding: 28px 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent-light);
+    margin: 0 0 14px;
+  }
+  .sidebar .brand {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #fff;
+  }
+  .sidebar .version {
+    font-size: 12px;
+    color: rgba(255,255,255,.55);
+    margin-bottom: 28px;
+  }
+  .sidebar nav a {
+    display: block;
+    color: rgba(255,255,255,.78);
+    text-decoration: none;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    margin-bottom: 2px;
+    transition: all .15s;
+    border-left: 2px solid transparent;
+  }
+  .sidebar nav a:hover {
+    background: rgba(255,255,255,.06);
+    color: #fff;
+    border-left-color: var(--accent);
+  }
+  .sidebar nav a.section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    letter-spacing: 1px;
+    margin-top: 18px;
+    pointer-events: none;
+    padding: 4px 10px;
+  }
+
+  main {
+    padding: 40px 56px 80px;
+    max-width: 1200px;
+  }
+
+  /* ---------------- Header ---------------- */
+  header.page-header {
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  header.page-header h1 {
+    font-size: 30px;
+    margin: 0 0 12px;
+    color: var(--primary-dark);
+    letter-spacing: -.5px;
+  }
+  header.page-header .meta {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    color: var(--text-muted);
+    font-size: 13.5px;
+  }
+  header.page-header .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: .3px;
+  }
+
+  /* ---------------- Sections ---------------- */
+  section {
+    margin-bottom: 48px;
+  }
+  section > h2 {
+    font-size: 22px;
+    color: var(--primary-dark);
+    margin: 0 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  section > h3 {
+    font-size: 17px;
+    color: var(--primary);
+    margin: 28px 0 12px;
+  }
+  p { margin: 0 0 14px; }
+
+  /* ---------------- Mermaid wrapper ---------------- */
+  .diagram-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+    overflow-x: auto;
+  }
+  .mermaid {
+    text-align: center;
+  }
+
+  /* ---------------- Custom flow diagram (Entries/Outputs) ---------------- */
+  .flow-pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: var(--shadow-md);
+  }
+  .flow-step {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 14px 0;
+    position: relative;
+  }
+  .flow-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 110px;
+    bottom: -14px;
+    width: 2px;
+    height: 28px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent-light));
+    transform: translateX(-1px);
+  }
+  .flow-step:not(:last-child)::before {
+    content: "▼";
+    position: absolute;
+    left: 110px;
+    bottom: -22px;
+    transform: translateX(-50%);
+    color: var(--accent);
+    font-size: 12px;
+    z-index: 2;
+  }
+  .flow-step .node {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13.5px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    letter-spacing: .2px;
+  }
+  .flow-step.optional .node {
+    background: linear-gradient(135deg, #64748b, #94a3b8);
+  }
+  .flow-step.implementation .node {
+    background: linear-gradient(135deg, var(--success), #34d399);
+  }
+  .flow-step.validator .node {
+    background: linear-gradient(135deg, var(--warning), #fbbf24);
+  }
+  .flow-step .arrow-and-output {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .flow-step .arrow {
+    color: var(--accent);
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .flow-step .output {
+    background: #f8fafc;
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-size: 12.5px;
+    color: var(--text);
+    flex: 1;
+    line-height: 1.55;
+  }
+  .flow-step .output .label {
+    color: var(--text-muted);
+    font-style: italic;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11.5px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ---------------- Prompt cards ---------------- */
+  .prompt-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .prompt-card:hover { box-shadow: var(--shadow-md); }
+  .prompt-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--accent);
+  }
+  .prompt-card.required::before { background: var(--danger); }
+  .prompt-card.optional::before { background: var(--text-muted); }
+  .prompt-card.validator::before { background: var(--warning); }
+  .prompt-card.implementation::before { background: var(--success); }
+
+  .prompt-card h3 {
+    margin: 0 0 6px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-size: 16px;
+    color: var(--primary-dark);
+  }
+  .prompt-card .tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .tag.req { background: #fee2e2; color: #b91c1c; }
+  .tag.opt { background: #e2e8f0; color: #475569; }
+  .tag.val { background: #fef3c7; color: #b45309; }
+  .tag.impl { background: #d1fae5; color: #065f46; }
+
+  .prompt-card ol, .prompt-card ul {
+    padding-left: 22px;
+    margin: 10px 0;
+  }
+  .prompt-card li { margin-bottom: 4px; }
+
+  /* ---------------- Tables ---------------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin: 14px 0 18px;
+    font-size: 13.5px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--primary-dark);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  td.center, th.center { text-align: center; }
+
+  /* ---------------- Code & inline ---------------- */
+  code {
+    background: #eff3f8;
+    color: var(--primary-dark);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-size: 12.5px;
+  }
+  pre {
+    background: var(--bg-code);
+    color: #e2e8f0;
+    padding: 18px 22px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 12.5px;
+    line-height: 1.55;
+    box-shadow: var(--shadow-md);
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 14px 0;
+    padding: 12px 18px;
+    background: #fef9e7;
+    border-left: 4px solid var(--warning);
+    border-radius: 0 8px 8px 0;
+    color: #78350f;
+    font-size: 13.5px;
+  }
+
+  /* ---------------- Guardrail callout ---------------- */
+  .guardrail {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 4px solid var(--danger);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin: 6px 0;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    color: #7f1d1d;
+  }
+  .guardrail .gr-label {
+    font-weight: 700;
+    color: var(--danger);
+  }
+
+  /* ---------------- Detailed prompt card blocks ---------------- */
+  .purpose {
+    font-style: italic;
+    color: var(--text-muted);
+    margin: 4px 0 18px;
+    font-size: 13.5px;
+    border-left: 3px solid var(--border);
+    padding-left: 12px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 760px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+  .card-block {
+    margin-bottom: 16px;
+  }
+  .block-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border);
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .block-title::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .block-title.input::before    { background: #3b82f6; }
+  .block-title.mcp::before      { background: #8b5cf6; }
+  .block-title.steps::before    { background: var(--accent); }
+  .block-title.artifacts::before{ background: var(--success); }
+  .block-title.guardrails::before { background: var(--danger); }
+  .block-title.output::before   { background: var(--primary); }
+  .block-title.tools::before    { background: var(--warning); }
+
+  .steps-list {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .steps-list > li {
+    counter-increment: step;
+    position: relative;
+    padding: 8px 0 8px 38px;
+    border-bottom: 1px dotted var(--border);
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .steps-list > li:last-child { border-bottom: none; }
+  .steps-list > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+  }
+
+  .file-list, .mcp-list, .input-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+  }
+  .file-list li, .mcp-list li, .input-list li {
+    padding: 5px 0 5px 22px;
+    position: relative;
+    border-bottom: 1px dotted var(--border);
+  }
+  .file-list li:last-child, .mcp-list li:last-child, .input-list li:last-child {
+    border-bottom: none;
+  }
+  .file-list li::before {
+    content: "📄";
+    position: absolute;
+    left: 0;
+    font-size: 12px;
+    filter: grayscale(1);
+    opacity: .7;
+  }
+  .file-list li.dir::before { content: "📁"; }
+  .file-list li.created::before { content: "✚"; color: var(--success); font-weight: bold; opacity: 1; filter: none; }
+  .file-list li.updated::before { content: "✎"; color: var(--warning); font-weight: bold; opacity: 1; filter: none; }
+  .mcp-list li::before {
+    content: "⚡";
+    position: absolute;
+    left: 0;
+    color: #8b5cf6;
+    font-weight: bold;
+  }
+  .input-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 4px;
+    color: #3b82f6;
+    font-weight: bold;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .pill {
+    background: #ede9fe;
+    color: #5b21b6;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-weight: 600;
+  }
+  .pill.ado { background: #dbeafe; color: #1e40af; }
+  .pill.skill { background: #fef3c7; color: #92400e; }
+  .pill.cvs { background: #fee2e2; color: #991b1b; }
+  .pill.oracle { background: #fed7aa; color: #9a3412; }
+
+  .substeps {
+    margin: 6px 0 0 0;
+    padding-left: 18px;
+    list-style: disc;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  .substeps li { padding: 2px 0; border: none; }
+  .substeps li::before { display: none; }
+
+  .branch-callout {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin: 12px 0;
+    color: #075985;
+  }
+  .branch-callout strong { color: #0c4a6e; }
+
+  details.show-snippet {
+    margin: 8px 0;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+  details.show-snippet summary {
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  details.show-snippet pre {
+    margin: 8px 0 0;
+    font-size: 11.5px;
+  }
+
+  /* ---------------- Actor (quem dispara) ---------------- */
+  .actor {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .actor::before {
+    font-size: 11px;
+    line-height: 1;
+  }
+  .actor.user    { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .actor.user::before    { content: "👤"; }
+  .actor.llm     { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+  .actor.llm::before     { content: "🤖"; }
+  .actor.mcp     { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+  .actor.mcp::before     { content: "⚡"; }
+  .actor.script  { background: #d1fae5; color: #065f46; border: 1px solid #86efac; }
+  .actor.script::before  { content: "⚙"; }
+  .actor.gate    { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .actor.gate::before    { content: "⛔"; }
+
+  .trigger-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 14px;
+    font-size: 12.5px;
+  }
+  .trigger-bar .label {
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    font-size: 10.5px;
+  }
+  .trigger-bar .arrow-mini {
+    color: var(--text-muted);
+    font-weight: bold;
+  }
+
+  /* Step list with actor badge on the left */
+  .steps-list > li.has-actor {
+    padding-left: 38px;
+  }
+  .steps-list > li > .actor {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* Legend block for actors */
+  .actors-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow-sm);
+    margin: 14px 0 0;
+  }
+  .actors-legend .legend-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .actors-legend .legend-item .actor {
+    margin-top: 2px;
+  }
+  .actors-legend .legend-item .desc {
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .actors-legend .legend-item .desc strong {
+    display: block;
+    color: var(--primary-dark);
+    margin-bottom: 2px;
+    font-size: 13px;
+  }
+  .actors-legend .legend-item .desc em {
+    color: var(--text-muted);
+    font-style: normal;
+    font-size: 11.5px;
+  }
+
+  /* ---------------- Auto-sizing matrix ---------------- */
+  .sizing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .sizing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    border-top: 4px solid var(--accent);
+  }
+  .sizing-card.pequeno  { border-top-color: #10b981; }
+  .sizing-card.medio    { border-top-color: #3b82f6; }
+  .sizing-card.grande   { border-top-color: #f59e0b; }
+  .sizing-card.complexo { border-top-color: #dc2626; }
+
+  .sizing-card h4 {
+    margin: 0 0 4px;
+    color: var(--primary-dark);
+    font-size: 15px;
+  }
+  .sizing-card .crit {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .phase-row {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px dotted var(--border);
+    font-size: 12px;
+    align-items: center;
+  }
+  .phase-row:last-child { border-bottom: none; }
+  .phase-row .phase {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  .phase.specify { background: #dbeafe; color: #1e40af; }
+  .phase.design  { background: #fef3c7; color: #92400e; }
+  .phase.tasks   { background: #ede9fe; color: #5b21b6; }
+  .phase.execute { background: #d1fae5; color: #065f46; }
+  .phase-row .what { color: var(--text); font-size: 12px; }
+  .phase-row.skip .what { color: var(--text-muted); font-style: italic; }
+
+  /* ---------------- Knowledge Verification Chain ---------------- */
+  .kvc-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+    counter-reset: kvc;
+  }
+  .kvc-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    counter-increment: kvc;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+  }
+  .kvc-step::before {
+    content: "Passo " counter(kvc);
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .kvc-step strong {
+    display: block;
+    color: var(--primary-dark);
+    font-size: 13.5px;
+    margin-bottom: 4px;
+  }
+  .kvc-step:nth-child(5) {
+    border-left-color: var(--danger);
+  }
+  .kvc-step:nth-child(5)::before {
+    color: var(--danger);
+  }
+
+  /* ---------------- Authorization table cells ---------------- */
+  .yes  { color: var(--success); font-weight: 700; }
+  .yes::before  { content: "✓ "; }
+  .no   { color: var(--danger); font-weight: 700; }
+  .no::before   { content: "✕ "; }
+  .cond { color: var(--warning); font-weight: 700; }
+  .cond::before { content: "▲ "; }
+
+  /* ---------------- Responsive ---------------- */
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    main { padding: 28px 22px; }
+    .flow-step { grid-template-columns: 1fr; }
+    .flow-step:not(:last-child)::after,
+    .flow-step:not(:last-child)::before { left: 50%; }
+  }
+
+  /* ---------------- Print ---------------- */
+  @media print {
+    .sidebar { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    main { padding: 0; }
+    .prompt-card, .diagram-card, .flow-pipeline { box-shadow: none; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Spec-Driven Hapvida</div>
+    <div class="version">v0.4 · 2026-05-08</div>
+
+    <nav>
+      <a class="section-title">Conceitos</a>
+      <a href="#visao-geral">Visão geral</a>
+      <a href="#auto-sizing">Auto-Sizing</a>
+      <a href="#kvc">Knowledge Verification Chain</a>
+      <a href="#matriz-spec">Matriz de templates</a>
+      <a href="#obrigatoriedade">Quando spec é obrigatória</a>
+      <a href="#mcp-autorizacao">Autorização MCP</a>
+      <a href="#atores">Quem dispara o quê</a>
+
+      <a class="section-title">Fluxo</a>
+      <a href="#diagrama">Diagrama do fluxo</a>
+      <a href="#pipeline">Entradas e saídas</a>
+
+      <a class="section-title">Bootstrap</a>
+      <a href="#project-init">/project-init</a>
+      <a href="#map-codebase">/map-codebase</a>
+      <a href="#baseline-re">/baseline-reverse-engineering</a>
+      <a href="#baseline-re-forms">/baseline-reverse-engineering-forms</a>
+
+      <a class="section-title">Specify (entry points)</a>
+      <a href="#spec-from-workitem">/spec-from-workitem</a>
+      <a href="#spec-from-lecom">/spec-from-lecom</a>
+      <a href="#spec-from-baseline-plsql">/spec-from-baseline-plsql</a>
+
+      <a class="section-title">Approve & Plan</a>
+      <a href="#spec-validator">/spec-validator</a>
+      <a href="#spec-publish">/spec-publish-snapshot</a>
+      <a href="#design-from-spec">/design-from-spec</a>
+      <a href="#tasks-from-design">/tasks-from-design</a>
+
+      <a class="section-title">Apêndices</a>
+      <a href="#artefatos">Artefatos por feature</a>
+      <a href="#commits">Convenções de commit</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="page-header">
+      <h1>Fluxo dos Prompts — Framework Spec-Driven Hapvida</h1>
+      <div class="meta">
+        <span class="badge">v0.4</span>
+        <span>Base: TLC Spec-Driven · Área piloto: Comercial — venda de planos</span>
+        <span>Referência: <code>SKILL.md</code> · ADR-007 · ADR-009 · ADR-010 · ADR-011 · ADR-012</span>
+      </div>
+    </header>
+
+    <!-- ===================== VISÃO GERAL ===================== -->
+    <section id="visao-geral">
+      <h2>Visão geral</h2>
+      <p>
+        Adaptação do framework <strong>TLC Spec-Driven</strong> para o ecossistema Hapvida — Azure DevOps,
+        WinCVS, regulação ANS, GitHub Copilot Claude. <strong>Camada fina sobre o Agile Hapvida 2.0.</strong>
+      </p>
+      <p>
+        Quatro fases adaptativas, com <strong>auto-sizing por complexidade</strong>:
+      </p>
+<pre><code>┌──────────┐    ┌──────────┐    ┌─────────┐    ┌─────────┐
+│ SPECIFY  │ ─► │  DESIGN  │ ─► │  TASKS  │ ─► │ EXECUTE │
+└──────────┘    └──────────┘    └─────────┘    └─────────┘
+ obrigatório     opcional*       obrigatório**  obrigatório
+
+ *  Auto-skip baseado em complexidade
+ **  Sempre obrigatório + sync automático ao Azure DevOps (ADR-010)</code></pre>
+      <p style="font-size:13px;color:var(--text-muted);">
+        Cada prompt command executa um conjunto fixo de passos e produz artefatos rastreados em
+        <code>.specs/</code>. As próximas seções detalham os princípios e o fluxo completo.
+      </p>
+    </section>
+
+    <!-- ===================== AUTO-SIZING ===================== -->
+    <section id="auto-sizing">
+      <h2>Auto-Sizing — princípio central</h2>
+      <p>
+        <strong>A complexidade determina a profundidade, não um pipeline fixo.</strong> Antes de iniciar
+        qualquer feature, avalie escopo e aplique apenas o necessário. As fases <strong>Specify</strong>,
+        <strong>Tasks</strong> e <strong>Execute</strong> são sempre obrigatórias; <strong>Design</strong> é
+        auto-skip em mudanças diretas.
+      </p>
+
+      <div class="sizing-grid">
+        <div class="sizing-card pequeno">
+          <h4>Pequeno</h4>
+          <span class="crit">≤ 3 arquivos · frase de escopo</span>
+          <div class="phase-row"><span class="phase specify">Specify</span><span class="what">Inline (frontmatter + seções mínimas)</span></div>
+          <div class="phase-row skip"><span class="phase design">Design</span><span class="what">Skip</span></div>
+          <div class="phase-row"><span class="phase tasks">Tasks</span><span class="what">1–3 itens, sem diagrama + sync ADO</span></div>
+          <div class="phase-row"><span class="phase execute">Execute</span><span class="what">Implementar + verificar</span></div>
+        </div>
+
+        <div class="sizing-card medio">
+          <h4>Médio</h4>
+          <span class="crit">feature clara · &lt; 10 tasks</span>
+          <div class="phase-row"><span class="phase specify">Specify</span><span class="what">Spec completa</span></div>
+          <div class="phase-row skip"><span class="phase design">Design</span><span class="what">Skip — design inline</span></div>
+          <div class="phase-row"><span class="phase tasks">Tasks</span><span class="what">3–10 itens, fases simples + sync ADO</span></div>
+          <div class="phase-row"><span class="phase execute">Execute</span><span class="what">Implementar + verificar</span></div>
+        </div>
+
+        <div class="sizing-card grande">
+          <h4>Grande</h4>
+          <span class="crit">multi-componente</span>
+          <div class="phase-row"><span class="phase specify">Specify</span><span class="what">Spec + IDs de traceability</span></div>
+          <div class="phase-row"><span class="phase design">Design</span><span class="what">Arquitetura + componentes</span></div>
+          <div class="phase-row"><span class="phase tasks">Tasks</span><span class="what">Decomposição + dependências + sync ADO</span></div>
+          <div class="phase-row"><span class="phase execute">Execute</span><span class="what">Implementar por task + commit atômico</span></div>
+        </div>
+
+        <div class="sizing-card complexo">
+          <h4>Complexo</h4>
+          <span class="crit">ambiguidade · domínio novo</span>
+          <div class="phase-row"><span class="phase specify">Specify</span><span class="what">Spec + Discuss (gray areas)</span></div>
+          <div class="phase-row"><span class="phase design">Design</span><span class="what">Arquitetura + KVC + pesquisa</span></div>
+          <div class="phase-row"><span class="phase tasks">Tasks</span><span class="what">Decomposição + paralelismo + sync ADO</span></div>
+          <div class="phase-row"><span class="phase execute">Execute</span><span class="what">Implementar + UAT interativo</span></div>
+        </div>
+      </div>
+
+      <div class="branch-callout">
+        <strong>Válvula de segurança:</strong> quando Design é pulado, Tasks <strong>sempre</strong> começa listando os
+        passos atômicos. Se a decomposição revelar &gt; 5 passos com dependências complexas,
+        <strong>PARE</strong> e crie <code>design.md</code> formal — a fase Design foi indevidamente pulada.
+      </div>
+
+      <blockquote>
+        <strong>Quick Mode (atalho TLC) NÃO está no escopo do piloto v0.4</strong> — ver
+        <code>ADR-008</code>.
+      </blockquote>
+    </section>
+
+    <!-- ===================== KNOWLEDGE VERIFICATION CHAIN ===================== -->
+    <section id="kvc">
+      <h2>Knowledge Verification Chain</h2>
+      <p>
+        Antes de qualquer decisão técnica, design ou pesquisa, a LLM <strong>obrigatoriamente</strong>
+        segue esta ordem (<code>references/knowledge-verification.md</code>). Aplicada em
+        <code>/spec-from-workitem</code>, <code>/design-from-spec</code> e
+        <code>/baseline-reverse-engineering</code>.
+      </p>
+
+      <div class="kvc-steps">
+        <div class="kvc-step">
+          <strong>Codebase</strong>
+          PL/SQL: WinCVS tag <code>PRODUCAO</code> (NUNCA banco produtivo)<br>
+          Java/.NET: ADO Repos <code>main</code>
+        </div>
+        <div class="kvc-step">
+          <strong>Project docs</strong>
+          <code>.specs/codebase/</code>, <code>.specs/features/</code>, Wiki Arquitetura-Referência (ADRs corporativas)
+        </div>
+        <div class="kvc-step">
+          <strong>Context7 MCP</strong>
+          Para libraries, frameworks e APIs externas
+        </div>
+        <div class="kvc-step">
+          <strong>Web search</strong>
+          Documentação oficial ANS, Lei 9.656/98, RNs, padrões públicos
+        </div>
+        <div class="kvc-step">
+          <strong>Flag uncertain</strong>
+          "Não sei" é SEMPRE preferível a inventar. Marca <code>[REVISAO]</code> ou <code>[BLOQUEADO]</code>.
+        </div>
+      </div>
+
+      <div class="guardrail">
+        <span class="gr-label">[GUARDRAIL]</span> Nunca pular para Passo 5 se 1–4 são acessíveis. Passo 5 é
+        SEMPRE marcado como <code>[REVISAO]</code> ou <code>[BLOQUEADO]</code> — nunca apresentado como fato.
+      </div>
+      <div class="guardrail">
+        <span class="gr-label">[GUARDRAIL]</span> NUNCA inventar APIs, padrões, comportamentos. Se não
+        encontrar, marque a incerteza explicitamente.
+      </div>
+    </section>
+
+    <!-- ===================== MATRIZ DE TEMPLATES ===================== -->
+    <section id="matriz-spec">
+      <h2>Matriz Demand Type × Value Area</h2>
+      <p>
+        <code>/spec-from-workitem</code> determina o template a aplicar pela combinação dos campos
+        <code>Demand Type</code> e <code>Value Area</code> do work item ADO.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Demand Type</th><th>Value Area</th><th>Template aplicado</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Project</td><td>Business</td><td><code>spec-project-business.md</code></td></tr>
+          <tr><td>Improvement</td><td>Business</td><td><code>spec-improvement-business.md</code></td></tr>
+          <tr><td><strong>Improvement</strong></td><td><strong>Tunning</strong></td><td><code>spec-improvement-tunning.md</code> <em>(refatoração PL/SQL)</em></td></tr>
+          <tr><td>Maintenance</td><td>Business</td><td><code>spec-maintenance-business.md</code></td></tr>
+          <tr><td>Maintenance</td><td>Tunning</td><td><code>spec-maintenance-tunning.md</code></td></tr>
+          <tr><td>Incident <em>(criticidade alta/média)</em></td><td>(qualquer)</td><td><code>spec-incident-fast-track.md</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ===================== OBRIGATORIEDADE DE SPEC ===================== -->
+    <section id="obrigatoriedade">
+      <h2>Quando spec é obrigatória</h2>
+      <table>
+        <thead>
+          <tr><th>Tipo de work item</th><th>Spec?</th><th>Observação</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Feature</td><td><span class="yes">Sim</span></td><td>Canônico</td></tr>
+          <tr><td>Incident <em>criticidade alta/média</em></td><td><span class="yes">Sim</span></td><td>Fast-track ou completa</td></tr>
+          <tr><td>Defect <em>criticidade alta/média</em></td><td><span class="yes">Sim</span></td><td>—</td></tr>
+          <tr><td>User Story <em>standalone</em></td><td><span class="yes">Sim</span></td><td>Enxuta</td></tr>
+          <tr><td>User Story <em>filha</em> de Feature com spec</td><td><span class="cond">Herda</span></td><td>Não regenera spec</td></tr>
+          <tr><td>Epic</td><td><span class="no">Não</span></td><td>PRD/visão</td></tr>
+          <tr><td>Bug, Request, Task, Impediment</td><td><span class="no">Não</span></td><td>—</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ===================== AUTORIZAÇÃO MCP ===================== -->
+    <section id="mcp-autorizacao">
+      <h2>Autorização de MCPs</h2>
+      <p>
+        O framework define limites <strong>inegociáveis</strong> sobre quais MCPs a LLM pode invocar e em
+        que circunstâncias. Banco produtivo é <strong>proibido</strong> — sempre WinCVS tag PRODUCAO.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Uso</th><th>Autorizado?</th><th>Notas</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Acessar/atualizar work items via <code>@azure-devops/mcp</code></td>
+            <td><span class="yes">Sim</span></td>
+            <td>Local, autenticado</td>
+          </tr>
+          <tr>
+            <td><strong>Criar Tasks ADO</strong> a partir de <code>tasks.md</code></td>
+            <td><span class="yes">Obrigatório</span></td>
+            <td>ADR-010 — via <code>/tasks-from-design</code></td>
+          </tr>
+          <tr>
+            <td>Anexar snapshot de spec/design/tasks ao work item</td>
+            <td><span class="yes">Sim</span></td>
+            <td>Acionado pelo TL via <code>/spec-publish-snapshot</code></td>
+          </tr>
+          <tr>
+            <td>Ler PRs, commits, builds</td>
+            <td><span class="yes">Sim</span></td>
+            <td>Read-only</td>
+          </tr>
+          <tr>
+            <td>Acessar Wiki Arquitetura-Referência</td>
+            <td><span class="yes">Sim</span></td>
+            <td>Para citar ADRs</td>
+          </tr>
+          <tr>
+            <td><strong>MCP Oracle</strong> — dicionário read-only (<code>dba_*</code>, <code>dba_source</code>)</td>
+            <td><span class="cond">Condicional</span></td>
+            <td>Apenas skills <code>engenharia-reversa-sigo</code> e <code>plsql-oracle-expert</code> (ADR-007 emendada por ADR-011)</td>
+          </tr>
+          <tr>
+            <td><strong>MCP Oracle</strong> — dados de negócio / DML / DDL</td>
+            <td><span class="no">PROIBIDO</span></td>
+            <td>Sempre WinCVS tag PRODUCAO</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ===================== ATORES ===================== -->
+    <section id="atores">
+      <h2>Quem dispara o quê</h2>
+      <p>
+        Em todo prompt o <strong>TL/desenvolvedor</strong> é quem inicia (digita o slash command). Dali em diante,
+        a <strong>LLM</strong> orquestra a execução, podendo invocar <strong>MCPs</strong> ou <strong>scripts</strong> externos.
+        Em pontos críticos, a LLM <strong>devolve a palavra ao TL</strong> (gates de aprovação).
+      </p>
+
+      <div class="actors-legend">
+        <div class="legend-item">
+          <span class="actor user">TL</span>
+          <div class="desc">
+            <strong>TL / Desenvolvedor</strong>
+            <em>Ação manual humana: digita slash command, responde perguntas, revisa, aprova, faz commit, abre PR, executa GMUD.</em>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="actor llm">LLM</span>
+          <div class="desc">
+            <strong>Agente LLM (Copilot/Claude)</strong>
+            <em>Executa os passos do prompt: lê arquivos, gera conteúdo, aplica checklists, decide quando parar e perguntar.</em>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="actor mcp">MCP</span>
+          <div class="desc">
+            <strong>MCP Server / Skill / Tool</strong>
+            <em>Tool externa invocada pela LLM: <code>@azure-devops/mcp</code>, MCP Oracle (dba_*), skills (<code>engenharia-reversa-sigo</code>, <code>engenharia-reversa-forms</code>), executáveis em <code>tools/</code> (parsers).</em>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="actor script">CLI</span>
+          <div class="desc">
+            <strong>Script / CLI local</strong>
+            <em>Executado diretamente pelo TL no terminal: <code>scripts/init-spec-project.ps1</code>, checkout CVS, <code>git commit</code>.</em>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="actor gate">GATE</span>
+          <div class="desc">
+            <strong>Gate de aprovação</strong>
+            <em>A LLM <strong>pára</strong> e aguarda decisão explícita do TL antes de prosseguir.</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="branch-callout" style="margin-top:14px;">
+        <strong>Regra geral:</strong> nada é publicado externamente (anexo no ADO, criação de Tasks, commit) sem que o TL tenha aprovado.
+        A LLM nunca executa ações irreversíveis sozinha — sempre pede confirmação antes de chamar
+        <code>create_work_item</code> ou upload de attachment.
+      </div>
+    </section>
+
+    <!-- ===================== DIAGRAMA ===================== -->
+    <section id="diagrama">
+      <h2>Diagrama do fluxo (com atores)</h2>
+      <p style="font-size:13px;color:var(--text-muted);">
+        Os <strong>slash commands</strong> são todos disparados pelo TL. As caixas em
+        <span style="background:#fef3c7;padding:1px 6px;border-radius:4px;">amarelo</span> são ações manuais (TL/CLI),
+        em <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;">azul</span> são execuções LLM,
+        em <span style="background:#ede9fe;padding:1px 6px;border-radius:4px;">roxo</span> envolvem MCP externo,
+        e em <span style="background:#fee2e2;padding:1px 6px;border-radius:4px;">vermelho</span> são gates que aguardam aprovação humana.
+      </p>
+      <div class="diagram-card">
+        <div class="mermaid">
+flowchart TB
+    classDef user fill:#fef3c7,stroke:#b45309,color:#78350f,stroke-width:2px
+    classDef llm fill:#dbeafe,stroke:#1e40af,color:#1e3a8a,stroke-width:2px
+    classDef mcp fill:#ede9fe,stroke:#6d28d9,color:#4c1d95,stroke-width:2px
+    classDef gate fill:#fee2e2,stroke:#b91c1c,color:#7f1d1d,stroke-width:2.5px,stroke-dasharray:0
+    classDef impl fill:#d1fae5,stroke:#047857,color:#065f46,stroke-width:2px
+
+    subgraph BOOTSTRAP[" Bootstrap (uma vez por squad) "]
+        direction TB
+        U0["TL roda<br/>scripts/init-spec-project.ps1<br/>OU /project-init"]:::user
+        A0["LLM scaffolda .specs/, .vscode/, .github/<br/>+ submódulo framework"]:::llm
+        B0["LLM analisa repo<br/>(/map-codebase)"]:::llm
+        C0["LLM + skill engenharia-reversa-sigo<br/>(/baseline-reverse-engineering)<br/>PL/SQL"]:::mcp
+        C1["LLM + skill engenharia-reversa-forms<br/>+ tools/forms-extractor<br/>(/baseline-reverse-engineering-forms)"]:::mcp
+        U0 --> A0
+        A0 -. opcional .-> B0
+        A0 -. PL/SQL .-> C0
+        A0 -. Oracle Forms .-> C1
+    end
+
+    subgraph SPEC[" Specify (1 por feature) "]
+        direction TB
+        U1["TL invoca /spec-from-workitem<br/>(ou /spec-from-lecom, ou /spec-from-baseline-plsql)"]:::user
+        D1["LLM consulta MCP ADO<br/>wit_get_work_items_by_id"]:::mcp
+        D2["LLM gera spec.md<br/>+ Knowledge Verification Chain"]:::llm
+        U2["TL responde [REVISAO] e refina"]:::user
+        E["GATE /spec-validator<br/>checklist 100%?"]:::gate
+        U1 --> D1 --> D2 --> U2 --> E
+        E -- falhas --> D2
+    end
+
+    subgraph PUBLISH[" Publish snapshot "]
+        direction TB
+        U3["TL aprova spec no ADO<br/>+ merge PR em main"]:::user
+        F1["LLM gera snapshot<br/>+ calcula SHA-256"]:::llm
+        F2["MCP ADO upload attachment<br/>+ wit_update_work_item"]:::mcp
+        U3 --> F1 --> F2
+    end
+
+    subgraph PLAN[" Design + Tasks "]
+        direction TB
+        G["LLM gera design.md<br/>(/design-from-spec)<br/><i>auto-skip se Pequeno/Médio</i>"]:::llm
+        H1["LLM gera tasks.md<br/>+ 3 checks pré-aprovação"]:::llm
+        H2["GATE TL aprova tasks"]:::gate
+        H3["MCP create_work_item<br/>1× por task"]:::mcp
+        G --> H1 --> H2 --> H3
+    end
+
+    subgraph EXECUTE[" Execute "]
+        direction TB
+        I1["TL implementa código<br/>commits WI-TaskID"]:::user
+        I2["TL abre PR → Homologação → GMUD → Closed"]:::user
+        I1 --> I2
+    end
+
+    BOOTSTRAP --> SPEC
+    SPEC -- aprovada --> PUBLISH
+    PUBLISH --> PLAN
+    PLAN -- Status=Synced --> EXECUTE
+
+    class I1,I2 impl
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ENTRADAS E SAÍDAS ===================== -->
+    <section id="pipeline">
+      <h2>Entradas e saídas de cada etapa</h2>
+      <p style="font-size:13px;color:var(--text-muted);">
+        Cada etapa indica os atores envolvidos: quem dispara, quem executa e quais MCPs são invocados.
+      </p>
+      <div class="flow-pipeline">
+
+        <div class="flow-step">
+          <div class="node">init.ps1</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;">
+                <span class="actor user">TL roda</span>
+                <span class="actor script">PowerShell</span>
+              </div>
+              <span class="label">Saída</span>
+              .specs/project/ · .vscode/ · .github/ · .gitmodules · submódulo framework
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step optional">
+          <div class="node">/map-codebase</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;">
+                <span class="actor user">TL invoca</span>
+                <span class="actor llm">LLM executa</span>
+              </div>
+              <span class="label">Saída (opcional)</span>
+              .specs/codebase/STACK.md + 6 outros docs
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="node">/baseline-reverse-engineering</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                <span class="actor user">TL invoca</span>
+                <span class="actor llm">LLM</span>
+                <span class="actor mcp">skill engenharia-reversa-sigo</span>
+                <span class="actor mcp">CVS PRODUCAO</span>
+              </div>
+              <span class="label">Saída (PL/SQL apenas)</span>
+              .specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/reversa-&lt;NOME&gt;.md
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="node">/spec-from-workitem</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                <span class="actor user">TL invoca + ID WI</span>
+                <span class="actor llm">LLM</span>
+                <span class="actor mcp">MCP ADO wit_get</span>
+              </div>
+              <span class="label">Saída</span>
+              .specs/features/WI-XXXX/spec.md
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step validator">
+          <div class="node">/spec-validator</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                <span class="actor user">TL invoca</span>
+                <span class="actor llm">LLM</span>
+                <span class="actor gate">GATE — TL corrige</span>
+              </div>
+              <span class="label">Saída</span>
+              checklist; loop com TL até aprovação total
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="node">/spec-publish-snapshot</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                <span class="actor user">TL aprova spec no ADO</span>
+                <span class="actor llm">LLM</span>
+                <span class="actor mcp">MCP ADO upload + comment</span>
+              </div>
+              <span class="label">Saída</span>
+              WI-XXXX-spec-vN.md anexado no ADO
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="node">/design-from-spec</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;">
+                <span class="actor user">TL invoca</span>
+                <span class="actor llm">LLM</span>
+              </div>
+              <span class="label">Saída</span>
+              .specs/features/WI-XXXX/design.md
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="node">/tasks-from-design</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                <span class="actor user">TL invoca</span>
+                <span class="actor llm">LLM</span>
+                <span class="actor gate">GATE aprova tasks</span>
+                <span class="actor mcp">MCP create_work_item × N</span>
+              </div>
+              <span class="label">Saída</span>
+              tasks.md (Status=Synced) · N Tasks ADO criadas
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step implementation">
+          <div class="node">Implementação</div>
+          <div class="arrow-and-output">
+            <span class="arrow">→</span>
+            <div class="output">
+              <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                <span class="actor user">TL implementa + commits</span>
+                <span class="actor user">TL: PR / GMUD</span>
+              </div>
+              <span class="label">Saída</span>
+              commits WI-TaskID: type(scope): desc · PR → Homologação → GMUD → Closed
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== DESCRIÇÃO POR PROMPT ===================== -->
+    <section>
+      <h2>Descrição detalhada por comando</h2>
+      <p style="color:var(--text-muted);font-size:13.5px;">
+        Cada cartão abaixo descreve o que <strong>de fato</strong> é executado: inputs, MCPs/skills invocados,
+        passos do agente, arquivos materializados e guardrails. Origem: <code>prompts/*.prompt.md</code> e
+        <code>scripts/init-spec-project.ps1</code>.
+      </p>
+
+      <!-- ============== /project-init ============== -->
+      <article class="prompt-card" id="project-init">
+        <header>
+          <h3>/project-init <span class="tag req">Bootstrap</span></h3>
+          <p class="purpose">
+            Bootstrap do framework no repo do squad. Dispara o script
+            <code>scripts/init-spec-project.ps1</code> e materializa apenas o que é responsabilidade do squad —
+            <strong>não copia</strong> SKILL.md/prompts/templates do framework (esses ficam no submódulo
+            <code>.specs/framework/</code>, ADR-012).
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL roda no terminal</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor script">init-spec-project.ps1</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL faz commit do scaffold</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input pedido ao TL</h4>
+            <ul class="input-list">
+              <li><code>SquadName</code> — nome curto do squad/projeto</li>
+              <li><code>Stack</code> — <code>PLSQL</code> | <code>Java</code> | <code>DotNet</code> | <code>Mista</code></li>
+              <li><code>AdoOrg</code> — slug ADO (default <code>hapvidalabs</code> · URL <code>https://dev.azure.com/hapvidalabs/</code>)</li>
+              <li><code>AreaAtuacao</code> — Comercial, Autorização, etc.</li>
+              <li>Flags: <code>-Brownfield</code>, <code>-WithProject</code>, <code>-WithRoadmap</code>, <code>-NoSubmodule</code>, <code>-Force</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title tools">Ferramentas usadas</h4>
+            <div class="pill-row">
+              <span class="pill">PowerShell</span>
+              <span class="pill">git submodule</span>
+              <span class="pill">UTF-8 sem BOM</span>
+            </div>
+            <p style="font-size:12.5px;color:var(--text-muted);margin:6px 0 0;">
+              Sem MCP. Tudo é local: filesystem + <code>git</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real do <code>init-spec-project.ps1</code></h4>
+          <ol class="steps-list">
+            <li><strong>Verifica pré-condições</strong> — diretório é repositório Git? <code>.specs/</code> já existe? (sem <code>-Force</code>, preserva).</li>
+            <li><strong>Cria diretórios base</strong>: <code>.specs/project/</code>, <code>.specs/features/</code>, <code>.vscode/</code>, <code>.github/</code>.</li>
+            <li><strong>Gera <code>STATE.md</code></strong> (ADR-009) — esqueleto com Recent Decisions, Active Blockers, Lessons Learned, Quick Tasks, Deferred Ideas, Todos, Preferences (stack, área, MCP ADO=yes).</li>
+            <li><strong>Gera <code>.vscode/mcp.json</code></strong> com server <code>azure-devops</code> apontando para <code>npx -y @azure-devops/mcp &lt;AdoOrg&gt;</code> (default <code>hapvidalabs</code> → <code>https://dev.azure.com/hapvidalabs/</code>).</li>
+            <li><strong>Gera <code>.github/copilot-instructions.md</code></strong> — aponta para <code>.specs/framework/SKILL.md</code>, lista contexto do squad e os 5 guardrails inegociáveis (ADR-007, PII, ANS, ADR-AUSENTE).</li>
+            <li><strong>Gera <code>.vscode/settings.json</code></strong> — habilita <code>chat.promptFiles</code> + <code>chat.promptFilesLocations</code> apontando para <code>.specs/framework/prompts</code>; <code>chat.instructionsFilesLocations</code> para <code>.specs/framework/instructions</code> e <code>.github/instructions</code>.</li>
+            <li><strong>Gera <code>.vscode/extensions.json</code></strong> com recomendações: <code>github.copilot</code>, <code>github.copilot-chat</code>, <code>ms-azure-devops.azure-pipelines</code>, <code>oracle.sql-developer-for-vscode</code>.</li>
+            <li><strong>Gera <code>.github/pull_request_template.md</code></strong> — checklist Spec-Driven (Knowledge Verification, ADR aplicável, [ANS]+norma, anonimização, Conventional Commits, snapshot anexado, versão framework).</li>
+            <li><strong>Opcionais</strong>: <code>-WithProject</code> → <code>PROJECT.md</code> (Vision/For/Solves/Goals); <code>-WithRoadmap</code> → <code>ROADMAP.md</code> (Now/Next/Later); <code>-Brownfield</code> → <code>.specs/codebase/</code> + <code>knowledge-base/</code>; se <code>Stack=PLSQL</code> também cria <code>.specs/reverse-engineering/</code>.</li>
+            <li><strong>Vincula framework como submódulo</strong> (ADR-012): <code>git submodule add -b &lt;ref&gt; &lt;repo&gt; .specs/framework</code>, faz <code>update --init --recursive</code>, captura <code>HEAD</code> e grava manifesto <code>.specs/.framework.json</code> (<code>{repo, ref, commit, pinned_at, adr}</code>).</li>
+            <li><strong>Imprime resumo</strong> com próximos passos (revisar copilot-instructions, autenticar MCP ADO, commit inicial <code>WI-XXXX: chore(spec-driven): scaffold inicial v0.2 (ADR-012)</code>).</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivos materializados</h4>
+            <ul class="file-list">
+              <li class="created"><code>.specs/project/STATE.md</code> <em>(obrigatório)</em></li>
+              <li class="created"><code>.specs/.framework.json</code> <em>(submódulo pinado)</em></li>
+              <li class="dir"><code>.specs/framework/</code> <em>(submódulo Git)</em></li>
+              <li class="created"><code>.vscode/mcp.json</code></li>
+              <li class="created"><code>.vscode/settings.json</code></li>
+              <li class="created"><code>.vscode/extensions.json</code></li>
+              <li class="created"><code>.github/copilot-instructions.md</code></li>
+              <li class="created"><code>.github/pull_request_template.md</code></li>
+              <li class="dir"><code>.specs/features/</code> <em>(vazio)</em></li>
+              <li><code>PROJECT.md / ROADMAP.md</code> <em>(opcionais via flag)</em></li>
+              <li><code>.specs/codebase/ + reverse-engineering/</code> <em>(se Brownfield)</em></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails ativos</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> UTF-8 sem BOM em todos os arquivos gerados</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Sem emojis em artefatos formais</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> NÃO copiar SKILL.md/prompts/templates/ADRs do framework</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Se <code>.specs/</code> já existir populado, confirmar antes de sobrescrever</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== /map-codebase ============== -->
+      <article class="prompt-card optional" id="map-codebase">
+        <header>
+          <h3>/map-codebase <span class="tag opt">Opcional · Brownfield</span></h3>
+          <p class="purpose">
+            Análise estática do código fonte do workspace para gerar 7 documentos de contexto em
+            <code>.specs/codebase/</code>. Sem ele, o contexto precisa ser fornecido manualmente em cada conversa.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca no chat</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM lê filesystem + grep</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM grava 7 docs</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL revisa</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Pré-condições</h4>
+            <ul class="input-list">
+              <li>Squad inicializado com <code>-Brownfield</code></li>
+              <li>Diretório <code>.specs/codebase/</code> existe (vazio ou parcial)</li>
+              <li>Código fonte presente no workspace</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title tools">Ferramentas usadas</h4>
+            <div class="pill-row">
+              <span class="pill">filesystem read</span>
+              <span class="pill">grep/glob</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title artifacts">7 documentos gerados em <code>.specs/codebase/</code></h4>
+          <table>
+            <thead><tr><th class="center">#</th><th>Arquivo</th><th>Conteúdo</th></tr></thead>
+            <tbody>
+              <tr><td class="center">1</td><td><code>STACK.md</code></td><td>Linguagens, frameworks, versões</td></tr>
+              <tr><td class="center">2</td><td><code>ARCHITECTURE.md</code></td><td>Componentes, fluxo de dados, dependências</td></tr>
+              <tr><td class="center">3</td><td><code>STRUCTURE.md</code></td><td>Layout de pastas, convenções de naming</td></tr>
+              <tr><td class="center">4</td><td><code>CONVENTIONS.md</code></td><td>Padrões de código, estilo, idiomas do time</td></tr>
+              <tr><td class="center">5</td><td><code>TESTING.md</code></td><td>Frameworks, cobertura, gate check commands, Test Coverage Matrix, Parallelism Assessment</td></tr>
+              <tr><td class="center">6</td><td><code>INTEGRATIONS.md</code></td><td>ServiceNow, Lecom, GMUD, APIs externas</td></tr>
+              <tr><td class="center">7</td><td><code>CONCERNS.md</code></td><td>Tech debt, áreas frágeis, ADRs ausentes</td></tr>
+            </tbody>
+          </table>
+          <div class="branch-callout">
+            <strong>Por que importa:</strong> <code>TESTING.md</code> é input direto de <code>/tasks-from-design</code> (Test Coverage Matrix + Parallelism Assessment para marcar tasks <code>[P]</code>).
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== /baseline-reverse-engineering ============== -->
+      <article class="prompt-card required" id="baseline-re">
+        <header>
+          <h3>/baseline-reverse-engineering <span class="tag req">Obrigatório PL/SQL</span></h3>
+          <p class="purpose">
+            Produz o <strong>artefato canônico de engenharia reversa</strong> de uma rotina PL/SQL Oracle, persistido
+            como baseline cacheado em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/</code> (ADR-011).
+            Elimina releitura do código bruto em specs futuras.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + nome do objeto</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">CVS PRODUCAO ou MCP Oracle dba_source</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">skill engenharia-reversa-sigo</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor gate">TL aprova Painel de Decisão</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Nome do objeto (<code>SCHEMA.NOME</code>)</li>
+              <li>Tipo: <code>procedure</code> | <code>function</code> | <code>package</code> | <code>trigger</code></li>
+              <li>(Opcional) ID do work item ADO destino</li>
+            </ul>
+            <div class="branch-callout">
+              <strong>Quando usar:</strong> rotina PL/SQL &gt; 2.000 linhas, complexidade alta, refresh de RE marcada <code>[REVISAO]</code>, ou antes de Specify de Improvement+Tunning sobre rotina não mapeada.
+            </div>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title mcp">Ferramentas / Skills</h4>
+            <ul class="mcp-list">
+              <li><strong>Skill</strong> <code>engenharia-reversa-sigo</code> (passos 0–6)</li>
+              <li><strong>CVS</strong> tag PRODUCAO (fonte primária)</li>
+              <li><strong>MCP Oracle</strong> <code>dba_source</code> (fallback com <code>[ATENCAO]</code>)</li>
+            </ul>
+            <div class="pill-row">
+              <span class="pill cvs">CVS PRODUCAO</span>
+              <span class="pill oracle">MCP Oracle (dba_*)</span>
+              <span class="pill skill">skill: engenharia-reversa-sigo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li><strong>Verifica guardrails</strong> — confirma origem CVS tag PRODUCAO; bloqueia leitura de tabelas de negócio.</li>
+            <li><strong>Invoca skill</strong> <code>engenharia-reversa-sigo</code> seguindo seu protocolo (Passos 0–6: caracterização → leitura → análise → riscos → painel).</li>
+            <li><strong>Materializa pré-requisitos</strong> em <code>.specs/codebase/knowledge-base/</code> se ausentes:
+              <ul class="substeps">
+                <li><code>indice.md</code></li>
+                <li><code>catalogo-conceitos-negocio.md</code></li>
+                <li><code>catalogo-objetos-plsql.md</code></li>
+                <li><code>pendencias-abertas.md</code></li>
+                <li><code>riscos-ans.md</code></li>
+              </ul>
+            </li>
+            <li><strong>Resolve tag CVS PRODUCAO</strong> e grava no frontmatter do artefato (<code>baseline_cvs_tag</code>).</li>
+            <li><strong>Gera artefato</strong> a partir de <code>templates/reverse-engineering-template.md</code> em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/reversa-&lt;NOME&gt;.md</code>.</li>
+            <li><strong>Atualiza índice</strong> <code>README-rotina.md</code> da rotina e os catálogos de conhecimento.</li>
+            <li><strong>Apresenta Painel de Decisão</strong> (seção 11 do artefato) ao TL com lista de <code>[ATENCAO]</code> / <code>[BLOQUEADO]</code> / <code>[ANS]</code> para validação com PO/DBA.</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivos criados/atualizados</h4>
+            <ul class="file-list">
+              <li class="created"><code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/reversa-&lt;NOME&gt;.md</code></li>
+              <li class="updated"><code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/README-rotina.md</code></li>
+              <li class="updated"><code>.specs/codebase/knowledge-base/indice.md</code></li>
+              <li class="updated"><code>.specs/codebase/knowledge-base/catalogo-conceitos-negocio.md</code></li>
+              <li class="updated"><code>.specs/codebase/knowledge-base/catalogo-objetos-plsql.md</code></li>
+              <li class="updated"><code>.specs/codebase/knowledge-base/pendencias-abertas.md</code></li>
+              <li class="updated"><code>.specs/codebase/knowledge-base/riscos-ans.md</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails ativos</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Código PL/SQL sempre via CVS tag PRODUCAO</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> MCP Oracle só para <code>dba_*</code> e <code>dba_source</code> — nunca tabelas de negócio</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimização obrigatória de PII em comentários/massa</div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title output">Handoff</h4>
+          <p style="font-size:13.5px;">
+            Após aprovação, a RE pode ser referenciada por specs Improvement+Tunning via
+            <code>[REF: .specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/]</code>.
+          </p>
+        </div>
+      </article>
+
+      <!-- ============== /baseline-reverse-engineering-forms ============== -->
+      <article class="prompt-card required" id="baseline-re-forms">
+        <header>
+          <h3>/baseline-reverse-engineering-forms <span class="tag req">Oracle Forms · Experimental</span></h3>
+          <p class="purpose">
+            Espelho Oracle Forms do <a href="#baseline-re"><code>/baseline-reverse-engineering</code></a>:
+            orquestra o tool <a href="https://github.com/rawelcl/hap-spec-driven/tree/main/tools/forms-extractor"><code>tools/forms-extractor</code></a>
+            (pipeline 2 etapas) + skill <code>engenharia-reversa-forms</code> e produz artefato canônico em
+            <code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/</code>.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + nome do módulo + path .fmb</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">tool Convert-FmbToXml.ps1 (.fmb→.xml)</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">tool Extract-FormsMetadata.ps1 (12 relatórios)</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">skill engenharia-reversa-forms (Passos 2-6)</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor gate">TL aprova Painel de Decisão</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Nome do módulo (ex.: <code>T229BCON</code>)</li>
+              <li>Path do <code>.fmb</code> no checkout CVS tag PRODUCAO</li>
+              <li>(Opcional) ID do work item ADO destino</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title mcp">Ferramentas / Skills</h4>
+            <ul class="mcp-list">
+              <li><strong>Tool</strong> <code>tools/forms-extractor/Convert-FmbToXml.ps1</code></li>
+              <li><strong>Tool</strong> <code>tools/forms-extractor/Extract-FormsMetadata.ps1</code></li>
+              <li><strong>Skill</strong> <code>engenharia-reversa-forms</code> (Passos 2–6)</li>
+              <li><strong>CVS</strong> tag PRODUCAO (fonte do <code>.fmb</code>)</li>
+            </ul>
+            <div class="pill-row">
+              <span class="pill cvs">CVS PRODUCAO</span>
+              <span class="pill skill">skill: engenharia-reversa-forms</span>
+              <span class="pill">forms-extractor</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title input">Pré-requisitos verificáveis (aborta se faltar)</h4>
+          <ul class="input-list">
+            <li><code>.fmb</code> existe no checkout CVS tag PRODUCAO</li>
+            <li>Oracle Forms Developer 10g+ instalado <strong>OU</strong> JARs do Forms2XML em <code>ORACLE_HOME</code></li>
+            <li>Tool <code>tools/forms-extractor/</code> presente (vem do submódulo do framework)</li>
+          </ul>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li><strong>Verifica guardrails</strong> — confirma origem CVS tag PRODUCAO; bloqueia se Forms Developer ausente.</li>
+            <li><strong>Resolve tag CVS PRODUCAO</strong> e grava no frontmatter do artefato.</li>
+            <li><strong>Calcula NNN</strong> — sequencial zero-padded (lista <code>rev-*</code> existentes do módulo + 1; primeira = <code>001</code>).</li>
+            <li><strong>Cria estrutura</strong> de diretórios:
+              <ul class="substeps">
+                <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/README-modulo.md</code></li>
+                <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/raw/</code></li>
+                <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/parsed/</code></li>
+              </ul>
+            </li>
+            <li><strong>Etapa 1 — Conversão binário → XML</strong> via <code>Convert-FmbToXml.ps1</code>. Saída: <code>&lt;MODULO&gt;.xml</code> em <code>raw/</code>.</li>
+            <li><strong>Etapa 2 — Extração estruturada</strong> via <code>Extract-FormsMetadata.ps1 -Format md</code>. Saída: 12 relatórios em <code>parsed/</code>:
+              <ul class="substeps">
+                <li><code>_RESUMO</code>, <code>_WINDOWS</code>, <code>_CANVAS</code>, <code>_BLOCKS</code></li>
+                <li><code>_TRIGGERS</code>, <code>_PROGRAM_UNITS</code></li>
+                <li><code>_LOVS</code>, <code>_ALERTS</code>, <code>_PARAMETERS</code></li>
+                <li><code>_RELATIONS</code>, <code>_VISUAL_ATTRS</code>, <code>_RECORD_GROUPS</code></li>
+              </ul>
+            </li>
+            <li><strong>Materializa pré-requisitos</strong> em <code>.specs/codebase/knowledge-base/</code> se ausentes.</li>
+            <li><strong>Invoca skill</strong> <code>engenharia-reversa-forms</code> Passos 2–6 (Inventário UI → Triggers → Dependências → Smells/Riscos → Painel de Decisão).</li>
+            <li><strong>Gera artefato</strong> <code>reversa-&lt;MODULO&gt;.md</code> seguindo <code>templates/reverse-engineering-forms-template.md</code> (a criar na primeira execução).</li>
+            <li><strong>Atualiza índice</strong> <code>README-modulo.md</code> listando todas as revisões.</li>
+            <li><strong>Atualiza catálogos</strong>: <code>catalogo-objetos-plsql.md</code> (packages chamados pelo Forms), <code>pendencias-abertas.md</code>, <code>riscos-ans.md</code>.</li>
+            <li><strong>Apresenta Painel de Decisão</strong> ao TL com sinopse, regras prioritizadas, lista de marcadores e recomendação (modernizar/manter/deprecate).</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivos materializados</h4>
+            <ul class="file-list">
+              <li class="created"><code>raw/&lt;MODULO&gt;.xml</code> <em>(Forms2XML)</em></li>
+              <li class="created">12× <code>parsed/&lt;MODULO&gt;_*.txt</code> <em>(rastreio fechado)</em></li>
+              <li class="created"><code>reversa-&lt;MODULO&gt;.md</code> <em>(artefato canônico)</em></li>
+              <li class="updated"><code>README-modulo.md</code></li>
+              <li class="updated"><code>knowledge-base/catalogo-objetos-plsql.md</code></li>
+              <li class="updated"><code>knowledge-base/pendencias-abertas.md</code></li>
+              <li class="updated"><code>knowledge-base/riscos-ans.md</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails ativos</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> <code>.fmb</code> sempre via CVS tag PRODUCAO</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> LLM <strong>não</strong> lê XML bruto — apenas os 12 relatórios</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> PL/SQL embutido segue regras de <code>engenharia-reversa-sigo</code></div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimização de PII em hard-coded values e massa</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Cada <code>rev-NNN-&lt;TAG&gt;</code> é imutável</div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title output">Tratamento de erros</h4>
+          <p style="font-size:12.5px;color:var(--text-muted);">
+            Forms Developer ausente → bloquear · Falha Etapa 1 (.fmb→.xml) → reportar STDERR ·
+            Falha Etapa 2 (XML→relatórios) → idem · <code>.fmb</code> corrompido → <code>[BLOQUEADO]</code>, re-checkout CVS ·
+            XML excessivo (&gt;50k linhas PL/SQL embutido) → processar em chunks por bloco com <code>[ATENCAO]</code>.
+          </p>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title output">Handoff</h4>
+          <p style="font-size:13.5px;">
+            Após aprovação no Painel, a RE pode ser referenciada por specs de modernização via
+            <code>[REF: .specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/]</code>.
+          </p>
+        </div>
+      </article>
+
+      <!-- ============== /spec-from-workitem ============== -->
+      <article class="prompt-card" id="spec-from-workitem">
+        <header>
+          <h3>/spec-from-workitem <span class="tag" style="background:#dbeafe;color:#1e40af;">Entry · ADO</span></h3>
+          <p class="purpose">
+            Cria <code>spec.md</code> a partir de um Work Item Azure DevOps existente. Entry point principal —
+            há duas alternativas: <a href="#spec-from-lecom">/spec-from-lecom</a> (BPM Lecom) e
+            <a href="#spec-from-baseline-plsql">/spec-from-baseline-plsql</a> (refatoração PL/SQL).
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + ID work item</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">MCP ADO wit_get_work_items_by_id</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM gera spec.md com [REVISAO]</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL responde lacunas</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li><code>work_item_id</code> — ID do work item ADO</li>
+              <li><code>feature</code> — slug curto (vira nome do diretório)</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title mcp">MCP invocado</h4>
+            <ul class="mcp-list">
+              <li><code>mcp_azure-devops_wit_get_work_items_by_id</code></li>
+            </ul>
+            <div class="pill-row">
+              <span class="pill ado">@azure-devops/mcp</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li><strong>Lê work item</strong> via <code>wit_get_work_items_by_id</code> — payload completo.</li>
+            <li><strong>Extrai campos</strong>: título, descrição, <code>demand_type</code>, <code>value_area</code>, <code>area_solicitante</code>, <code>criticidade</code>, customizados (<code>Lecom ID</code>, <code>ServiceNow INC</code>), Acceptance Criteria.</li>
+            <li><strong>Determina template</strong> pela matriz Demand Type × Value Area (Improvement+Tunning, Feature+Roadmap, Defect+SLA, etc.).</li>
+            <li><strong>Cria diretório</strong> <code>.specs/features/WI-&lt;id&gt;-&lt;slug&gt;/</code>.</li>
+            <li><strong>Gera <code>spec.md</code></strong>: frontmatter YAML preenchido + seções do template; lacunas marcadas com <code>[REVISAO]</code> para input do TL.</li>
+            <li><strong>Aplica Knowledge Verification Chain</strong> (ADR-006) — registra fontes consultadas e <code>[REVISAO]</code>/<code>[BLOQUEADO]</code> em itens incertos.</li>
+            <li><strong>Confirma com TL</strong>: "Spec inicial criada. Posso fazer perguntas para preencher as lacunas?"</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivos materializados</h4>
+            <ul class="file-list">
+              <li class="dir"><code>.specs/features/WI-&lt;id&gt;-&lt;slug&gt;/</code></li>
+              <li class="created"><code>.specs/features/WI-&lt;id&gt;-&lt;slug&gt;/spec.md</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails ativos</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimizar PII de beneficiário nos dados extraídos</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Marcar <code>[ANS]</code> em qualquer regra que toca regulação</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Citar ADRs via <code>[REF: ADR-XX]</code>; sem ADR → <code>[ADR-AUSENTE]</code></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== /spec-from-lecom (alt) ============== -->
+      <article class="prompt-card" id="spec-from-lecom">
+        <header>
+          <h3>/spec-from-lecom <span class="tag" style="background:#fce7f3;color:#9d174d;">Entry · BPM</span></h3>
+          <p class="purpose">
+            Variante de entry point: cria <code>spec.md</code> a partir de um documento Lecom (BPM corporativo)
+            anexado pelo TL — PDF, DOCX ou texto colado.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + anexa PDF/DOCX</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">skill pdf/docx</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM gera spec.md</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL refina [REVISAO]</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Path do documento Lecom (PDF/DOCX/texto)</li>
+              <li>ID do work item ADO destino</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title mcp">Skills usadas</h4>
+            <ul class="mcp-list">
+              <li><strong>Skill</strong> <code>pdf</code> ou <code>docx</code> (extração)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li>Lê o documento Lecom com a skill apropriada (<code>pdf</code>/<code>docx</code>).</li>
+            <li>Extrai contexto, regras de negócio, critérios de aceitação, stakeholders, anexos referenciados.</li>
+            <li>Aplica Knowledge Verification Chain — cita ADRs aplicáveis.</li>
+            <li>Gera <code>spec.md</code> no template aplicável (matriz Demand Type × Value Area).</li>
+            <li>Vincula ao work item via <code>rastreio.lecom_id</code> no frontmatter.</li>
+          </ol>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title guardrails">Guardrails ativos</h4>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Documento Lecom pode ter PII — anonimizar antes de incluir em spec</div>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Marcar <code>[REVISAO]</code> em interpretações não explícitas no Lecom</div>
+        </div>
+      </article>
+
+      <!-- ============== /spec-from-baseline-plsql (alt) ============== -->
+      <article class="prompt-card required" id="spec-from-baseline-plsql">
+        <header>
+          <h3>/spec-from-baseline-plsql <span class="tag req">Entry · PL/SQL</span></h3>
+          <p class="purpose">
+            Variante de entry point para refatoração PL/SQL: gera <code>spec.md</code> tipo
+            <strong>Improvement+Tunning</strong> a partir de baseline reverso já produzido.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + path CVS PRODUCAO</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM verifica RE cacheada</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">(se ausente) /baseline-reverse-engineering</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM gera spec Improvement+Tunning</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL mede tempo_pre_melhoria_seg</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Caminho do arquivo PL/SQL no checkout CVS tag PRODUCAO</li>
+              <li>ID do work item ADO destino</li>
+              <li>Cenário de medição base (Ficha de Tunning)</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title tools">Dependência</h4>
+            <p style="font-size:12.5px;color:var(--text-muted);">
+              Requer RE cacheada em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/</code>. Se ausente/stale,
+              dispara antes <a href="#baseline-re"><code>/baseline-reverse-engineering</code></a>.
+            </p>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li><strong>Verifica guardrail</strong> — confirma origem CVS tag PRODUCAO.</li>
+            <li><strong>Verifica RE cacheada</strong> — se tag bate na PRODUCAO atual, usa como baseline (<code>[REF]</code>); senão dispara <code>/baseline-reverse-engineering</code>.</li>
+            <li><strong>Identifica</strong> regras de negócio, gargalos de performance, pontos <code>[MIGRACAO]</code>.</li>
+            <li><strong>Aplica Knowledge Verification Chain</strong> (cita ADR-22 Padrão Repositório, ADR-74 DDD).</li>
+            <li><strong>Gera spec</strong> usando template <code>spec-improvement-tunning</code>.</li>
+            <li><strong>Preenche Ficha de Tunning</strong> com <code>tempo_pre_melhoria_seg</code> medido no cenário indicado.</li>
+          </ol>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title guardrails">Guardrails ativos</h4>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> NUNCA acessar banco produtivo — sempre checkout CVS tag PRODUCAO</div>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Comportamento funcional NÃO pode mudar (vira outro Demand Type se mudar)</div>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimizar dados em comentários ou massa de teste</div>
+        </div>
+      </article>
+
+      <!-- ============== /spec-validator ============== -->
+      <article class="prompt-card validator" id="spec-validator">
+        <header>
+          <h3>/spec-validator <span class="tag val">Gate · Loop</span></h3>
+          <p class="purpose">
+            Roda a spec contra um <strong>checklist completo</strong> e devolve uma tabela de issues com severidade
+            e instrução de correção. Repete-se em loop até score = 100% antes de avançar para
+            <code>/spec-publish-snapshot</code>.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo (loop):</span>
+          <span class="actor user">TL invoca</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM avalia 4 grupos de critérios</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor gate">GATE — TL corrige issues</span>
+          <span class="arrow-mini">↻</span>
+          <span class="actor user">TL re-invoca até score 100%</span>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">4 grupos de validação executados</h4>
+          <ol class="steps-list">
+            <li><strong>Frontmatter YAML</strong> — <code>spec_id</code> (formato <code>SPEC-YYYY-&lt;area&gt;-NNNN</code>), <code>work_item_id</code>, <code>work_item_type</code>, <code>work_item_url</code>, <code>demand_type</code> + <code>value_area</code> (combinação válida), <code>area_solicitante</code>, <code>stack_principal</code>, <code>risco_regulatorio</code>, <code>autor</code>, <code>papel_autor</code>, <code>revisores</code> (se risco médio/alto), <code>estado_spec</code> ∈ {draft, in-refinement, approved, active, resolved, closed}, <code>versao_spec</code>, <code>ultima_atualizacao</code>. Para PL/SQL: <code>rastreio.baseline_cvs_tag = PRODUCAO</code>.</li>
+            <li><strong>Conteúdo</strong> — Problem Statement (2–3 sentenças); Goals mensuráveis; Out of Scope explicitado; Glossário ancorado em <code>[REF: ADR-21]</code>; Regras (Gatilho/Comportamento/Resultado/Fonte); User Stories com prioridade P1/P2/P3; Acceptance Criteria em <strong>WHEN/THEN/SHALL</strong>; IDs de Requirement Traceability (<code>FEAT-NN</code>); Edge Cases; Plano de validação com mapeamento para Test Cases ADO; Anexos e rastreio de fontes.</li>
+            <li><strong>Marcadores regulatórios</strong> — <code>[ANS]</code> em toda regra regulatória + norma específica citada (Lei 9.656/98 art. X, RN ##### art. Y); <code>[ADR-AUSENTE]</code> em decisões sem ADR formal aplicável.</li>
+            <li><strong>Knowledge Verification Chain</strong> + <strong>guardrails</strong> — seção "Pesquisa realizada" presente, cada item com step alcançado e fonte; sem PII de beneficiário; sem referência a banco produtivo (apenas CVS PRODUCAO ou ADO Repos main).</li>
+          </ol>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title output">Output devolvido ao TL</h4>
+          <details class="show-snippet">
+            <summary>Ver template de saída</summary>
+<pre><code># Validacao da spec
+
+## Resumo
+[OK / ATENCAO / X]
+
+## Issues encontradas
+| # | Severidade | Issue | Como consertar |
+|---|---|---|---|
+| 1 | | | |
+
+## Score
+[X/N criterios atendidos]</code></pre>
+          </details>
+        </div>
+      </article>
+
+      <!-- ============== /spec-publish-snapshot ============== -->
+      <article class="prompt-card" id="spec-publish">
+        <header>
+          <h3>/spec-publish-snapshot <span class="tag" style="background:#cffafe;color:#155e75;">Publica · ADO</span></h3>
+          <p class="purpose">
+            Após spec atingir <code>Approved</code>: gera snapshot consolidado (spec + design + tasks + context),
+            faz upload como attachment no work item ADO via MCP, atualiza campos customizados, posta comentário com
+            hash SHA-256 e link Git. Idempotente por hash.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL aprova WI + merge PR</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL invoca prompt</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM verifica pré-condições</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM consolida + SHA-256</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">MCP ADO upload + update + comment</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Pré-requisitos verificáveis (aborta se faltar)</h4>
+            <ul class="input-list">
+              <li><code>.vscode/mcp.json</code> com server <code>ado</code> e domínios <code>core</code>, <code>work-items</code>, <code>repositories</code></li>
+              <li>Work item em estado <code>Approved</code></li>
+              <li><code>spec.md</code> aprovada por PR e merged em <code>main</code> do ADO Repos</li>
+              <li>Frontmatter com <code>work_item_id</code> válido</li>
+              <li>Anonimização verificada — sem PII</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title mcp">MCPs invocados</h4>
+            <ul class="mcp-list">
+              <li><code>wit_get_work_item</code> (verificar estado)</li>
+              <li>Tool MCP de upload de attachment</li>
+              <li><code>wit_update_work_item</code> (relação <code>AttachedFile</code> + campos customizados)</li>
+              <li><code>wit_add_comment</code> (comentário com hash)</li>
+            </ul>
+            <div class="pill-row">
+              <span class="pill ado">@azure-devops/mcp</span>
+              <span class="pill">SHA-256</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li>Lê frontmatter de <code>spec.md</code> → extrai <code>work_item_id</code>.</li>
+            <li>Verifica via MCP que o work item está em <code>Approved</code>.</li>
+            <li>Lê arquivos da feature: <code>spec.md</code> (sempre), <code>design.md</code>, <code>tasks.md</code>, <code>context.md</code> (se existirem).</li>
+            <li>Gera snapshot consolidado em arquivo único <code>WI-&lt;id&gt;-spec-v&lt;N&gt;.md</code>.</li>
+            <li>Verifica via MCP se já existe attachment com mesmo nome — se existe, incrementa <code>N</code> e regenera (idempotência).</li>
+            <li>Faz upload do arquivo via tool MCP de attachment.</li>
+            <li>Chama <code>wit_update_work_item</code> com relação <code>AttachedFile</code> apontando ao anexo.</li>
+            <li>Atualiza campos customizados: <code>Spec Path</code> = caminho Git; <code>Spec Version Atual</code> = <code>vN</code>.</li>
+            <li>Posta comentário no work item com nome do anexo, path Git + commit hash, versão, hash SHA-256, autor, data.</li>
+            <li>Reporta ao TL link do anexo + confirmação.</li>
+          </ol>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title guardrails">Guardrails + tratamento de erros</h4>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> MCP do ADO autorizado para metadados — <strong>não</strong> para banco produtivo</div>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Conteúdo deve estar anonimizado; <code>[REVISAO]</code> em campo de PII → ABORTAR</div>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Idempotência — re-execução na mesma versão NÃO duplica anexo (verifica hash)</div>
+          <p style="font-size:12.5px;color:var(--text-muted);margin:10px 0 0;">
+            Falha de auth → re-autenticar Entra ID/PAT · Falha de rede → retry 3× backoff · Anexo grande → comprimir/dividir · Permissão insuficiente → contactar plataforma ADO.
+          </p>
+        </div>
+      </article>
+
+      <!-- ============== /design-from-spec ============== -->
+      <article class="prompt-card" id="design-from-spec">
+        <header>
+          <h3>/design-from-spec <span class="tag opt">Auto-skip · Pequeno/Médio</span></h3>
+          <p class="purpose">
+            Gera <code>design.md</code> a partir de <code>spec.md</code> aprovada. Aplica Code Reuse Analysis para
+            identificar código reutilizável e marca pontos <code>[MIGRACAO]</code> em refatorações PL/SQL.
+            <strong>Auto-skip</strong> em escopo Pequeno/Médio (ver <a href="#auto-sizing">Auto-Sizing</a>) —
+            nesse caso, <code>/tasks-from-design</code> lê direto a <code>spec.md</code>.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + confirma spec Approved</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM lê spec + context + codebase</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM gera design.md</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL revisa antes de Tasks</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Path do <code>spec.md</code> (estado <code>Approved</code>)</li>
+              <li>Confirmação explícita do TL</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title tools">Insumos lidos</h4>
+            <ul class="file-list">
+              <li><code>spec.md</code></li>
+              <li><code>context.md</code> <em>(decisões locked, se existir)</em></li>
+              <li><code>.specs/codebase/*</code> <em>(reúso de código)</em></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li>Lê <code>spec.md</code> completa.</li>
+            <li>Lê <code>context.md</code> se existir — decisões locked são invioláveis.</li>
+            <li><strong>Code Reuse Analysis</strong> — identifica módulos/classes/packages existentes reutilizáveis.</li>
+            <li>Aplica Knowledge Verification Chain.</li>
+            <li>Cita ADRs aplicáveis via <code>[REF: ADR-XX]</code>.</li>
+            <li>Para refatoração PL/SQL: identifica <code>[MIGRACAO]</code> points (DDD, Repository pattern).</li>
+            <li>Gera <code>design.md</code> usando template.</li>
+            <li>Confirma com TL: "Revisar antes de ir para Tasks?"</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivos materializados</h4>
+            <ul class="file-list">
+              <li class="created"><code>.specs/features/WI-&lt;id&gt;-&lt;slug&gt;/design.md</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails ativos</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> ADR aplicável ausente → <code>[ADR-AUSENTE]</code> + bloquear até ADR proposta</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Decisões locked em <code>context.md</code> são invioláveis</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> PL/SQL: nunca consultar banco produtivo — sempre tag PRODUCAO</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== /tasks-from-design ============== -->
+      <article class="prompt-card" id="tasks-from-design">
+        <header>
+          <h3>/tasks-from-design <span class="tag impl">Sync ADO</span></h3>
+          <p class="purpose">
+            Gera <code>tasks.md</code> com decomposição atômica + grafo de dependências + paralelismo, e
+            <strong>cria 1 work item Task no Azure DevOps por item</strong> via MCP, vinculando ao <code>wi_pai</code>
+            (User Story / Feature). Hard gate antes da implementação (ADR-010).
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM decompõe + 3 checks</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor gate">GATE — TL aprova explicitamente</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">MCP create_work_item × N (Tasks ADO)</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM grava IDs em tasks.md (Synced)</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Path do <code>design.md</code> (ou <code>spec.md</code> se design auto-skip)</li>
+              <li>Aprovação explícita do TL</li>
+              <li><code>TESTING.md</code> em <code>.specs/codebase/</code> ou indicação de testes</li>
+              <li>Frontmatter da spec com <code>wi_pai</code>, <code>ado_project</code>, <code>ado_area_path</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title mcp">MCPs invocados</h4>
+            <ul class="mcp-list">
+              <li><code>mcp_azure-devops_create_work_item</code> <em>(1× por task)</em></li>
+            </ul>
+            <div class="pill-row">
+              <span class="pill ado">@azure-devops/mcp</span>
+              <span class="pill">type=Task</span>
+              <span class="pill">parent=wi_pai</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li>Lê <code>design.md</code> (ou <code>spec.md</code>) completo.</li>
+            <li>Lê <code>TESTING.md</code> — Test Coverage Matrix + Parallelism Assessment.</li>
+            <li>Decompõe em tasks atômicas (1 task = 1 deliverable).</li>
+            <li>Constrói grafo de dependências.</li>
+            <li>Marca tasks paralelas com <code>[P]</code> respeitando paralelismo de testes.</li>
+            <li>Para cada task, define: <strong>Done when</strong>, <strong>Tests</strong>, <strong>Gate</strong>, <strong>Commit</strong> (Conventional Commits + prefix <code>WI-&lt;ado_task_id&gt;</code> a ser preenchido depois).</li>
+            <li><strong>Roda 3 checks pré-aprovação</strong>:
+              <ul class="substeps">
+                <li>Granularity Check (atomicidade)</li>
+                <li>Diagram-Definition Cross-Check (alinhamento com design)</li>
+                <li>Test Co-location Validation (hard gate)</li>
+              </ul>
+            </li>
+            <li>Apresenta tabelas de validação ao TL e <strong>aguarda aprovação explícita</strong>.</li>
+            <li>Confirma metadados de sync ADO com TL: <code>wi_pai</code>, <code>ado_project</code>, <code>ado_area_path</code> — se ausentes, <strong>pára e pergunta</strong>.</li>
+            <li><strong>Para cada task aprovada</strong>: chama <code>mcp_azure-devops_create_work_item</code> com:
+              <ul class="substeps">
+                <li><code>type</code>: <code>Task</code></li>
+                <li><code>title</code>: <code>T&lt;n&gt; - &lt;título&gt;</code></li>
+                <li><code>parent</code>: <code>wi_pai</code></li>
+                <li><code>description</code>: link ao <code>tasks.md</code> + bloco Done when</li>
+                <li><code>area_path</code> / <code>iteration_path</code>: herdados da spec</li>
+              </ul>
+              Recebe ID retornado, grava em <code>ADO Task ID</code> de cada task no <code>tasks.md</code> e atualiza placeholder <code>WI-&lt;ADO Task ID&gt;</code> no campo <code>Commit:</code>.
+            </li>
+            <li>Reporta tabela final <code>T&lt;n&gt; ↔ ADO Task #&lt;id&gt;</code> e atualiza <code>Status: Synced</code> em <code>tasks.md</code>.</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Artefatos produzidos</h4>
+            <ul class="file-list">
+              <li class="created"><code>.specs/features/WI-&lt;id&gt;-&lt;slug&gt;/tasks.md</code> <em>(Status=Synced)</em></li>
+              <li class="created"><strong>N work items Task no ADO</strong>, vinculados ao <code>wi_pai</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails (hard gates)</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Sem <code>wi_pai</code> válido → <strong>bloquear</strong> sync (não criar Tasks órfãs)</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> NÃO prosseguir para Execute sem todos os <code>ADO Task ID</code> preenchidos</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Test Co-location é hard gate — falhas DEVEM ser corrigidas</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Conventional Commits + <code>WI-&lt;TaskID&gt;</code> em todo commit (ADR-005, ADR-010)</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> PL/SQL: cabeçalho do procedure cita <code>WI-####</code> + <code>SPEC-####</code></div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> MCP indisponível: TL cria Tasks manualmente e preenche IDs antes de Execute</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===================== ARTEFATOS ===================== -->
+    <section id="artefatos">
+      <h2>Artefatos produzidos por feature</h2>
+<pre><code>.specs/features/WI-XXXX-&lt;slug&gt;/
+  spec.md          ← /spec-from-workitem + /spec-validator
+  design.md        ← /design-from-spec
+  tasks.md         ← /tasks-from-design  (Status = Synced após criar Tasks ADO)
+  context.md       ← decisões locked (opcional, gerado ao longo do ciclo)
+
+WI-XXXX-spec-vN.md ← snapshot consolidado (/spec-publish-snapshot, anexado ao ADO)</code></pre>
+    </section>
+
+    <!-- ===================== COMMITS ===================== -->
+    <section id="commits">
+      <h2>Convenções de commit por fase</h2>
+      <table>
+        <thead>
+          <tr><th style="width:140px;">Fase</th><th>Exemplo de commit</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Scaffold</strong></td><td><code>WI-XXXX: chore(spec-driven): scaffold inicial v0.2 (ADR-012)</code></td></tr>
+          <tr><td><strong>Baseline RE</strong></td><td><code>WI-XXXX: docs(re): baseline PKG_X.proc rev-PROD-2026-05-08</code></td></tr>
+          <tr><td><strong>Spec</strong></td><td><code>WI-1234: docs(spec): spec inicial WI-1234-cotacao-pme</code></td></tr>
+          <tr><td><strong>Design</strong></td><td><code>WI-1234: docs(design): design WI-1234-cotacao-pme</code></td></tr>
+          <tr><td><strong>Tasks</strong></td><td><code>WI-1234: docs(tasks): tasks WI-1234-cotacao-pme (Synced)</code></td></tr>
+          <tr><td><strong>Implementação</strong></td><td><code>WI-5678: feat(cotacao): cálculo de prêmio PME</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '14px',
+      primaryColor: '#1e6fb8',
+      primaryTextColor: '#ffffff',
+      primaryBorderColor: '#0f4c81',
+      lineColor: '#64748b',
+      secondaryColor: '#00a99d',
+      tertiaryColor: '#f4f7fb',
+      mainBkg: '#1e6fb8'
+    },
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 50,
+      rankSpacing: 60,
+      htmlLabels: true
+    }
+  });
+</script>
+
+</body>
+</html>
