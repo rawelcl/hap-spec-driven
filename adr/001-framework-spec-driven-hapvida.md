@@ -49,7 +49,7 @@ TLC Spec-Driven (Tech Lead's Club, https://github.com/tech-leads-club, CC-BY-4.0
 
 ## Implementacao
 
-- v0.2 publicada em https://github.com/rawelcl/hapvida-spec-driven
+- v0.2 publicada em https://github.com/rawelcl/hap-spec-driven
 - Onda 1: piloto Comercial com ~30 TLs
 - Onda 2: escala para 30+ squads apos validacao da v0.3 (ajustes pos-piloto)
 - Governance pos-piloto: forum/guild de TLs para evolucao

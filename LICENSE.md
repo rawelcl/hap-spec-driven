@@ -14,7 +14,7 @@ Este projeto **Framework Spec-Driven Hapvida** e uma adaptacao corporativa de
 ## Adaptacao Hapvida
 
 - Adaptacao corporativa: Framework Spec-Driven Hapvida v0.2
-- Repositorio: https://github.com/rawelcl/hapvida-spec-driven
+- Repositorio: https://github.com/rawelcl/hap-spec-driven
 - Adaptacoes detalhadas em `CHANGELOG.md`
 - Licenca da adaptacao: CC-BY-4.0 (mesma licenca da obra original)
 

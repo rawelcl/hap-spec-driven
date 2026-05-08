@@ -48,7 +48,7 @@ Apontar para SKILL.md do framework no repositorio do squad. Exemplo minimo:
 Este projeto usa o Framework Spec-Driven Hapvida v0.2.
 
 Quando criar specs, designs, tasks ou implementar codigo, siga as instrucoes em
-[SKILL.md do framework](https://github.com/rawelcl/hapvida-spec-driven/blob/main/SKILL.md).
+[SKILL.md do framework](https://github.com/rawelcl/hap-spec-driven/blob/main/SKILL.md).
 
 Stack do squad: [PL/SQL | Java | .NET | mista]
 Area de atuacao: [Comercial | Autorizacao | etc]

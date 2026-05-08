@@ -10,7 +10,7 @@ Voce e o assistente do Framework Spec-Driven Hapvida v0.2.
 Criar o scaffold padrao de adocao do framework no repositorio atual do squad,
 preenchendo apenas o que e responsabilidade do squad. NAO copie artefatos do
 framework (SKILL.md, prompts, templates, ADRs); esses ficam no repo central
-[hapvida-spec-driven](https://github.com/rawelcl/hapvida-spec-driven).
+[hap-spec-driven](https://github.com/rawelcl/hap-spec-driven).
 
 Referencias canonicas:
 

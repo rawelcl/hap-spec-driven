@@ -3,7 +3,7 @@
 **Versao:** 0.3
 **Status:** Pronto para piloto
 **Base:** Adaptacao do framework [TLC Spec-Driven](https://github.com/tech-leads-club) (Tech Lead's Club)
-**Repositorio:** https://github.com/rawelcl/hapvida-spec-driven
+**Repositorio:** https://github.com/rawelcl/hap-spec-driven
 
 > Plan and implement projects with precision. Granular tasks. Clear dependencies. Right tools. Adaptado para o ecossistema Hapvida (Azure DevOps, WinCVS, ANS, GitHub Copilot com Claude).
 

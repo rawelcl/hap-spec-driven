@@ -29,6 +29,12 @@ Thumbs.db
 # Rascunhos de spec ainda nao aprovados
 /.specs/draft/
 
+# Copia de prompts para .github/prompts/ (path default do VS Code Chat).
+# Os canonicos ficam em /prompts/. Esta pasta e gerada localmente para
+# habilitar autocomplete de slash-commands no Copilot Chat.
+/.github/prompts/
+
+
 # Credenciais - NUNCA commitar
 .env
 .env.local

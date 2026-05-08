@@ -55,7 +55,7 @@
   .\init-spec-project.ps1 -SquadName "Comercial" -Stack PLSQL -AreaAtuacao "Comercial - venda de planos" -Brownfield
 
 .EXAMPLE
-  iwr https://raw.githubusercontent.com/rawelcl/hapvida-spec-driven/main/scripts/init-spec-project.ps1 -OutFile init.ps1
+  iwr https://raw.githubusercontent.com/rawelcl/hap-spec-driven/main/scripts/init-spec-project.ps1 -OutFile init.ps1
   .\init.ps1 -SquadName "Autorizacao" -Stack Java
 #>
 
