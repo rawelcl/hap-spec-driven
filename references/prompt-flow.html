@@ -1254,7 +1254,7 @@ flowchart TB
                 <span class="actor mcp">CVS PRODUCAO</span>
               </div>
               <span class="label">Saída (PL/SQL apenas)</span>
-              .specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/reversa-&lt;NOME&gt;.md
+              .specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/reversa-&lt;NOME&gt;.md
             </div>
           </div>
         </div>
@@ -1520,7 +1520,7 @@ flowchart TB
           <h3>/baseline-reverse-engineering <span class="tag req">Obrigatório PL/SQL</span></h3>
           <p class="purpose">
             Produz o <strong>artefato canônico de engenharia reversa</strong> de uma rotina PL/SQL Oracle, persistido
-            como baseline cacheado em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/</code> (ADR-011).
+            como baseline cacheado em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/</code> (ADR-011).
             Elimina releitura do código bruto em specs futuras.
           </p>
         </header>
@@ -1580,7 +1580,7 @@ flowchart TB
               </ul>
             </li>
             <li><strong>Resolve tag CVS PRODUCAO</strong> e grava no frontmatter do artefato (<code>baseline_cvs_tag</code>).</li>
-            <li><strong>Gera artefato</strong> a partir de <code>templates/reverse-engineering-template.md</code> em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/reversa-&lt;NOME&gt;.md</code>.</li>
+            <li><strong>Gera artefato</strong> a partir de <code>templates/reverse-engineering-template.md</code> em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/reversa-&lt;NOME&gt;.md</code>.</li>
             <li><strong>Atualiza índice</strong> <code>README-rotina.md</code> da rotina e os catálogos de conhecimento.</li>
             <li><strong>Apresenta Painel de Decisão</strong> (seção 11 do artefato) ao TL com lista de <code>[ATENCAO]</code> / <code>[BLOQUEADO]</code> / <code>[ANS]</code> para validação com PO/DBA.</li>
           </ol>
@@ -1590,7 +1590,7 @@ flowchart TB
           <div class="card-block">
             <h4 class="block-title artifacts">Arquivos criados/atualizados</h4>
             <ul class="file-list">
-              <li class="created"><code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/reversa-&lt;NOME&gt;.md</code></li>
+              <li class="created"><code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/reversa-&lt;NOME&gt;.md</code></li>
               <li class="updated"><code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/README-rotina.md</code></li>
               <li class="updated"><code>.specs/codebase/knowledge-base/indice.md</code></li>
               <li class="updated"><code>.specs/codebase/knowledge-base/catalogo-conceitos-negocio.md</code></li>
@@ -1611,7 +1611,7 @@ flowchart TB
           <h4 class="block-title output">Handoff</h4>
           <p style="font-size:13.5px;">
             Após aprovação, a RE pode ser referenciada por specs Improvement+Tunning via
-            <code>[REF: .specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/]</code>.
+            <code>[REF: .specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/]</code>.
           </p>
         </div>
       </article>
@@ -1624,7 +1624,7 @@ flowchart TB
             Espelho Oracle Forms do <a href="#baseline-re"><code>/baseline-reverse-engineering</code></a>:
             orquestra o tool <a href="https://github.com/rawelcl/hap-spec-driven/tree/main/tools/forms-extractor"><code>tools/forms-extractor</code></a>
             (pipeline 2 etapas) + skill <code>engenharia-reversa-forms</code> e produz artefato canônico em
-            <code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/</code>.
+            <code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/</code>.
           </p>
         </header>
 
@@ -1684,8 +1684,8 @@ flowchart TB
             <li><strong>Cria estrutura</strong> de diretórios:
               <ul class="substeps">
                 <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/README-modulo.md</code></li>
-                <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/raw/</code></li>
-                <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/parsed/</code></li>
+                <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/raw/</code></li>
+                <li><code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/parsed/</code></li>
               </ul>
             </li>
             <li><strong>Etapa 1 — Conversão binário → XML</strong> via <code>Convert-FmbToXml.ps1</code>. Saída: <code>&lt;MODULO&gt;.xml</code> em <code>raw/</code>.</li>
@@ -1725,7 +1725,7 @@ flowchart TB
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> LLM <strong>não</strong> lê XML bruto — apenas os 12 relatórios</div>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> PL/SQL embutido segue regras de <code>engenharia-reversa-sigo</code></div>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimização de PII de beneficiário pessoa física (CPF, nome, matrícula, dados de saúde) em hard-coded values e massa</div>
-            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Cada <code>rev-NNN-&lt;TAG&gt;</code> é imutável</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Cada pasta <code>v&lt;VERSAO_CVS&gt;-rev-NNN</code> é imutável</div>
           </div>
         </div>
 
@@ -1742,7 +1742,7 @@ flowchart TB
           <h4 class="block-title output">Handoff</h4>
           <p style="font-size:13.5px;">
             Após aprovação no Painel, a RE pode ser referenciada por specs de modernização via
-            <code>[REF: .specs/reverse-engineering/forms/&lt;MODULO&gt;/rev-NNN-&lt;TAG&gt;/]</code>.
+            <code>[REF: .specs/reverse-engineering/forms/&lt;MODULO&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/]</code>.
           </p>
         </div>
       </article>
@@ -1908,7 +1908,7 @@ flowchart TB
           <div class="card-block">
             <h4 class="block-title tools">Dependência</h4>
             <p style="font-size:12.5px;color:var(--text-muted);">
-              Requer RE cacheada em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/rev-NNN-&lt;TAG&gt;/</code>. Se ausente/stale,
+              Requer RE cacheada em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/</code>. Se ausente/stale,
               dispara antes <a href="#baseline-re"><code>/baseline-reverse-engineering</code></a>.
             </p>
           </div>

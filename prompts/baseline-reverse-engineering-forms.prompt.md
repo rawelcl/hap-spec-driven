@@ -8,7 +8,7 @@ Voce e o assistente do Framework Spec-Driven Hapvida v0.4.
 # Tarefa
 
 Produzir o **artefato canonico de engenharia reversa** de um modulo Oracle Forms (`.fmb`),
-persistido em `.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/` para servir de baseline
+persistido em `.specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/` para servir de baseline
 cacheado em futuras specs de modernizacao (ver
 [ADR-011](../adr/011-engenharia-reversa-como-baseline.md)).
 
@@ -48,14 +48,14 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
 
 2. **Resolver tag CVS PRODUCAO** do `.fmb` e gravar no frontmatter do artefato
 
-3. **Calcular NNN** - sequencial zero-padded da revisao (listar `rev-*` em
+3. **Calcular NNN** - sequencial zero-padded da analise (listar pastas `v*-rev-*` em
    `.specs/reverse-engineering/forms/<MODULO>/`, incrementar 1; primeira analise = `001`)
 
 4. **Criar estrutura de diretorios**:
    ```
    .specs/reverse-engineering/forms/<MODULO>/
      README-modulo.md                    (criar/atualizar)
-     rev-NNN-<TAG>/
+     v<VERSAO_CVS>-rev-NNN/
        raw/                              (Etapa 1 do tool)
        parsed/                           (Etapa 2 do tool)
    ```
@@ -64,15 +64,15 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
    ```powershell
    .specs/framework/tools/forms-extractor/Convert-FmbToXml.ps1 `
      -FmbPath <path-cvs-PRODUCAO>/<MODULO>.fmb `
-     -OutputDir .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/raw/
+     -OutputDir .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/raw/
    ```
    Saida esperada: `<MODULO>.xml` em `raw/`. Se falhar, abortar e reportar STDERR ao TL.
 
 6. **Etapa 2 - Extracao estruturada** (tool `tools/forms-extractor/`):
    ```powershell
    .specs/framework/tools/forms-extractor/Extract-FormsMetadata.ps1 `
-     -XmlPath .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/raw/<MODULO>.xml `
-     -OutputDir .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/parsed/ `
+     -XmlPath .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/raw/<MODULO>.xml `
+     -OutputDir .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/parsed/ `
      -Format md
    ```
    Saida esperada: 12 relatorios (`<MODULO>_RESUMO.txt`, `_WINDOWS.txt`, `_CANVAS.txt`,
@@ -96,7 +96,7 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
 9. **Gerar artefato** seguindo `templates/reverse-engineering-forms-template.md` (a criar
    na primeira execucao - estrutura espelha
    [`templates/reverse-engineering-template.md`](../templates/reverse-engineering-template.md))
-   em `.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/reversa-<MODULO>.md`
+   em `.specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/reversa-<MODULO>.md`
 
 10. **Atualizar indice** `.specs/reverse-engineering/forms/<MODULO>/README-modulo.md`
     listando todas as revisoes existentes com data + tag
@@ -120,8 +120,8 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
   (tabelas de negocio proibidas; somente dba_* autorizados via MCP - dba_source proibido como fonte de codigo)
 - `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de saude) em comentarios, hard-coded values, exemplos de massa
 - `[GUARDRAIL]` Toda regra que tocar area regulada (ANS, LGPD) exige `[ANS]` + citacao da norma
-- `[GUARDRAIL]` Cada revisao e **imutavel** - nunca editar `rev-NNN-<TAG>` existente; sempre
-  criar nova rev quando a tag CVS divergir
+- `[GUARDRAIL]` Cada pasta e **imutavel** - nunca editar `v<VERSAO_CVS>-rev-NNN` existente; sempre
+  criar nova quando a versao CVS divergir
 
 # Output
 
@@ -135,7 +135,7 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
 # Handoff
 
 Apos aprovacao no Painel de Decisao, a RE pode ser referenciada por specs de modernizacao
-via `[REF: .specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/]` - elimina necessidade
+via `[REF: .specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/]` - elimina necessidade
 de releitura do `.fmb` ou do XML bruto na fase Specify.
 
 # Tratamento de erros

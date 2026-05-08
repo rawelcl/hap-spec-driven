@@ -138,7 +138,7 @@ git push
    (que vive em `.specs/framework/prompts/baseline-reverse-engineering.prompt.md`)
 2. Informe a rotina-alvo (ex.: `PKG_COTACAO.calcular_premio`)
 3. O Copilot usa a skill `engenharia-reversa-sigo` (MCP Oracle so para `dba_*` read-only)
-4. Resultado em `.specs/reverse-engineering/plsql/<rotina>/rev-NNN-<TAG>/` (NNN sequencial). Para Forms: `.specs/reverse-engineering/forms/<modulo>/rev-NNN-<TAG>/`
+4. Resultado em `.specs/reverse-engineering/plsql/<rotina>/v<VERSAO_CVS>-rev-NNN/` (versao CVS + sequencial). Para Forms: `.specs/reverse-engineering/forms/<modulo>/v<VERSAO_CVS>-rev-NNN/`
 5. Commit:
    ```powershell
    git add .specs/reverse-engineering

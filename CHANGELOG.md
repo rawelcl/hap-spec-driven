@@ -7,6 +7,23 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.5.2] - 2026-05-08
+
+### Mudado
+
+- **Novo padrao de pasta para revisoes de engenharia reversa**: `v<VERSAO_CVS>-rev-NNN`
+  (antes: `rev-NNN-<TAG_CVS>`). A versao do objeto no WinCVS vem primeiro, seguida do
+  numero sequencial da analise. Exemplo: `PRC_CALCULAR_CARENCIA/v1.23-rev-001/`.
+  Arquivos atualizados:
+  - `skills/engenharia-reversa-sigo/SKILL.md`
+  - `SKILL.md` (raiz)
+  - `adr/011-engenharia-reversa-como-baseline.md`
+  - `prompts/baseline-reverse-engineering-forms.prompt.md`
+  - `references/prompt-flow.md`, `references/prompt-flow.html`
+  - `INDEX.md`, `TUTORIAL-NEW-PROJECT.md`
+
+---
+
 ## [0.5.1] - 2026-05-08
 
 ### Corrigido / Endurecido

@@ -27,27 +27,29 @@ A camada de RE vive em estrutura **segregada por tipo de objeto** com revisoes n
   plsql/                             # procedures, functions, packages, triggers
     <NOME_OBJETO>/
       README-rotina.md               # indice de revisoes da rotina
-      rev-001-<TAG_CVS>/             # numeracao sequencial zero-padded
+      v1.23-rev-001/                 # versao CVS do objeto + sequencial da analise
         reversa-<NOME_OBJETO>.md     # artefato canonico
-      rev-002-<TAG_CVS>/             # nova rev quando tag PRODUCAO divergir
+      v1.24-rev-002/                 # nova versao CVS -> novo prefixo
         reversa-<NOME_OBJETO>.md
   forms/                             # modulos Oracle Forms (.fmb)
     <MODULO>/
       README-modulo.md
-      rev-001-<TAG_CVS>/
+      v1.23-rev-001/
         raw/<MODULO>.xml             # Forms2XML (Etapa 1 do tools/forms-extractor)
         parsed/<MODULO>_*.txt        # 12 relatorios (Etapa 2)
         reversa-<MODULO>.md
 ```
 
-**Convencao da revisao:** `rev-NNN-<TAG_CVS>` onde `NNN` e numero sequencial zero-padded
-(`001`, `002`, ...). A skill calcula `NNN` listando `rev-*` existentes do objeto e somando 1.
-Cada revisao e **imutavel** - nunca editar; sempre criar nova rev quando a tag CVS divergir.
+**Convencao da pasta:** `v<VERSAO_CVS>-rev-NNN` onde `VERSAO_CVS` e a revisao numerica do
+objeto na tag PRODUCAO do CVS (ex: `1.23`) e `NNN` e o numero sequencial zero-padded da analise
+feita sobre aquela versao (`001`, `002`, ...). A skill calcula `NNN` listando `v*-rev-*`
+existentes do objeto e somando 1. Cada pasta e **imutavel** - nunca editar; criar nova quando
+a versao CVS divergir ou uma nova analise for necessaria.
 
 A `Knowledge Verification Chain` Step 1 e atualizada para priorizar a RE cacheada antes de ler o
-codigo cru no CVS. RE sera usada quando a tag CVS gravada em `rev-NNN-<TAG_CVS>` (mais recente)
+codigo cru no CVS. RE sera usada quando a versao CVS gravada no prefixo `v<VERSAO_CVS>-rev-NNN` (mais recente)
 bate com a tag PRODUCAO atual; caso contrario, a RE e marcada `[REVISAO]` e refresh e disparado
-gerando `rev-(NNN+1)`.
+gerando nova pasta com versao CVS atualizada.
 
 ## Justificativa
 
@@ -87,7 +89,7 @@ e o gatilho.
 
 - Squads passam a investir em RE inicial das rotinas core do escopo (uma vez por rotina)
 - Specs do tipo Improvement+Tunning citam
-  `[REF: .specs/reverse-engineering/plsql/<rotina>/rev-NNN-<TAG>/]` (ou `forms/<modulo>/...`)
+  `[REF: .specs/reverse-engineering/plsql/<rotina>/v<VERSAO_CVS>-rev-NNN/]` (ou `forms/<modulo>/...`)
   como evidencia de baseline
 - `references/brownfield-mapping.md` ganha referencia a esta camada
 - `.specs/codebase/knowledge-base/` no projeto consumidor materializa catalogos compartilhados

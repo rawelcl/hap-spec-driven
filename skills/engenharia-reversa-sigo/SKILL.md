@@ -1,6 +1,6 @@
 ---
 name: engenharia-reversa-sigo
-description: Engenharia reversa forense de objetos PL/SQL Oracle (procedure, function, package, trigger) - extracao de regras de negocio, mapeamento de dependencias, identificacao de smells e riscos ANS, com evidencia de codigo. Produz artefato canonico em .specs/reverse-engineering/plsql/<objeto>/rev-NNN-<TAG>/ (revisoes numeradas sequenciais) que serve de baseline cacheado para specs Improvement+Tunning. Use quando (1) primeira analise de rotina PL/SQL legada com >2k linhas, (2) refresh de RE stale (tag CVS divergente), (3) analise de impacto antes de refatoracao. Triggers - "engenharia reversa", "extrai as regras", "o que essa rotina faz", "analisa esse objeto", "RE da procedure X". NAO acessar dados de beneficiario; fonte de codigo exclusivamente WinCVS tag PRODUCAO; MCP Oracle restrito ao dicionario (dba_*) - nunca dba_source.
+description: Engenharia reversa forense de objetos PL/SQL Oracle (procedure, function, package, trigger) - extracao de regras de negocio, mapeamento de dependencias, identificacao de smells e riscos ANS, com evidencia de codigo. Produz artefato canonico em .specs/reverse-engineering/plsql/<objeto>/v<VERSAO_CVS>-rev-NNN/ (versao CVS do objeto + numero sequencial da analise) que serve de baseline cacheado para specs Improvement+Tunning. Use quando (1) primeira analise de rotina PL/SQL legada com >2k linhas, (2) refresh de RE stale (tag CVS divergente), (3) analise de impacto antes de refatoracao. Triggers - "engenharia reversa", "extrai as regras", "o que essa rotina faz", "analisa esse objeto", "RE da procedure X". NAO acessar dados de beneficiario; fonte de codigo exclusivamente WinCVS tag PRODUCAO; MCP Oracle restrito ao dicionario (dba_*) - nunca dba_source.
 license: CC-BY-4.0
 metadata:
   versao: 0.3
@@ -87,11 +87,14 @@ A skill espera encontrar (ou criar se ausente) os seguintes catalogos em
 [ ] Obter a revisao numerica do objeto no CVS (ex: 1.23):
       -> Consultar a revisao exata do arquivo do objeto na tag PRODUCAO
       -> Registrar no frontmatter (campo revisao_cvs, ex: "1.23")
+[ ] Determinar numero de analise (NNN) - sequencial zero-padded:
+      -> Listar pastas v*-rev-* existentes em .specs/reverse-engineering/plsql/[NOME]/
+      -> NNN = (maior NNN existente + 1), ou 001 se for a primeira
 [ ] Criar estrutura de pastas (segregada por tipo - ADR-011):
       .specs/reverse-engineering/plsql/[NOME]/README-rotina.md
-      .specs/reverse-engineering/plsql/[NOME]/v[REVISAO_CVS]/reversa-[NOME].md
+      .specs/reverse-engineering/plsql/[NOME]/v[REVISAO_CVS]-rev-NNN/reversa-[NOME].md
       (a partir de templates/reverse-engineering-template.md)
-      Exemplo: .specs/reverse-engineering/plsql/PRC_CALCULAR_CARENCIA/v1.23/reversa-PRC_CALCULAR_CARENCIA.md
+      Exemplo: .specs/reverse-engineering/plsql/PRC_CALCULAR_CARENCIA/v1.23-rev-001/reversa-PRC_CALCULAR_CARENCIA.md
 ```
 
 ### Passo 1 - Leitura estrutural
@@ -239,11 +242,11 @@ Artefato unico seguindo
 salvo em:
 
 ```
-.specs/reverse-engineering/plsql/<NOME_OBJETO>/v<REVISAO_CVS>/reversa-<NOME_OBJETO>.md
+.specs/reverse-engineering/plsql/<NOME_OBJETO>/v<VERSAO_CVS>-rev-NNN/reversa-<NOME_OBJETO>.md
 ```
 
-Onde `REVISAO_CVS` e a revisao numerica exata do objeto na tag PRODUCAO do CVS (ex: `1.23`). Ver
-`.specs/reverse-engineering/README.md` no projeto consumidor para a convencao completa.
+Onde `VERSAO_CVS` e a revisao numerica exata do objeto na tag PRODUCAO do CVS (ex: `1.23`) e
+`NNN` e o numero sequencial zero-padded da analise feita sobre aquela versao (`001`, `002`, ...).
 
 Atualizar tambem:
 
@@ -256,4 +259,4 @@ Atualizar tambem:
 
 Apos aprovacao do PO no Painel de Decisao (secao 11 do artefato), a RE pode ser usada como
 baseline em specs Improvement+Tunning via
-`[REF: .specs/reverse-engineering/plsql/<NOME>/v<REVISAO_CVS>/]`.
+`[REF: .specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/]`.

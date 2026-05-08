@@ -27,7 +27,7 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 
 ### "Vou refatorar uma procedure PL/SQL legada"
 
-1. **Antes da spec**: garantir RE cacheada em `.specs/reverse-engineering/plsql/<X>/rev-NNN-<TAG>/`. Se
+1. **Antes da spec**: garantir RE cacheada em `.specs/reverse-engineering/plsql/<X>/v<VERSAO_CVS>-rev-NNN/`. Se
    ausente ou stale, dispare [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) - ver
    [ADR-011](adr/011-engenharia-reversa-como-baseline.md) e [`references/reverse-engineering.md`](references/reverse-engineering.md)
 2. Use o template: [`templates/spec-improvement-tunning.md`](templates/spec-improvement-tunning.md)
@@ -42,7 +42,7 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 2. **Prompt**: [`prompts/baseline-reverse-engineering-forms.prompt.md`](prompts/baseline-reverse-engineering-forms.prompt.md) - orquestra tool + skill end-to-end
 3. Skill: [`skills/engenharia-reversa-forms`](skills/engenharia-reversa-forms/SKILL.md) (experimental v0.1)
 4. Tool de extracao: [`tools/forms-extractor/`](tools/forms-extractor/) - pipeline 2 etapas (.fmb -> .xml -> 12 relatorios .txt/.md). Ver [`tools/README.md`](tools/README.md)
-5. Saida: artefato canonico em `.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/reversa-<MODULO>.md`
+5. Saida: artefato canonico em `.specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/reversa-<MODULO>.md`
 
 ### "Vou desenhar arquitetura para uma feature"
 

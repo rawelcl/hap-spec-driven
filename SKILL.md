@@ -3,7 +3,7 @@ name: hapvida-spec-driven
 description: Framework de desenvolvimento spec-driven adaptado ao Hapvida (Azure DevOps, WinCVS, ANS, GitHub Copilot Claude). Quatro fases adaptativas - Specify, Design, Tasks, Execute. Auto-sizing por complexidade. Spec versionada em ADO Repos com snapshot anexado ao work item via MCP do Azure DevOps. Camada fina sobre Agile Hapvida 2.0. Use quando (1) iniciando uma feature/incident/defect/user story standalone que exige spec, (2) trabalhando codigo legado PL/SQL com refatoracao (Improvement+Tunning), (3) implementando feature regulatoria (touche ANS), (4) precisando rastrear decisoes (STATE.md), (5) pausando/retomando trabalho. Triggers - "specify feature", "design feature", "break into tasks", "implement task", "validate feature", "map codebase", "initialize project", "pause work", "resume work". NAO usar para Quick Mode (fora do escopo do piloto). NAO acessar banco produtivo via MCP - sempre WinCVS tag PRODUCAO.
 license: CC-BY-4.0
 metadata:
-  versao: 0.5.1
+  versao: 0.5.2
   base: TLC Spec-Driven (Tech Lead's Club)
   area_piloto: Comercial - venda de planos
 ---
@@ -82,14 +82,14 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 │   ├── plsql/             # procedures, functions, packages, triggers
 │   │   └── <NOME_OBJETO>/
 │   │       ├── README-rotina.md
-│   │       ├── rev-001-<TAG_CVS>/   # numeracao sequencial zero-padded
+│   │       ├── v1.23-rev-001/       # versao CVS do objeto + sequencial da analise
 │   │       │   └── reversa-<NOME_OBJETO>.md
-│   │       └── rev-002-<TAG_CVS>/   # nova rev quando tag PRODUCAO divergir
+│   │       └── v1.23-rev-002/       # nova analise sobre a mesma versao CVS
 │   │           └── reversa-<NOME_OBJETO>.md
 │   └── forms/             # modulos Oracle Forms (.fmb)
 │       └── <MODULO>/
 │           ├── README-modulo.md
-│           └── rev-001-<TAG_CVS>/
+│           └── v1.23-rev-001/
 │               ├── raw/<MODULO>.xml          # Forms2XML
 │               ├── parsed/<MODULO>_*.txt      # 12 relatorios (forms-extractor)
 │               └── reversa-<MODULO>.md
@@ -116,12 +116,12 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 ### Refatoracao PL/SQL (Improvement + Tunning)
 
 1. **Engenharia reversa do baseline** - se a rotina nao tem RE cacheada em
-   `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/` ou a tag esta stale, dispare o prompt
+   `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/` ou a tag esta stale, dispare o prompt
    [`baseline-reverse-engineering`](prompts/baseline-reverse-engineering.prompt.md) que invoca
    a skill [`engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md). Ver
    [ADR-011](adr/011-engenharia-reversa-como-baseline.md).
 2. `Specify` com template `spec-improvement-tunning` referenciando
-   `[REF: .specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/]` como baseline
+   `[REF: .specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/]` como baseline
 3. `Design` referencia ADRs aplicaveis da wiki Arquitetura-Referencia (ADR 22 Padrao Repositorio, ADR 74 DDD, etc)
 4. `Tasks` decomposto em refatoracoes atomicas
 5. `Execute` com convencao de cabecalho de procedure citando `WI-####` e `SPEC-####`
@@ -269,7 +269,7 @@ O framework agora **carrega skills internas** da pasta [`skills/`](skills/):
   regras ANS aplicadas
 - **[`engenharia-reversa-forms`](skills/engenharia-reversa-forms/SKILL.md)** - engenharia
   reversa forense de modulos Oracle Forms (.fmb -> XML), produzindo artefato em
-  `.specs/reverse-engineering/forms/<MODULO>/rev-NNN-<TAG>/` **(experimental v0.1)**
+  `.specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/` **(experimental v0.1)**
 
 Skills externas SIGO continuam compativeis quando disponiveis no ambiente do dev:
 

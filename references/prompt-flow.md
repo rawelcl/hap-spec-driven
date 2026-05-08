@@ -115,7 +115,7 @@ Passos executados:
 1. Le o objeto via **CVS tag PRODUCAO** - se nao localizado: `[BLOQUEADO]` (sem fallback)
 2. Invoca a skill `engenharia-reversa-sigo`
 3. Materializa pre-requisitos em `.specs/codebase/knowledge-base/` se ausentes
-4. Gera `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/reversa-<NOME>.md` (NNN sequencial)
+4. Gera `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/reversa-<NOME>.md`
 5. Atualiza `README-rotina.md` e catalogos
 
 Guardrails ativos:
