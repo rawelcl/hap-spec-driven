@@ -21,6 +21,11 @@ framework. O framework esta em https://github.com/rawelcl/hap-spec-driven.
 
 - `[GUARDRAIL]` NUNCA acessar dados de beneficiario via MCP Oracle - codigo PL/SQL sempre via
   WinCVS tag PRODUCAO
+- `[GUARDRAIL]` **Toda engenharia reversa de PL/SQL e Oracle Forms deve ser feita
+  prioritariamente com base na ultima versao com TAG DE PRODUCAO no WinCVS.** Nao iniciar RE
+  sem confirmar que o codigo em analise e a ultima tag de producao (`cvs log` ou tag explicita).
+  Nenhuma outra fonte (banco produtivo, sandbox, branch) substitui WinCVS tag PRODUCAO como
+  baseline de RE.
 - `[GUARDRAIL]` MCP Oracle autorizado APENAS para dicionario read-only (`dba_*`, sem `dba_source`)
   pelas skills `engenharia-reversa-sigo` e `plsql-oracle-expert` ([ADR-007](../adr/007-guardrail-acesso-producao.md) emendada por [ADR-011](../adr/011-engenharia-reversa-como-baseline.md))
   Fonte de codigo e **exclusivamente WinCVS tag PRODUCAO**.

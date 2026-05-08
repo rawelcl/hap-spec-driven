@@ -115,10 +115,16 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 
 ### Refatoracao PL/SQL (Improvement + Tunning)
 
-1. **Engenharia reversa do baseline** - se a rotina nao tem RE cacheada em
-   `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/` ou a tag esta stale, dispare o prompt
-   [`baseline-reverse-engineering`](prompts/baseline-reverse-engineering.prompt.md) que invoca
-   a skill [`engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md). Ver
+> `[GUARDRAIL]` Toda engenharia reversa de PL/SQL e Oracle Forms deve ser feita
+> **prioritariamente com base na ultima versao com TAG DE PRODUCAO no WinCVS**.
+> Confirme a tag antes de iniciar (`cvs log` ou tag explicita). Nenhuma outra fonte
+> (banco produtivo, sandbox, branch) substitui WinCVS tag PRODUCAO como baseline de RE.
+
+1. **Engenharia reversa do baseline** - obtenha o codigo-fonte via **WinCVS tag PRODUCAO**
+   (ultima versao em producao). Se a rotina nao tem RE cacheada em
+   `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/` ou a tag esta stale,
+   dispare o prompt [`baseline-reverse-engineering`](prompts/baseline-reverse-engineering.prompt.md)
+   que invoca a skill [`engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md). Ver
    [ADR-011](adr/011-engenharia-reversa-como-baseline.md).
 2. `Specify` com template `spec-improvement-tunning` referenciando
    `[REF: .specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/]` como baseline
@@ -200,8 +206,8 @@ Configuracao em [`references/mcp-integration.md`](references/mcp-integration.md)
 | Initialize project, setup project | [`references/project-init.md`](references/project-init.md) |
 | Create roadmap, plan features | [`references/roadmap.md`](references/roadmap.md) |
 | Map codebase, analyze existing code | [`references/brownfield-mapping.md`](references/brownfield-mapping.md) |
-| Reverse-engineer rotina PL/SQL, baseline RE, refresh RE | [`references/reverse-engineering.md`](references/reverse-engineering.md) / [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) |
-| Reverse-engineer modulo Oracle Forms (.fmb) | [`prompts/baseline-reverse-engineering-forms.prompt.md`](prompts/baseline-reverse-engineering-forms.prompt.md) (skill `engenharia-reversa-forms` + tool `forms-extractor`) |
+| Reverse-engineer rotina PL/SQL, baseline RE, refresh RE | [`references/reverse-engineering.md`](references/reverse-engineering.md) / [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) - **fonte obrigatoria: WinCVS tag PRODUCAO** |
+| Reverse-engineer modulo Oracle Forms (.fmb) | [`prompts/baseline-reverse-engineering-forms.prompt.md`](prompts/baseline-reverse-engineering-forms.prompt.md) (skill `engenharia-reversa-forms` + tool `forms-extractor`) - **fonte obrigatoria: WinCVS tag PRODUCAO** |
 | Document concerns, find tech debt | [`references/concerns.md`](references/concerns.md) |
 | Record decision, log blocker, add todo | [`references/state-management.md`](references/state-management.md) |
 | Pause work, end session, Resume work | [`references/session-handoff.md`](references/session-handoff.md) |
@@ -250,6 +256,7 @@ A spec a aplicar e determinada pela combinacao de campos do work item:
 - Tom conversacional em portugues, sem emojis em artefatos formais
 - Use tokens textuais: `[ATENCAO]`, `[BLOQUEADO]`, `[REVISAO]`, `[ANS]`, `[REF: id]`, `[ADR-AUSENTE]`, `[MIGRACAO]`, `[GUARDRAIL]`, `[OK]`, `[PREMISSA]`
 - `[GUARDRAIL]` Toda mudanca no Hapvida exige Task no Azure DevOps. `tasks.md` -> Tasks ADO sincronizadas 1:1 ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md))
+- `[GUARDRAIL]` Toda engenharia reversa de **PL/SQL e Oracle Forms** deve usar como baseline a **ultima versao com TAG DE PRODUCAO no WinCVS**. Confirme a tag antes de iniciar RE. Nenhuma outra fonte (banco, sandbox, branch) e aceita como substituta.
 - Encoding UTF-8 sem BOM em todo arquivo gerado
 - Para tarefas leves (validacao, handoff), comente uma vez que modelos mais rapidos cumprem bem - registre em STATE.md `Preferences` para nao repetir
 - Para tarefas pesadas (brownfield, refatoracao PL/SQL complexa), use Claude Opus
