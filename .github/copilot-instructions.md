@@ -1,11 +1,11 @@
 # Copilot Instructions
 
-Este projeto usa o **Framework Spec-Driven Hapvida v0.2**.
+Este projeto usa o **Framework Spec-Driven Hapvida v0.5.2**.
 
 ## Regra fundamental
 
 Quando criar specs, designs, tasks ou implementar codigo, siga as instrucoes em `SKILL.md` do
-framework. O framework esta em https://github.com/rawelcl/hap-spec-driven.
+framework. O framework esta em https://github.com/rawelcl/hap-spec-driven (v0.5.2).
 
 ## Comportamento esperado
 
