@@ -1060,9 +1060,9 @@
             <td>Para citar ADRs</td>
           </tr>
           <tr>
-            <td><strong>MCP Oracle</strong> — dicionário read-only (<code>dba_*</code>, <code>dba_source</code>)</td>
+            <td><strong>MCP Oracle</strong> — dicionário read-only (<code>dba_*</code>, sem <code>dba_source</code>)</td>
             <td><span class="cond">Condicional</span></td>
-            <td>Apenas skills <code>engenharia-reversa-sigo</code> e <code>plsql-oracle-expert</code> (ADR-007 emendada por ADR-011)</td>
+            <td>Apenas skills <code>engenharia-reversa-sigo</code> e <code>plsql-oracle-expert</code> (ADR-007 emendada por ADR-011). Fonte de código exclusivamente WinCVS tag PRODUCAO — <code>dba_source</code> proibido como fonte de código.</td>
           </tr>
           <tr>
             <td><strong>MCP Oracle</strong> — dados de negócio / DML / DDL</td>
@@ -1531,7 +1531,7 @@ flowchart TB
           <span class="arrow-mini">→</span>
           <span class="actor llm">LLM</span>
           <span class="arrow-mini">→</span>
-          <span class="actor mcp">CVS PRODUCAO ou MCP Oracle dba_source</span>
+          <span class="actor mcp">CVS PRODUCAO (exclusivo)</span>
           <span class="arrow-mini">→</span>
           <span class="actor mcp">skill engenharia-reversa-sigo</span>
           <span class="arrow-mini">→</span>
@@ -1554,8 +1554,8 @@ flowchart TB
             <h4 class="block-title mcp">Ferramentas / Skills</h4>
             <ul class="mcp-list">
               <li><strong>Skill</strong> <code>engenharia-reversa-sigo</code> (passos 0–6)</li>
-              <li><strong>CVS</strong> tag PRODUCAO (fonte primária)</li>
-              <li><strong>MCP Oracle</strong> <code>dba_source</code> (fallback com <code>[ATENCAO]</code>)</li>
+              <li><strong>CVS</strong> tag PRODUCAO (fonte exclusiva — sem fallback)</li>
+              <li><strong>MCP Oracle</strong> <code>dba_*</code> (somente dicionário)</li>
             </ul>
             <div class="pill-row">
               <span class="pill cvs">CVS PRODUCAO</span>
@@ -1602,8 +1602,8 @@ flowchart TB
           <div class="card-block">
             <h4 class="block-title guardrails">Guardrails ativos</h4>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Código PL/SQL sempre via CVS tag PRODUCAO</div>
-            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> MCP Oracle só para <code>dba_*</code> e <code>dba_source</code> — nunca tabelas de negócio</div>
-            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimização obrigatória de PII em comentários/massa</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> MCP Oracle só para <code>dba_*</code> — <code>dba_source</code> proibido como fonte de código; nunca tabelas de negócio</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimização obrigatória de PII de beneficiário pessoa física (CPF, nome, matrícula, dados de saúde) — dados comerciais não precisam ser anonimizados</div>
           </div>
         </div>
 
@@ -1724,7 +1724,7 @@ flowchart TB
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> <code>.fmb</code> sempre via CVS tag PRODUCAO</div>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> LLM <strong>não</strong> lê XML bruto — apenas os 12 relatórios</div>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> PL/SQL embutido segue regras de <code>engenharia-reversa-sigo</code></div>
-            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimização de PII em hard-coded values e massa</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimização de PII de beneficiário pessoa física (CPF, nome, matrícula, dados de saúde) em hard-coded values e massa</div>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Cada <code>rev-NNN-&lt;TAG&gt;</code> é imutável</div>
           </div>
         </div>
@@ -1811,7 +1811,7 @@ flowchart TB
           </div>
           <div class="card-block">
             <h4 class="block-title guardrails">Guardrails ativos</h4>
-            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimizar PII de beneficiário nos dados extraídos</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimizar PII de beneficiário pessoa física (CPF, nome, matrícula, dados de saúde) nos dados extraídos — dados comerciais (razão social, contrato, CNPJ) podem ser mantidos</div>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Marcar <code>[ANS]</code> em qualquer regra que toca regulação</div>
             <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Citar ADRs via <code>[REF: ADR-XX]</code>; sem ADR → <code>[ADR-AUSENTE]</code></div>
           </div>
@@ -1868,7 +1868,7 @@ flowchart TB
 
         <div class="card-block">
           <h4 class="block-title guardrails">Guardrails ativos</h4>
-          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Documento Lecom pode ter PII — anonimizar antes de incluir em spec</div>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Documento Lecom pode ter PII de beneficiário pessoa física — anonimizar CPF, nome, matrícula e dados de saúde antes de incluir em spec</div>
           <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Marcar <code>[REVISAO]</code> em interpretações não explícitas no Lecom</div>
         </div>
       </article>
@@ -1930,7 +1930,7 @@ flowchart TB
           <h4 class="block-title guardrails">Guardrails ativos</h4>
           <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> NUNCA acessar banco produtivo — sempre checkout CVS tag PRODUCAO</div>
           <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Comportamento funcional NÃO pode mudar (vira outro Demand Type se mudar)</div>
-          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimizar dados em comentários ou massa de teste</div>
+          <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimizar PII de beneficiário pessoa física (CPF, nome, matrícula, dados de saúde) em comentários ou massa de teste</div>
         </div>
       </article>
 

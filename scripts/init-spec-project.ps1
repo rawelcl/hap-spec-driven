@@ -201,7 +201,7 @@ Versao pinada do framework: ver ``.specs/.framework.json``.
 ## Guardrails inegociaveis
 
 - ``[GUARDRAIL]`` NUNCA acessar dados de beneficiario via MCP Oracle - codigo PL/SQL sempre via WinCVS tag PRODUCAO (ADR-007)
-- ``[GUARDRAIL]`` MCP Oracle autorizado APENAS para dicionario read-only (``dba_*``, ``dba_source``)
+- ``[GUARDRAIL]`` MCP Oracle autorizado APENAS para dicionario read-only (``dba_*``) - ``dba_source`` proibido como fonte de codigo - use WinCVS tag PRODUCAO
 - ``[GUARDRAIL]`` Anonimizacao obrigatoria de PII de beneficiario
 - ``[GUARDRAIL]`` Toque em area regulada exige ``[ANS]`` + citacao de norma
 - ``[GUARDRAIL]`` ADR aplicavel ausente -> ``[ADR-AUSENTE]`` + bloquear ate proposta de ADR

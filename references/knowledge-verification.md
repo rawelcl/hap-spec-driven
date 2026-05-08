@@ -11,7 +11,7 @@ Passo 1: Codebase
   │   ├── 1a. .specs/reverse-engineering/plsql|forms/<obj>/rev-NNN-<TAG>/  (RE cacheada - rev mais recente, se TAG bate com PRODUCAO)
   │   └── 1b. WinCVS tag PRODUCAO                              (se RE ausente/stale)
   │       [GUARDRAIL] NUNCA banco produtivo para dados de negocio
-  │       [GUARDRAIL] MCP Oracle so para dicionario (dba_*) e dba_source - ver ADR-007 emendada
+  │       [GUARDRAIL] MCP Oracle so para dicionario (dba_*) - dba_source proibido - ver ADR-007 emendada
   └── Java/.NET: ADO Repos branch main
 
 Passo 2: Project docs

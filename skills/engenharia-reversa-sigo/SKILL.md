@@ -1,6 +1,6 @@
 ---
 name: engenharia-reversa-sigo
-description: Engenharia reversa forense de objetos PL/SQL Oracle (procedure, function, package, trigger) - extracao de regras de negocio, mapeamento de dependencias, identificacao de smells e riscos ANS, com evidencia de codigo. Produz artefato canonico em .specs/reverse-engineering/plsql/<objeto>/rev-NNN-<TAG>/ (revisoes numeradas sequenciais) que serve de baseline cacheado para specs Improvement+Tunning. Use quando (1) primeira analise de rotina PL/SQL legada com >2k linhas, (2) refresh de RE stale (tag CVS divergente), (3) analise de impacto antes de refatoracao. Triggers - "engenharia reversa", "extrai as regras", "o que essa rotina faz", "analisa esse objeto", "RE da procedure X". NAO acessar dados de beneficiario; leitura via MCP Oracle restrita ao dicionario (dba_*) e dba_source.
+description: Engenharia reversa forense de objetos PL/SQL Oracle (procedure, function, package, trigger) - extracao de regras de negocio, mapeamento de dependencias, identificacao de smells e riscos ANS, com evidencia de codigo. Produz artefato canonico em .specs/reverse-engineering/plsql/<objeto>/rev-NNN-<TAG>/ (revisoes numeradas sequenciais) que serve de baseline cacheado para specs Improvement+Tunning. Use quando (1) primeira analise de rotina PL/SQL legada com >2k linhas, (2) refresh de RE stale (tag CVS divergente), (3) analise de impacto antes de refatoracao. Triggers - "engenharia reversa", "extrai as regras", "o que essa rotina faz", "analisa esse objeto", "RE da procedure X". NAO acessar dados de beneficiario; fonte de codigo exclusivamente WinCVS tag PRODUCAO; MCP Oracle restrito ao dicionario (dba_*) - nunca dba_source.
 license: CC-BY-4.0
 metadata:
   versao: 0.3
@@ -39,10 +39,12 @@ pode ser tao importante quanto o que esta. Sinalize toda ambiguidade com `[ATENC
 - `[GUARDRAIL]` Codigo PL/SQL e sempre lido da **WinCVS tag PRODUCAO**. Nunca de banco produtivo
   como fonte primaria.
 - `[GUARDRAIL]` MCP Oracle autorizado **somente para leitura do dicionario** (`dba_objects`,
-  `dba_dependencies`, `dba_constraints`, `dba_indexes`, `dba_scheduler_jobs`) e fallback de
-  codigo via `dba_source` quando o CVS nao localizar a versao - ver ADR-007 emendada por ADR-011.
-  **Proibido**: SELECT em tabelas de negocio, qualquer DML/DDL, leitura de dados de beneficiario.
-- `[GUARDRAIL]` Anonimizar qualquer dado em comentarios, snippets ou exemplos de massa.
+  `dba_dependencies`, `dba_constraints`, `dba_indexes`, `dba_scheduler_jobs`).
+  **Proibido**: `dba_source`, SELECT em tabelas de negocio, qualquer DML/DDL, leitura de dados de beneficiario.
+  Fonte de codigo e **exclusivamente o WinCVS tag PRODUCAO** - ver ADR-007 emendada por ADR-011.
+- `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de
+  saude) em comentarios, snippets ou exemplos de massa. Dados comerciais (razao social de
+  empresa, numero de contrato) NAO precisam ser anonimizados.
 - `[GUARDRAIL]` Toda regra que tocar area regulada exige token `[ANS]` + citacao da norma.
 
 ## Pre-requisitos no projeto consumidor
@@ -82,13 +84,14 @@ A skill espera encontrar (ou criar se ausente) os seguintes catalogos em
       -> Se nao: prosseguir
 [ ] Verificar status do objeto via MCP:
       SELECT status FROM dba_objects WHERE object_name = UPPER('[OBJETO]')
-[ ] Determinar numero de revisao (NNN) - sequencial zero-padded:
-      -> Listar revs existentes em .specs/reverse-engineering/plsql/[NOME]/
-      -> NNN = (maior rev existente + 1), ou 001 se for a primeira
+[ ] Obter a revisao numerica do objeto no CVS (ex: 1.23):
+      -> Consultar a revisao exata do arquivo do objeto na tag PRODUCAO
+      -> Registrar no frontmatter (campo revisao_cvs, ex: "1.23")
 [ ] Criar estrutura de pastas (segregada por tipo - ADR-011):
       .specs/reverse-engineering/plsql/[NOME]/README-rotina.md
-      .specs/reverse-engineering/plsql/[NOME]/rev-NNN-[TAG]/reversa-[NOME].md
+      .specs/reverse-engineering/plsql/[NOME]/v[REVISAO_CVS]/reversa-[NOME].md
       (a partir de templates/reverse-engineering-template.md)
+      Exemplo: .specs/reverse-engineering/plsql/PRC_CALCULAR_CARENCIA/v1.23/reversa-PRC_CALCULAR_CARENCIA.md
 ```
 
 ### Passo 1 - Leitura estrutural
@@ -121,8 +124,7 @@ analise recursiva antes de continuar a analise do objeto pai.
 
 1. Verificar em `catalogo-objetos-plsql.md` - se ja analisada: usar `[REF]` e nao reanalisar
 2. Verificar status via MCP (`dba_objects`)
-3. Recuperar codigo do CVS com tag PRODUCAO - se nao encontrado: `[BLOQUEADO]`
-4. Se CVS nao localizar: usar `dba_source` via MCP como fonte auxiliar - marcar `[ATENCAO]`
+3. Recuperar codigo do CVS com tag PRODUCAO - se nao encontrado: `[BLOQUEADO]` (sem fallback)
 5. Mapear contrato: entradas, saidas, tabelas que escreve
 6. Documentar como o retorno condiciona o fluxo do objeto pai
 7. Repetir para as sub-rotinas desta sub-rotina
@@ -237,10 +239,10 @@ Artefato unico seguindo
 salvo em:
 
 ```
-.specs/reverse-engineering/plsql/<NOME_OBJETO>/rev-NNN-<TAG_CVS>/reversa-<NOME_OBJETO>.md
+.specs/reverse-engineering/plsql/<NOME_OBJETO>/v<REVISAO_CVS>/reversa-<NOME_OBJETO>.md
 ```
 
-Onde `NNN` e numero sequencial zero-padded da revisao (`001`, `002`, ...). Ver
+Onde `REVISAO_CVS` e a revisao numerica exata do objeto na tag PRODUCAO do CVS (ex: `1.23`). Ver
 `.specs/reverse-engineering/README.md` no projeto consumidor para a convencao completa.
 
 Atualizar tambem:
@@ -254,4 +256,4 @@ Atualizar tambem:
 
 Apos aprovacao do PO no Painel de Decisao (secao 11 do artefato), a RE pode ser usada como
 baseline em specs Improvement+Tunning via
-`[REF: .specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/]`.
+`[REF: .specs/reverse-engineering/plsql/<NOME>/v<REVISAO_CVS>/]`.

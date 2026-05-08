@@ -34,7 +34,7 @@ Fazer engenharia reversa de uma procedure ou package PL/SQL e gerar spec.md tipo
 
 - `[GUARDRAIL]` NUNCA acessar banco produtivo - sempre checkout CVS tag PRODUCAO
 - `[GUARDRAIL]` Comportamento funcional NAO pode mudar (vira outro Demand Type se mudar)
-- `[GUARDRAIL]` Anonimizar qualquer dado em comentarios ou massa de teste
+- `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de saude) em comentarios ou massa de teste
 
 # Output
 

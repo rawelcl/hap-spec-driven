@@ -26,7 +26,10 @@ e code review:
 
 - `dba_objects`, `dba_dependencies`, `dba_constraints`, `dba_indexes`, `dba_scheduler_jobs`,
   `plan_table` - metadados sem PII
-- `dba_source` - codigo fonte de fallback quando o CVS nao localizar a versao (marcar `[ATENCAO]`)
+
+`[GUARDRAIL]` Fonte de codigo e **exclusivamente o WinCVS tag PRODUCAO**. O `dba_source` esta
+explicitamente proibido como fonte de codigo - se o CVS nao localizar a versao do objeto,
+parar com `[BLOQUEADO]` e notificar o usuario.
 
 `[GUARDRAIL]` Permanecem proibidos: SELECT em tabelas de negocio, qualquer DML/DDL, acesso a
 view/tabela com PII de beneficiario.

@@ -94,8 +94,8 @@ tag_cvs_no_artefato == tag_PRODUCAO_atual_no_CVS
 [`skills/engenharia-reversa-sigo/SKILL.md`](../skills/engenharia-reversa-sigo/SKILL.md) e o
 produtor canonico. Ela:
 
-- Le codigo do CVS tag PRODUCAO (fonte primaria)
-- Usa MCP Oracle para dicionario (dba_*) e fallback `dba_source`
+- Le codigo do CVS tag PRODUCAO (fonte unica - sem fallback para banco)
+- Usa MCP Oracle somente para dicionario (dba_*)
 - Faz rastreamento recursivo de sub-rotinas (max 5 niveis)
 - Extrai regras de negocio em linguagem de negocio com evidencia de codigo
 - Identifica smells, riscos ANS, dependentes
@@ -111,7 +111,7 @@ Passo 1: Codebase
       .specs/reverse-engineering/forms/<modulo>/rev-NNN-<TAG>/  <- idem para Forms
   1b. WinCVS tag PRODUCAO                                        <- se RE ausente ou stale
   [GUARDRAIL] NUNCA banco produtivo para dados de negocio
-  [GUARDRAIL] MCP Oracle so para dicionario (dba_*) e dba_source
+  [GUARDRAIL] MCP Oracle so para dicionario (dba_*) - dba_source proibido como fonte de codigo
 ```
 
 ## Relacao com brownfield-mapping

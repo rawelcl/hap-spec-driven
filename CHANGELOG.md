@@ -7,6 +7,38 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.5.1] - 2026-05-08
+
+### Corrigido / Endurecido
+
+- **`dba_source` explicitamente proibido como fonte de codigo** em todos os artefatos do
+  framework. Codigo PL/SQL deve vir exclusivamente do WinCVS tag PRODUCAO. Se o CVS nao
+  localizar a versao -> `[BLOQUEADO]` sem fallback. Arquivos atualizados:
+  - `.github/copilot-instructions.md`
+  - `SKILL.md` (raiz)
+  - `adr/007-guardrail-acesso-producao.md` (excecao de `dba_source` removida)
+  - `adr/011-engenharia-reversa-como-baseline.md`
+  - `skills/engenharia-reversa-sigo/SKILL.md`
+  - `prompts/baseline-reverse-engineering.prompt.md`
+  - `prompts/baseline-reverse-engineering-forms.prompt.md`
+  - `references/prompt-flow.md`, `references/prompt-flow.html`
+  - `references/reverse-engineering.md`, `references/knowledge-verification.md`
+  - `templates/reverse-engineering-template.md`, `scripts/init-spec-project.ps1`
+
+- **Escopo de anonimizacao precisado**: anonimizacao obrigatoria restrita a **PII de
+  beneficiario pessoa fisica** (CPF, nome, matricula, dados de saude). Dados comerciais
+  (razao social de empresa, numero de contrato, CNPJ de empresa contratante) **nao precisam
+  ser anonimizados**. Arquivos atualizados:
+  - `.github/copilot-instructions.md`
+  - `skills/engenharia-reversa-sigo/SKILL.md`
+  - `prompts/spec-from-workitem.prompt.md`
+  - `prompts/spec-from-lecom.prompt.md`
+  - `prompts/spec-from-baseline-plsql.prompt.md`
+  - `prompts/baseline-reverse-engineering-forms.prompt.md` (ambas as ocorrencias)
+  - `references/prompt-flow.html`
+
+---
+
 ## [0.5.0] - 2026-05-08
 
 ### Adicionado

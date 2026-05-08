@@ -29,8 +29,8 @@ no diretorio do objeto e incrementando 1.
 # Passos
 
 1. **Verificar guardrails**:
-   - `[GUARDRAIL]` Codigo lido do CVS tag PRODUCAO (fallback `dba_source` via MCP com `[ATENCAO]`)
-   - `[GUARDRAIL]` MCP Oracle so para dicionario (dba_*) e dba_source - nunca tabelas de negocio
+   - `[GUARDRAIL]` Codigo lido **exclusivamente do CVS tag PRODUCAO** - se nao localizado: `[BLOQUEADO]` (sem fallback)
+   - `[GUARDRAIL]` MCP Oracle so para dicionario (dba_*) - `dba_source` proibido como fonte de codigo
 2. **Invocar a skill** [`engenharia-reversa-sigo`](../skills/engenharia-reversa-sigo/SKILL.md)
    seguindo seu protocolo de execucao (Passos 0 a 6)
 3. **Materializar pre-requisitos** se ausentes em `.specs/codebase/knowledge-base/`:

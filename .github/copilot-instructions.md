@@ -21,10 +21,13 @@ framework. O framework esta em https://github.com/rawelcl/hap-spec-driven.
 
 - `[GUARDRAIL]` NUNCA acessar dados de beneficiario via MCP Oracle - codigo PL/SQL sempre via
   WinCVS tag PRODUCAO
-- `[GUARDRAIL]` MCP Oracle autorizado APENAS para dicionario read-only (`dba_*`, `dba_source`)
+- `[GUARDRAIL]` MCP Oracle autorizado APENAS para dicionario read-only (`dba_*`, sem `dba_source`)
   pelas skills `engenharia-reversa-sigo` e `plsql-oracle-expert` ([ADR-007](../adr/007-guardrail-acesso-producao.md) emendada por [ADR-011](../adr/011-engenharia-reversa-como-baseline.md))
+  Fonte de codigo e **exclusivamente WinCVS tag PRODUCAO**.
 - `[GUARDRAIL]` MCP do Azure DevOps autorizado para metadados (work items, attachments, repos)
-- `[GUARDRAIL]` Anonimizacao obrigatoria de PII de beneficiario
+- `[GUARDRAIL]` Anonimizacao obrigatoria de PII de beneficiario pessoa fisica (CPF, nome,
+  matricula, dados de saude). Dados comerciais (razao social, numero de contrato, CNPJ de empresa
+  contratante) nao precisam ser anonimizados.
 - `[GUARDRAIL]` Toque em area regulada exige `[ANS]` + citacao de norma
 - `[GUARDRAIL]` ADR aplicavel ausente -> `[ADR-AUSENTE]` + bloquear ate proposta de ADR
 

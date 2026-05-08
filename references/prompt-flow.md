@@ -112,14 +112,14 @@ Analisa o codigo fonte presente no workspace e gera os 7 documentos de mapeament
 **Obrigatorio antes de qualquer spec de refatoracao PL/SQL (ADR-011).**
 
 Passos executados:
-1. Le o objeto via CVS tag PRODUCAO (fallback: `dba_source` via MCP Oracle com `[ATENCAO]`)
+1. Le o objeto via **CVS tag PRODUCAO** - se nao localizado: `[BLOQUEADO]` (sem fallback)
 2. Invoca a skill `engenharia-reversa-sigo`
 3. Materializa pre-requisitos em `.specs/codebase/knowledge-base/` se ausentes
 4. Gera `.specs/reverse-engineering/plsql/<NOME>/rev-NNN-<TAG>/reversa-<NOME>.md` (NNN sequencial)
 5. Atualiza `README-rotina.md` e catalogos
 
 Guardrails ativos:
-- `[GUARDRAIL]` MCP Oracle apenas para `dba_*` e `dba_source` — nunca tabelas de negocio
+- `[GUARDRAIL]` MCP Oracle apenas para `dba_*` — `dba_source` proibido como fonte de codigo; nunca tabelas de negocio
 - `[GUARDRAIL]` Codigo PL/SQL sempre via tag PRODUCAO do CVS
 
 ---

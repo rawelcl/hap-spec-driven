@@ -3,10 +3,11 @@ objeto: <SCHEMA.NOME>
 tipo: <PROCEDURE | FUNCTION | PACKAGE | TRIGGER>
 schema: <schema>
 tag_cvs: <PRODUCAO-X.Y.Z>
+revisao_cvs: <X.YY>
 tag_resolvida_em: YYYY-MM-DD
 analista: <nome>
 status_producao: <VALID | INVALID>
-fonte_codigo: <C:\CVS\health_install\... | dba_source>
+fonte_codigo: <C:\CVS\health_install\...>
 linhas_aproximadas: <numero>
 sub_rotinas_referenciadas: []
 dependentes_referenciados: []

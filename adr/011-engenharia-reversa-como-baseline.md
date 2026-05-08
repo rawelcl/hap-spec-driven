@@ -80,7 +80,8 @@ e o gatilho.
 
 - `[REF: ADR-006]` Knowledge Verification Chain - Step 1 ganha sub-niveis (1a RE cacheada, 1b CVS)
 - `[REF: ADR-007]` Guardrail acesso producao - emendado por esta ADR para liberar leitura
-  read-only do **dicionario Oracle** (dba_*) e codigo via `dba_source` durante a RE
+  read-only do **dicionario Oracle** (dba_*) durante a RE. Fonte de codigo permanece
+  exclusivamente WinCVS tag PRODUCAO (dba_source proibido como fonte de codigo).
 
 ## Consequencias
 

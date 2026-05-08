@@ -44,7 +44,7 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
    - `[GUARDRAIL]` `.fmb` lido do checkout CVS tag PRODUCAO - nunca de copia local nao versionada
    - `[GUARDRAIL]` Pipeline `tools/forms-extractor/` exige Oracle Forms Developer instalado;
      se ausente, bloquear e instruir o TL
-   - `[GUARDRAIL]` Anonimizar PII em hard-coded values, comentarios, exemplos de massa
+   - `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de saude) em hard-coded values, comentarios, exemplos de massa
 
 2. **Resolver tag CVS PRODUCAO** do `.fmb` e gravar no frontmatter do artefato
 
@@ -117,8 +117,8 @@ Se algum pre-requisito falhar -> ABORTAR e indicar ao TL o que falta.
 - `[GUARDRAIL]` `.fmb` deve vir do **CVS tag PRODUCAO** - nunca copia local nao versionada
 - `[GUARDRAIL]` LLM **nao** le XML bruto - sempre via os 12 relatorios da Etapa 2
 - `[GUARDRAIL]` PL/SQL embutido em triggers segue regras de `engenharia-reversa-sigo`
-  (tabelas de negocio proibidas; dba_* e dba_source autorizados via MCP)
-- `[GUARDRAIL]` Anonimizar dados em comentarios, hard-coded values, exemplos de massa
+  (tabelas de negocio proibidas; somente dba_* autorizados via MCP - dba_source proibido como fonte de codigo)
+- `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de saude) em comentarios, hard-coded values, exemplos de massa
 - `[GUARDRAIL]` Toda regra que tocar area regulada (ANS, LGPD) exige `[ANS]` + citacao da norma
 - `[GUARDRAIL]` Cada revisao e **imutavel** - nunca editar `rev-NNN-<TAG>` existente; sempre
   criar nova rev quando a tag CVS divergir
