@@ -7,6 +7,66 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.5.0] - 2026-05-08
+
+### Adicionado
+
+- **Engenharia reversa de Oracle Forms** (experimental v0.1)
+  - Skill `engenharia-reversa-forms` em [skills/engenharia-reversa-forms/SKILL.md](skills/engenharia-reversa-forms/SKILL.md), espelhando o padrao de `engenharia-reversa-sigo`
+  - Prompt `/baseline-reverse-engineering-forms` em [prompts/baseline-reverse-engineering-forms.prompt.md](prompts/baseline-reverse-engineering-forms.prompt.md), orquestrando tool + skill end-to-end
+- **Pasta `tools/`** para utilitarios executaveis disparados por skills (distinto de `scripts/` que sao executados pelo TL)
+  - `tools/forms-extractor/Convert-FmbToXml.ps1` (.fmb -> .xml via Oracle Forms Developer 10g+ ou JARs)
+  - `tools/forms-extractor/Extract-FormsMetadata.ps1` (.xml -> 12 relatorios estruturados em txt/md)
+  - `tools/README.md` com convencao de naming + diferenciacao vs scripts/prompts/skills
+- **Apresentacao HTML interativa** [references/prompt-flow.html](references/prompt-flow.html) com:
+  - Diagrama Mermaid em swim-lanes mostrando atores (TL / LLM / MCP / GATE)
+  - Auto-Sizing como cards lado a lado (Pequeno / Medio / Grande / Complexo)
+  - Knowledge Verification Chain como passos visuais
+  - Matriz Demand Type x Value Area, tabela de obrigatoriedade de spec, autorizacao de MCPs
+  - Cards detalhados por comando (input, MCPs invocados, passos reais, artefatos, guardrails)
+
+### Mudado (BREAKING)
+
+- **`.specs/reverse-engineering/` segregada por tipo de objeto** (ADR-011 atualizada)
+  - Antes: `.specs/reverse-engineering/<NOME>/rev-<TAG>/`
+  - Depois: `.specs/reverse-engineering/<plsql|forms>/<NOME>/rev-NNN-<TAG>/`
+- **Revisoes numeradas sequencial zero-padded** (`rev-001-<TAG>`, `rev-002-<TAG>`, ...) - permite ordenacao alfabetica = cronologica e marca cada rev como imutavel
+- **Slug ADO corrigido** para `hapvidalabs` (default em `init-spec-project.ps1`, prompts, tutorial, README do mcp.json)
+
+### Atualizado
+
+- `scripts/init-spec-project.ps1` cria estrutura `.specs/reverse-engineering/{plsql,forms}/` com READMEs explicando convencao quando `-Brownfield -Stack PLSQL` ou `-Stack Mista`
+- ADR-011 expandida com nova estrutura segregada e regra de imutabilidade de revisao
+- Skills `engenharia-reversa-sigo` e `engenharia-reversa-forms` calculam `NNN` listando revs existentes
+- `references/reverse-engineering.md`, `references/brownfield-mapping.md`, `references/knowledge-verification.md` atualizados com nova estrutura
+
+### Pendente para v0.6
+
+- Template `templates/reverse-engineering-forms-template.md` (sera criado na primeira RE end-to-end)
+- ADR-013 formalizando Forms RE como subdominio paralelo a ADR-011
+- Catalogo `catalogo-objetos-forms.md` em `knowledge-base/` (atualmente Forms reusa `catalogo-objetos-plsql.md` para dependencias)
+
+---
+
+## [0.4.0] - 2026-05-08
+
+### Adicionado
+
+- **Framework consumido como git submodule** ([ADR-012](adr/012-framework-como-submodule.md))
+  - `init-spec-project.ps1` adiciona `.specs/framework/` como submodule pinado a tag/branch
+  - Manifesto `.specs/.framework.json` registra `repo`, `ref`, `commit`, `pinned_at`
+  - `scripts/update-framework.ps1` para bump controlado da versao do framework no projeto
+- `.vscode/settings.json` configura `chat.promptFilesLocations` apontando para `.specs/framework/prompts`
+- `.github/pull_request_template.md` com checklist Spec-Driven (KVC, ADR aplicavel, [ANS], anonimizacao, snapshot)
+- Tutorial [TUTORIAL-NEW-PROJECT.md](TUTORIAL-NEW-PROJECT.md) end-to-end para TL adotando o framework
+
+### Mudado
+
+- Squads nao copiam mais `SKILL.md`/prompts/templates do framework - vinculam via submodule
+- Atualizacoes do framework chegam via `scripts/update-framework.ps1` (PR proprio recomendado)
+
+---
+
 ## [0.3.0] - 2026-05-06
 
 ### Mudado (BREAKING)

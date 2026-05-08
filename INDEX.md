@@ -138,6 +138,6 @@ Leitura recomendada:
 
 ---
 
-**Versao:** 0.4.0 (piloto Onda 1 - area Comercial)
+**Versao:** 0.5.0 (piloto Onda 1 - area Comercial)
 **Repositorio:** https://github.com/rawelcl/hap-spec-driven
 **Base:** TLC Spec-Driven 2.0.0 (CC-BY-4.0)

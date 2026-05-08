@@ -1,6 +1,6 @@
 # Framework Spec-Driven Hapvida
 
-**Versao:** 0.3
+**Versao:** 0.5.0
 **Status:** Pronto para piloto
 **Base:** Adaptacao do framework [TLC Spec-Driven](https://github.com/tech-leads-club) (Tech Lead's Club)
 **Repositorio:** https://github.com/rawelcl/hap-spec-driven

@@ -1,6 +1,6 @@
 # Fluxo dos Prompts - Framework Spec-Driven Hapvida
 
-**Versao:** v0.2
+**Versao:** v0.5.0
 **Referencia:** SKILL.md, ADR-009, ADR-010, ADR-011, ADR-012
 
 ---

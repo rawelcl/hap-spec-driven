@@ -3,7 +3,7 @@ name: hapvida-spec-driven
 description: Framework de desenvolvimento spec-driven adaptado ao Hapvida (Azure DevOps, WinCVS, ANS, GitHub Copilot Claude). Quatro fases adaptativas - Specify, Design, Tasks, Execute. Auto-sizing por complexidade. Spec versionada em ADO Repos com snapshot anexado ao work item via MCP do Azure DevOps. Camada fina sobre Agile Hapvida 2.0. Use quando (1) iniciando uma feature/incident/defect/user story standalone que exige spec, (2) trabalhando codigo legado PL/SQL com refatoracao (Improvement+Tunning), (3) implementando feature regulatoria (touche ANS), (4) precisando rastrear decisoes (STATE.md), (5) pausando/retomando trabalho. Triggers - "specify feature", "design feature", "break into tasks", "implement task", "validate feature", "map codebase", "initialize project", "pause work", "resume work". NAO usar para Quick Mode (fora do escopo do piloto). NAO acessar banco produtivo via MCP - sempre WinCVS tag PRODUCAO.
 license: CC-BY-4.0
 metadata:
-  versao: 0.4
+  versao: 0.5
   base: TLC Spec-Driven (Tech Lead's Club)
   area_piloto: Comercial - venda de planos
 ---
