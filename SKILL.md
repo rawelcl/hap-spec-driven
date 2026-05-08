@@ -123,7 +123,7 @@ paralelo dedicado (PL/SQL CVS - repo em ADO Repos so para specs):
 1. **Engenharia reversa do baseline** - obtenha o codigo-fonte via **WinCVS tag PRODUCAO**
    (ultima versao em producao). Se a rotina nao tem RE cacheada em
    `.specs/reverse-engineering/plsql/<NOME>/v<VERSAO_CVS>-rev-NNN/` ou a tag esta stale,
-   dispare o prompt [`baseline-reverse-engineering`](prompts/baseline-reverse-engineering.prompt.md)
+   dispare o prompt [`/hap-sd-re-plsql`](prompts/hap-sd-re-plsql.prompt.md)
    que invoca a skill [`engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md). Ver
    [ADR-011](adr/011-engenharia-reversa-como-baseline.md).
 2. `Specify` com template `spec-improvement-tunning` referenciando
@@ -188,7 +188,7 @@ Passo 5: Flag uncertain
 | Uso | Autorizado? |
 |---|---|
 | Acessar/atualizar work items | Sim - via `@azure-devops/mcp` local |
-| **Criar Tasks ADO automaticamente a partir de `tasks.md`** | **Sim - obrigatorio** ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md)), via prompt `tasks-from-design` |
+| **Criar Tasks ADO automaticamente a partir de `tasks.md`** | **Sim - obrigatorio** ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md)), via prompt `/hap-sd-tasks` |
 | Anexar spec/design/tasks como snapshot ao work item | Sim - acionado pelo TL via prompt file |
 | Ler PRs, commits, builds | Sim |
 | Acessar wiki Arquitetura-Referencia | Sim |
@@ -206,8 +206,8 @@ Configuracao em [`references/mcp-integration.md`](references/mcp-integration.md)
 | Initialize project, setup project | [`references/project-init.md`](references/project-init.md) |
 | Create roadmap, plan features | [`references/roadmap.md`](references/roadmap.md) |
 | Map codebase, analyze existing code | [`references/brownfield-mapping.md`](references/brownfield-mapping.md) |
-| Reverse-engineer rotina PL/SQL, baseline RE, refresh RE | [`references/reverse-engineering.md`](references/reverse-engineering.md) / [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) - **fonte obrigatoria: WinCVS tag PRODUCAO** |
-| Reverse-engineer modulo Oracle Forms (.fmb) | [`prompts/baseline-reverse-engineering-forms.prompt.md`](prompts/baseline-reverse-engineering-forms.prompt.md) (skill `engenharia-reversa-forms` + tool `forms-extractor`) - **fonte obrigatoria: WinCVS tag PRODUCAO** |
+| Reverse-engineer rotina PL/SQL, baseline RE, refresh RE | [`references/reverse-engineering.md`](references/reverse-engineering.md) / [`/hap-sd-re-plsql`](prompts/hap-sd-re-plsql.prompt.md) - **fonte obrigatoria: WinCVS tag PRODUCAO** |
+| Reverse-engineer modulo Oracle Forms (.fmb) | [`/hap-sd-re-forms`](prompts/hap-sd-re-forms.prompt.md) (skill `engenharia-reversa-forms` + tool `forms-extractor`) - **fonte obrigatoria: WinCVS tag PRODUCAO** |
 | Document concerns, find tech debt | [`references/concerns.md`](references/concerns.md) |
 | Record decision, log blocker, add todo | [`references/state-management.md`](references/state-management.md) |
 | Pause work, end session, Resume work | [`references/session-handoff.md`](references/session-handoff.md) |
@@ -222,7 +222,7 @@ Configuracao em [`references/mcp-integration.md`](references/mcp-integration.md)
 | Break into tasks, create tasks | [`references/tasks.md`](references/tasks.md) |
 | Implement task, build, execute | [`references/implement.md`](references/implement.md) |
 | Validate, verify, UAT | [`references/validate.md`](references/validate.md) |
-| Publish snapshot to work item | [`prompts/spec-publish-snapshot.prompt.md`](prompts/spec-publish-snapshot.prompt.md) |
+| Publish snapshot to work item | [`/hap-sd-snapshot`](prompts/hap-sd-snapshot.prompt.md) |
 
 ## Tipos de spec por matriz Demand Type x Value Area
 

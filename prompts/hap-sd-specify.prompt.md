@@ -13,7 +13,7 @@ testaveis e rastreaveis, seguindo o fluxo adaptativo (auto-sizing por complexida
 # Input esperado
 
 - **Descricao da feature** (o que o TL quer construir)
-- **Work item ID** (se houver - alternativa: use `/spec-from-workitem`)
+- **Work item ID** (se houver - alternativa: use `/hap-sd-spec-wi`)
 - **Demand Type x Value Area** (determina template): Project/Improvement/Maintenance x Business/Tunning
 - **Criticidade** (para Incident/Defect)
 

@@ -33,7 +33,7 @@ Verificar. Commit. Repetir.
 - [ ] A task escolhida tem `ADO Task ID` preenchido
 - [ ] Dependencias da task estao satisfeitas (tasks anteriores concluidas)
 
-Se algum item falhar: PARE e rode `/tasks-from-design` antes de prosseguir.
+Se algum item falhar: PARE e rode `/hap-sd-tasks` antes de prosseguir.
 
 # Passos
 

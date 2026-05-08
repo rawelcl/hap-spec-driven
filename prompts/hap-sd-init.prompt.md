@@ -64,14 +64,14 @@ framework (SKILL.md, prompts, templates, ADRs); esses ficam no repo central
    - Crie esqueleto vazio de `.specs/codebase/` e `.specs/codebase/knowledge-base/`
    - Avise: "rode `Map codebase` para preencher os 7 docs"
    - Se Stack = PLSQL: crie `.specs/reverse-engineering/` e avise sobre
-     [`baseline-reverse-engineering`](baseline-reverse-engineering.prompt.md)
+     [`/hap-sd-re-plsql`](hap-sd-re-plsql.prompt.md)
      antes de specs de refatoracao ([ADR-011](../adr/011-engenharia-reversa-como-baseline.md))
 
 8. **Resumo final ao TL**
    - Liste arquivos criados
    - Proximos passos: revisar `copilot-instructions.md`, autenticar MCP do ADO,
      commit inicial `WI-XXXX: chore(spec-driven): scaffold inicial`,
-     primeira feature via prompt `spec-from-workitem`
+     primeira feature via prompt `/hap-sd-spec-wi`
 
 # Guardrails
 

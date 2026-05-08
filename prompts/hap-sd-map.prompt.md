@@ -52,7 +52,7 @@ Executar o brownfield mapping do codebase atual, produzindo os 7 documentos can√
    ```
 
    E criar o esqueleto de `.specs/reverse-engineering/README.md` com instrucao para
-   executar [`baseline-reverse-engineering`](baseline-reverse-engineering.prompt.md)
+   executar [`/hap-sd-re-plsql`](hap-sd-re-plsql.prompt.md)
    antes de qualquer spec de refatoracao ([ADR-011](../adr/011-engenharia-reversa-como-baseline.md)).
 
 5. **Marcar areas de incerteza** com `[REVISAO]` onde a analise automatica nao for conclusiva.
@@ -62,5 +62,5 @@ Executar o brownfield mapping do codebase atual, produzindo os 7 documentos can√
    - Liste os 7 arquivos criados e tamanho estimado de cada
    - Destaque os `[CONCERNS]` mais criticos encontrados
    - Proximos passos: validar com Arquiteto, iniciar specs de feature, ou executar
-     `baseline-reverse-engineering` para rotinas PL/SQL prioritarias
+     `/hap-sd-re-plsql` para rotinas PL/SQL prioritarias
    - Commit sugerido: `WI-XXXX: docs(codebase): brownfield mapping inicial`

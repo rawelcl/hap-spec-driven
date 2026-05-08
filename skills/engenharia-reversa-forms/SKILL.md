@@ -37,7 +37,7 @@ Sinalize toda ambiguidade com `[ATENCAO]`, `[BLOQUEADO]` ou `[REVISAO]`.
 
 ## Quando esta skill atua
 
-- TL dispara [`prompts/baseline-reverse-engineering-forms.prompt.md`](../../prompts/baseline-reverse-engineering-forms.prompt.md)
+- TL dispara [`/hap-sd-re-forms`](../../prompts/hap-sd-re-forms.prompt.md)
   (gatilho canonico - orquestra tool + skill end-to-end)
 - Usuario pede engenharia reversa de modulo Forms (`.fmb` ou XML correspondente) por linguagem natural
 - Usuario diz "analisa esse Forms", "extrai as regras desse modulo", "o que essa tela faz"
