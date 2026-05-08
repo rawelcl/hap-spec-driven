@@ -210,6 +210,8 @@ Configuracao em [`references/mcp-integration.md`](references/mcp-integration.md)
 | Reverse-engineer modulo Oracle Forms (.fmb) | [`/hap-sd-re-forms`](prompts/hap-sd-re-forms.prompt.md) (skill `engenharia-reversa-forms` + tool `forms-extractor`) - **fonte obrigatoria: WinCVS tag PRODUCAO** |
 | Document concerns, find tech debt | [`references/concerns.md`](references/concerns.md) |
 | Record decision, log blocker, add todo | [`references/state-management.md`](references/state-management.md) |
+| Create/update ADR | [`/hap-sd-decision`](prompts/hap-sd-decision.prompt.md) |
+| Create/update project roadmap | [`/hap-sd-roadmap`](prompts/hap-sd-roadmap.prompt.md) |
 | Pause work, end session, Resume work | [`references/session-handoff.md`](references/session-handoff.md) |
 
 ### Feature-level (auto-sized)

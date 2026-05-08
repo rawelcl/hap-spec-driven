@@ -75,7 +75,7 @@ gera `[REVISAO]` automatico.
 
 `engenharia-reversa-sigo` (em [`skills/engenharia-reversa-sigo/SKILL.md`](../skills/engenharia-reversa-sigo/SKILL.md))
 e o produtor canonico do artefato. O prompt
-[`prompts/baseline-reverse-engineering.prompt.md`](../prompts/baseline-reverse-engineering.prompt.md)
+[`prompts/hap-sd-re-plsql.prompt.md`](../prompts/hap-sd-re-plsql.prompt.md)
 e o gatilho.
 
 ## Relacao com outras ADRs

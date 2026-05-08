@@ -133,9 +133,9 @@ git push
 
 1. No Copilot Chat, abra o prompt:
    ```
-   /baseline-reverse-engineering
+   /hap-sd-re-plsql
    ```
-   (que vive em `.specs/framework/prompts/baseline-reverse-engineering.prompt.md`)
+   (que vive em `.specs/framework/prompts/hap-sd-re-plsql.prompt.md`)
 2. Informe a rotina-alvo (ex.: `PKG_COTACAO.calcular_premio`)
 3. O Copilot usa a skill `engenharia-reversa-sigo` (MCP Oracle so para `dba_*` read-only)
 4. Resultado em `.specs/reverse-engineering/plsql/<rotina>/v<VERSAO_CVS>-rev-NNN/` (versao CVS + sequencial). Para Forms: `.specs/reverse-engineering/forms/<modulo>/v<VERSAO_CVS>-rev-NNN/`

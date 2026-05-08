@@ -1,6 +1,6 @@
 # Arquitetura do Framework Spec-Driven Hapvida
 
-**Versao:** 0.2 (piloto Comercial)
+**Versao:** 0.5.2 (piloto Comercial)
 **Status:** Documento descritivo - reflete o estado atual do repositorio
 **Base:** TLC Spec-Driven 2.0 adaptado ao ecossistema Hapvida
 
@@ -47,8 +47,8 @@ flowchart TB
         KVC["Knowledge Verification Chain<br/>(5 passos)"]
         TEMPL["Templates<br/>(spec/design/tasks/ADR/context)"]
         REFS["References<br/>(17 docs de pratica)"]
-        PROMPTS["Prompts<br/>(7 arquivos .prompt.md)"]
-        ADR["ADRs do framework<br/>(9 decisoes)"]
+        PROMPTS["Prompts<br/>(18 arquivos hap-sd-*.prompt.md)"]
+        ADR["ADRs do framework<br/>(12 decisoes)"]
         GLOSS["Glossario<br/>(Comercial / ANS / Legado)"]
     end
 
@@ -248,9 +248,9 @@ flowchart LR
         ENTRY["SKILL.md<br/>(entry point)"]
         INSTR[".github/copilot-instructions.md"]
         REFS2["references/*<br/>(specify, design, tasks,<br/>implement, validate, KVC,<br/>brownfield, state, handoff,<br/>code-analysis, mcp, ...)"]
-        PROMPTS2["prompts/*.prompt.md<br/>(spec-from-workitem,<br/>spec-from-baseline-plsql,<br/>spec-from-lecom, design-from-spec,<br/>tasks-from-design, spec-validator,<br/>spec-publish-snapshot)"]
+        PROMPTS2["prompts/hap-sd-*.prompt.md<br/>(specify, spec-wi, spec-plsql, spec-lecom,<br/>design, tasks, validate, snapshot,<br/>re-plsql, re-forms, init, map,<br/>discuss, concerns, decision, roadmap,<br/>handoff, implement)"]
         TEMPL2["templates/*<br/>(6 specs por matriz<br/>+ design/tasks/ADR/context)"]
-        ADRS2["adr/*<br/>(9 decisoes do framework)"]
+        ADRS2["adr/*<br/>(12 decisoes do framework)"]
         GLOSS2["glossario/*<br/>(comercial / ANS / legado)"]
         SKILLS2["skills/*<br/>(engenharia-reversa-sigo,<br/>plsql-oracle-expert,<br/>engenharia-reversa-forms)"]
         TOOLS2["tools/*<br/>(parsers/extracoes invocados<br/>pelas skills)"]

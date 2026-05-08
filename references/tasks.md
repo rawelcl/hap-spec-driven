@@ -130,7 +130,7 @@ via MCP `@azure-devops/mcp`.
 - `tasks.md` com todos os 3 checks pre-aprovacao verdes.
 - MCP `@azure-devops/mcp` conectado.
 
-**Acao automatizada (ver [`prompts/tasks-from-design.prompt.md`](../prompts/tasks-from-design.prompt.md)):**
+**Acao automatizada (ver [`/hap-sd-tasks`](../prompts/hap-sd-tasks.prompt.md)):**
 
 Para cada task `T<n>`:
 

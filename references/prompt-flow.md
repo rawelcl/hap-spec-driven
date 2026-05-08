@@ -1,6 +1,6 @@
 # Fluxo dos Prompts - Framework Spec-Driven Hapvida
 
-**Versao:** v0.5.0
+**Versao:** v0.5.2
 **Referencia:** SKILL.md, ADR-009, ADR-010, ADR-011, ADR-012
 
 ---
@@ -17,14 +17,14 @@ fechamento da implementacao.
 
 ```mermaid
 flowchart LR
-    A["🔧 init.ps1\n/project-init"]
-    B["📁 /map-codebase\n(opcional)"]
-    C["🔍 /baseline-reverse-engineering\n(PL/SQL — obrigatório ADR-011)"]
-    D["📝 /spec-from-workitem\n← Work Item ADO"]
-    E{"/spec-validator\nOK?"}
-    F["📤 /spec-publish-snapshot\n→ anexo no ADO"]
-    G["🎨 /design-from-spec"]
-    H["✅ /tasks-from-design\n→ cria Tasks no ADO"]
+    A["🔧 init.ps1\n/hap-sd-init"]
+    B["📁 /hap-sd-map\n(opcional)"]
+    C["🔍 /hap-sd-re-plsql\n(PL/SQL — obrigatório ADR-011)"]
+    D["📝 /hap-sd-spec-wi\n← Work Item ADO"]
+    E{"/hap-sd-validate\nOK?"}
+    F["📤 /hap-sd-snapshot\n→ anexo no ADO"]
+    G["🎨 /hap-sd-design"]
+    H["✅ /hap-sd-tasks\n→ cria Tasks no ADO"]
     I["💻 Implementacao\ncommits WI-ID"]
 
     A --> B
@@ -43,20 +43,20 @@ flowchart LR
 ```
 [init.ps1]                    → .specs/project/  .vscode/  .github/  .gitmodules
       ↓
-[/map-codebase]               → .specs/codebase/STACK.md + 6 outros docs
+[/hap-sd-map]                 → .specs/codebase/STACK.md + 6 outros docs
       ↓ (opcional)
-[/baseline-reverse-engineering] → .specs/reverse-engineering/NOME/rev-TAG/reversa-NOME.md
+[/hap-sd-re-plsql]            → .specs/reverse-engineering/plsql/NOME/v<VER>-rev-NNN/reversa-NOME.md
       ↓ (PL/SQL apenas)
-[/spec-from-workitem]         ← Work Item ADO (ID)
+[/hap-sd-spec-wi]             ← Work Item ADO (ID)
                               → .specs/features/WI-XXXX/spec.md
       ↓
-[/spec-validator]             → checklist; repete até aprovacao
+[/hap-sd-validate]            → checklist; repete até aprovacao
       ↓
-[/spec-publish-snapshot]      → WI-XXXX-spec-vN.md anexado no ADO
+[/hap-sd-snapshot]            → WI-XXXX-spec-vN.md anexado no ADO
       ↓
-[/design-from-spec]           → .specs/features/WI-XXXX/design.md
+[/hap-sd-design]              → .specs/features/WI-XXXX/design.md
       ↓
-[/tasks-from-design]          → .specs/features/WI-XXXX/tasks.md
+[/hap-sd-tasks]               → .specs/features/WI-XXXX/tasks.md
                               → 1 Task ADO criada por item via MCP
       ↓
 [Implementacao]               → commits WI-TaskID: type(scope): desc
@@ -67,7 +67,7 @@ flowchart LR
 
 ## Descricao por prompt
 
-### `/project-init` + `init.ps1`
+### `/hap-sd-init` + `init.ps1`
 
 Cria a estrutura inicial do repositorio do squad:
 
@@ -88,7 +88,7 @@ Cria a estrutura inicial do repositorio do squad:
 
 ---
 
-### `/map-codebase`
+### `/hap-sd-map`
 
 Analisa o codigo fonte presente no workspace e gera os 7 documentos de mapeamento em
 `.specs/codebase/`:
@@ -107,7 +107,7 @@ Analisa o codigo fonte presente no workspace e gera os 7 documentos de mapeament
 
 ---
 
-### `/baseline-reverse-engineering`
+### `/hap-sd-re-plsql`
 
 **Obrigatorio antes de qualquer spec de refatoracao PL/SQL (ADR-011).**
 
@@ -124,7 +124,7 @@ Guardrails ativos:
 
 ---
 
-### `/spec-from-workitem`
+### `/hap-sd-spec-wi`
 
 Passos executados:
 1. Le o work item via MCP ADO (`wit_get_work_items_by_id`)
@@ -136,7 +136,7 @@ Passos executados:
 
 ---
 
-### `/spec-validator`
+### `/hap-sd-validate`
 
 Valida `spec.md` contra checklist completo:
 - Frontmatter YAML (spec_id, work_item_id, demand_type, value_area, estado_spec, etc.)
@@ -148,7 +148,7 @@ Retorna lista de itens com falha. Repeticao ate aprovacao total.
 
 ---
 
-### `/spec-publish-snapshot`
+### `/hap-sd-snapshot`
 
 Executado quando spec atinge estado `Approved`. Passos:
 1. Verifica pre-requisitos (work item = Approved, spec merged em main, sem PII)
@@ -158,7 +158,7 @@ Executado quando spec atinge estado `Approved`. Passos:
 
 ---
 
-### `/design-from-spec`
+### `/hap-sd-design`
 
 Passos executados:
 1. Le `spec.md` aprovada + `context.md` (decisoes locked)
@@ -170,7 +170,7 @@ Passos executados:
 
 ---
 
-### `/tasks-from-design`
+### `/hap-sd-tasks`
 
 Passos executados:
 1. Le `design.md` + `TESTING.md` (Test Coverage Matrix, Parallelism Assessment)
@@ -191,12 +191,12 @@ Guardrails ativos:
 
 ```
 .specs/features/WI-XXXX-<slug>/
-  spec.md          <- /spec-from-workitem + /spec-validator
-  design.md        <- /design-from-spec
-  tasks.md         <- /tasks-from-design  (Status = Synced apos criar Tasks ADO)
+  spec.md          <- /hap-sd-spec-wi + /hap-sd-validate
+  design.md        <- /hap-sd-design
+  tasks.md         <- /hap-sd-tasks  (Status = Synced apos criar Tasks ADO)
   context.md       <- decisoes locked (opcional, gerado ao longo do ciclo)
 
-WI-XXXX-spec-vN.md  <- snapshot consolidado (/spec-publish-snapshot, anexado ao ADO)
+WI-XXXX-spec-vN.md  <- snapshot consolidado (/hap-sd-snapshot, anexado ao ADO)
 ```
 
 ---

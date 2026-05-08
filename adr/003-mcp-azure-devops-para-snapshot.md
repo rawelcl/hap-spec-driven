@@ -53,7 +53,7 @@ via prompt file no GitHub Copilot Agent Mode.
 
 - Configuracao em `.vscode/mcp.json` do squad
 - Dominios habilitados: `core`, `work-items`, `repositories`, `wiki`
-- Prompt file: `prompts/spec-publish-snapshot.prompt.md`
+- Prompt file: `prompts/hap-sd-snapshot.prompt.md`
 - Documentacao: `references/mcp-integration.md`
 
 ## Guardrail

@@ -19,7 +19,7 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
   - `SKILL.md` (raiz)
   - `adr/011-engenharia-reversa-como-baseline.md`
   - `prompts/baseline-reverse-engineering-forms.prompt.md`
-  - `references/prompt-flow.md`, `references/prompt-flow.html`
+  - `references/prompt-flow.md`, `workspace/prompt-flow.html`
   - `INDEX.md`, `TUTORIAL-NEW-PROJECT.md`
 
 ---
@@ -38,7 +38,7 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
   - `skills/engenharia-reversa-sigo/SKILL.md`
   - `prompts/baseline-reverse-engineering.prompt.md`
   - `prompts/baseline-reverse-engineering-forms.prompt.md`
-  - `references/prompt-flow.md`, `references/prompt-flow.html`
+  - `references/prompt-flow.md`, `workspace/prompt-flow.html`
   - `references/reverse-engineering.md`, `references/knowledge-verification.md`
   - `templates/reverse-engineering-template.md`, `scripts/init-spec-project.ps1`
 
@@ -52,7 +52,7 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
   - `prompts/spec-from-lecom.prompt.md`
   - `prompts/spec-from-baseline-plsql.prompt.md`
   - `prompts/baseline-reverse-engineering-forms.prompt.md` (ambas as ocorrencias)
-  - `references/prompt-flow.html`
+  - `workspace/prompt-flow.html`
 
 ---
 
@@ -62,12 +62,12 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
 
 - **Engenharia reversa de Oracle Forms** (experimental v0.1)
   - Skill `engenharia-reversa-forms` em [skills/engenharia-reversa-forms/SKILL.md](skills/engenharia-reversa-forms/SKILL.md), espelhando o padrao de `engenharia-reversa-sigo`
-  - Prompt `/baseline-reverse-engineering-forms` em [prompts/baseline-reverse-engineering-forms.prompt.md](prompts/baseline-reverse-engineering-forms.prompt.md), orquestrando tool + skill end-to-end
+  - Prompt `/hap-sd-re-forms` em [prompts/hap-sd-re-forms.prompt.md](prompts/hap-sd-re-forms.prompt.md), orquestrando tool + skill end-to-end
 - **Pasta `tools/`** para utilitarios executaveis disparados por skills (distinto de `scripts/` que sao executados pelo TL)
   - `tools/forms-extractor/Convert-FmbToXml.ps1` (.fmb -> .xml via Oracle Forms Developer 10g+ ou JARs)
   - `tools/forms-extractor/Extract-FormsMetadata.ps1` (.xml -> 12 relatorios estruturados em txt/md)
   - `tools/README.md` com convencao de naming + diferenciacao vs scripts/prompts/skills
-- **Apresentacao HTML interativa** [references/prompt-flow.html](references/prompt-flow.html) com:
+- **Apresentacao HTML interativa** [workspace/prompt-flow.html](workspace/prompt-flow.html) com:
   - Diagrama Mermaid em swim-lanes mostrando atores (TL / LLM / MCP / GATE)
   - Auto-Sizing como cards lado a lado (Pequeno / Medio / Grande / Complexo)
   - Knowledge Verification Chain como passos visuais
@@ -107,7 +107,7 @@ Versionamento segue [Semantic Versioning 2.0.0](https://semver.org/lang/pt-BR/).
   - `scripts/update-framework.ps1` para bump controlado da versao do framework no projeto
 - `.vscode/settings.json` configura `chat.promptFilesLocations` apontando para `.specs/framework/prompts`
 - `.github/pull_request_template.md` com checklist Spec-Driven (KVC, ADR aplicavel, [ANS], anonimizacao, snapshot)
-- Tutorial [TUTORIAL-NEW-PROJECT.md](TUTORIAL-NEW-PROJECT.md) end-to-end para TL adotando o framework
+- Tutorial [TUTORIAL-NEW-PROJECT.md](workspace/TUTORIAL-NEW-PROJECT.md) end-to-end para TL adotando o framework
 
 ### Mudado
 

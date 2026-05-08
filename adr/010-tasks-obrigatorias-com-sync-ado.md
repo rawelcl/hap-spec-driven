@@ -99,7 +99,7 @@ e ambiguo sem essa decisao - nao fica claro se o ID e da User Story ou da Task f
   com Azure DevOps".
 - [templates/tasks-template.md](../templates/tasks-template.md) - campo `ADO Task ID` e bloco
   `wi_pai`.
-- [prompts/tasks-from-design.prompt.md](../prompts/tasks-from-design.prompt.md) - passos de
+- [prompts/hap-sd-tasks.prompt.md](../prompts/hap-sd-tasks.prompt.md) - passos de
   criacao automatica via MCP.
 - [references/implement.md](../references/implement.md) - verificacao de IDs ADO antes de
   iniciar Execute.

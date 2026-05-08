@@ -108,5 +108,5 @@ Quando aprovada, um snapshot PDF e anexado ao WI via MCP Azure DevOps.
 ## Proximos passos
 
 1. Leia o [Guia Rapido](guia-rapido.md) para os comandos do dia a dia
-2. Siga o [TUTORIAL-NEW-PROJECT.md](../TUTORIAL-NEW-PROJECT.md) para iniciar seu repo
+2. Siga o [TUTORIAL-NEW-PROJECT.md](TUTORIAL-NEW-PROJECT.md) para iniciar seu repo
 3. Abra o `SKILL.md` no chat com `@workspace` para o agente ter contexto completo

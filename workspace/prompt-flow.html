@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -97,6 +97,17 @@
     margin-top: 18px;
     pointer-events: none;
     padding: 4px 10px;
+  }
+  .sidebar nav a .cmd-desc {
+    display: block;
+    font-size: 10.5px;
+    opacity: .5;
+    font-style: italic;
+    margin-top: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
   }
 
   main {
@@ -805,7 +816,7 @@
 <div class="layout">
   <aside class="sidebar">
     <div class="brand">Spec-Driven Hapvida</div>
-    <div class="version">v0.5.0 · 2026-05-08</div>
+    <div class="version">v0.5.2 · 2026-05-08</div>
 
     <nav>
       <a class="section-title">Conceitos</a>
@@ -822,21 +833,32 @@
       <a href="#pipeline">Entradas e saídas</a>
 
       <a class="section-title">Bootstrap</a>
-      <a href="#project-init">/project-init</a>
-      <a href="#map-codebase">/map-codebase</a>
-      <a href="#baseline-re">/baseline-reverse-engineering</a>
-      <a href="#baseline-re-forms">/baseline-reverse-engineering-forms</a>
+      <a href="#hap-sd-init">/hap-sd-init<span class="cmd-desc">scaffold .specs/ + subm&#xF3;dulo Git</span></a>
+      <a href="#hap-sd-map">/hap-sd-map<span class="cmd-desc">mapeia codebase brownfield</span></a>
+      <a href="#hap-sd-re-plsql">/hap-sd-re-plsql<span class="cmd-desc">engenharia reversa PL/SQL</span></a>
+      <a href="#hap-sd-re-forms">/hap-sd-re-forms<span class="cmd-desc">engenharia reversa Oracle Forms</span></a>
 
       <a class="section-title">Specify (entry points)</a>
-      <a href="#spec-from-workitem">/spec-from-workitem</a>
-      <a href="#spec-from-lecom">/spec-from-lecom</a>
-      <a href="#spec-from-baseline-plsql">/spec-from-baseline-plsql</a>
+      <a href="#hap-sd-specify">/hap-sd-specify<span class="cmd-desc">cria spec sem WI ADO</span></a>
+      <a href="#hap-sd-spec-wi">/hap-sd-spec-wi<span class="cmd-desc">spec a partir de WI ADO</span></a>
+      <a href="#hap-sd-spec-lecom">/hap-sd-spec-lecom<span class="cmd-desc">spec a partir de doc Lecom/BPM</span></a>
+      <a href="#hap-sd-spec-plsql">/hap-sd-spec-plsql<span class="cmd-desc">spec Improvement+Tunning PL/SQL</span></a>
+      <a href="#hap-sd-discuss">/hap-sd-discuss<span class="cmd-desc">resolve gray areas &rarr; context.md</span></a>
 
       <a class="section-title">Approve & Plan</a>
-      <a href="#spec-validator">/spec-validator</a>
-      <a href="#spec-publish">/spec-publish-snapshot</a>
-      <a href="#design-from-spec">/design-from-spec</a>
-      <a href="#tasks-from-design">/tasks-from-design</a>
+      <a href="#hap-sd-validate">/hap-sd-validate<span class="cmd-desc">valida spec (checklist gate)</span></a>
+      <a href="#hap-sd-snapshot">/hap-sd-snapshot<span class="cmd-desc">publica snapshot no WI ADO</span></a>
+      <a href="#hap-sd-design">/hap-sd-design<span class="cmd-desc">gera design.md (auto-skip P/M)</span></a>
+      <a href="#hap-sd-tasks">/hap-sd-tasks<span class="cmd-desc">decomp&otilde;e tasks + sync ADO</span></a>
+
+      <a class="section-title">Execute</a>
+      <a href="#hap-sd-implement">/hap-sd-implement<span class="cmd-desc">implementa 1 task &rarr; commit</span></a>
+
+      <a class="section-title">Utilitários</a>
+      <a href="#hap-sd-roadmap">/hap-sd-roadmap<span class="cmd-desc">cria/atualiza ROADMAP.md</span></a>
+      <a href="#hap-sd-concerns">/hap-sd-concerns<span class="cmd-desc">documenta tech debt e ADRs ausentes</span></a>
+      <a href="#hap-sd-decision">/hap-sd-decision<span class="cmd-desc">registra decis&atilde;o/blocker em STATE.md</span></a>
+      <a href="#hap-sd-handoff">/hap-sd-handoff<span class="cmd-desc">pausa/retoma sess&atilde;o de trabalho</span></a>
 
       <a class="section-title">Apêndices</a>
       <a href="#artefatos">Artefatos por feature</a>
@@ -848,7 +870,7 @@
     <header class="page-header">
       <h1>Fluxo dos Prompts — Framework Spec-Driven Hapvida</h1>
       <div class="meta">
-        <span class="badge">v0.5.0</span>
+        <span class="badge">v0.5.2</span>
         <span>Base: TLC Spec-Driven · Área piloto: Comercial — venda de planos</span>
         <span>Referência: <code>SKILL.md</code> · ADR-007 · ADR-009 · ADR-010 · ADR-011 · ADR-012</span>
       </div>
@@ -932,7 +954,7 @@
       </div>
 
       <blockquote>
-        <strong>Quick Mode (atalho TLC) NÃO está no escopo do piloto v0.4</strong> — ver
+        <strong>Quick Mode (atalho TLC) NÃO está no escopo do piloto</strong> — ver
         <code>ADR-008</code>.
       </blockquote>
     </section>
@@ -943,8 +965,8 @@
       <p>
         Antes de qualquer decisão técnica, design ou pesquisa, a LLM <strong>obrigatoriamente</strong>
         segue esta ordem (<code>references/knowledge-verification.md</code>). Aplicada em
-        <code>/spec-from-workitem</code>, <code>/design-from-spec</code> e
-        <code>/baseline-reverse-engineering</code>.
+        <code>/hap-sd-spec-wi</code>, <code>/hap-sd-design</code> e
+        <code>/hap-sd-re-plsql</code>.
       </p>
 
       <div class="kvc-steps">
@@ -985,7 +1007,7 @@
     <section id="matriz-spec">
       <h2>Matriz Demand Type × Value Area</h2>
       <p>
-        <code>/spec-from-workitem</code> determina o template a aplicar pela combinação dos campos
+        <code>/hap-sd-spec-wi</code> determina o template a aplicar pela combinação dos campos
         <code>Demand Type</code> e <code>Value Area</code> do work item ADO.
       </p>
       <table>
@@ -1042,12 +1064,12 @@
           <tr>
             <td><strong>Criar Tasks ADO</strong> a partir de <code>tasks.md</code></td>
             <td><span class="yes">Obrigatório</span></td>
-            <td>ADR-010 — via <code>/tasks-from-design</code></td>
+            <td>ADR-010 — via <code>/hap-sd-tasks</code></td>
           </tr>
           <tr>
             <td>Anexar snapshot de spec/design/tasks ao work item</td>
             <td><span class="yes">Sim</span></td>
-            <td>Acionado pelo TL via <code>/spec-publish-snapshot</code></td>
+            <td>Acionado pelo TL via <code>/hap-sd-snapshot</code></td>
           </tr>
           <tr>
             <td>Ler PRs, commits, builds</td>
@@ -1148,11 +1170,11 @@ flowchart TB
 
     subgraph BOOTSTRAP[" Bootstrap (uma vez por squad) "]
         direction TB
-        U0["TL roda<br/>scripts/init-spec-project.ps1<br/>OU /project-init"]:::user
+        U0["TL roda<br/>scripts/init-spec-project.ps1<br/>OU /hap-sd-init"]:::user
         A0["LLM scaffolda .specs/, .vscode/, .github/<br/>+ submódulo framework"]:::llm
-        B0["LLM analisa repo<br/>(/map-codebase)"]:::llm
-        C0["LLM + skill engenharia-reversa-sigo<br/>(/baseline-reverse-engineering)<br/>PL/SQL"]:::mcp
-        C1["LLM + skill engenharia-reversa-forms<br/>+ tools/forms-extractor<br/>(/baseline-reverse-engineering-forms)"]:::mcp
+        B0["LLM analisa repo<br/>(/hap-sd-map)"]:::llm
+        C0["LLM + skill engenharia-reversa-sigo<br/>(/hap-sd-re-plsql)<br/>PL/SQL"]:::mcp
+        C1["LLM + skill engenharia-reversa-forms<br/>+ tools/forms-extractor<br/>(/hap-sd-re-forms)"]:::mcp
         U0 --> A0
         A0 -. opcional .-> B0
         A0 -. PL/SQL .-> C0
@@ -1161,11 +1183,11 @@ flowchart TB
 
     subgraph SPEC[" Specify (1 por feature) "]
         direction TB
-        U1["TL invoca /spec-from-workitem<br/>(ou /spec-from-lecom, ou /spec-from-baseline-plsql)"]:::user
+        U1["TL invoca /hap-sd-spec-wi<br/>(ou /hap-sd-spec-lecom, ou /hap-sd-spec-plsql)"]:::user
         D1["LLM consulta MCP ADO<br/>wit_get_work_items_by_id"]:::mcp
         D2["LLM gera spec.md<br/>+ Knowledge Verification Chain"]:::llm
         U2["TL responde [REVISAO] e refina"]:::user
-        E["GATE /spec-validator<br/>checklist 100%?"]:::gate
+        E["GATE /hap-sd-validate<br/>checklist 100%?"]:::gate
         U1 --> D1 --> D2 --> U2 --> E
         E -- falhas --> D2
     end
@@ -1180,7 +1202,7 @@ flowchart TB
 
     subgraph PLAN[" Design + Tasks "]
         direction TB
-        G["LLM gera design.md<br/>(/design-from-spec)<br/><i>auto-skip se Pequeno/Médio</i>"]:::llm
+        G["LLM gera design.md<br/>(/hap-sd-design)<br/><i>auto-skip se Pequeno/Médio</i>"]:::llm
         H1["LLM gera tasks.md<br/>+ 3 checks pré-aprovação"]:::llm
         H2["GATE TL aprova tasks"]:::gate
         H3["MCP create_work_item<br/>1× por task"]:::mcp
@@ -1189,17 +1211,16 @@ flowchart TB
 
     subgraph EXECUTE[" Execute "]
         direction TB
-        I1["TL implementa código<br/>commits WI-TaskID"]:::user
+        U5["TL invoca /hap-sd-implement + T&lt;N&gt;"]:::user
+        I1["LLM planeja · implementa · verifica · commita<br/>WI-TaskID: type(scope): desc"]:::llm
         I2["TL abre PR → Homologação → GMUD → Closed"]:::user
-        I1 --> I2
+        U5 --> I1 --> I2
     end
 
     BOOTSTRAP --> SPEC
     SPEC -- aprovada --> PUBLISH
     PUBLISH --> PLAN
     PLAN -- Status=Synced --> EXECUTE
-
-    class I1,I2 impl
         </div>
       </div>
     </section>
@@ -1213,13 +1234,13 @@ flowchart TB
       <div class="flow-pipeline">
 
         <div class="flow-step">
-          <div class="node">init.ps1</div>
+          <div class="node">/hap-sd-init</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
               <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;">
-                <span class="actor user">TL roda</span>
-                <span class="actor script">PowerShell</span>
+                <span class="actor user">TL invoca</span>
+                <span class="actor script">init-spec-project.ps1</span>
               </div>
               <span class="label">Saída</span>
               .specs/project/ · .vscode/ · .github/ · .gitmodules · submódulo framework
@@ -1228,7 +1249,7 @@ flowchart TB
         </div>
 
         <div class="flow-step optional">
-          <div class="node">/map-codebase</div>
+          <div class="node">/hap-sd-map</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
@@ -1243,7 +1264,7 @@ flowchart TB
         </div>
 
         <div class="flow-step">
-          <div class="node">/baseline-reverse-engineering</div>
+          <div class="node">/hap-sd-re-plsql</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
@@ -1260,7 +1281,7 @@ flowchart TB
         </div>
 
         <div class="flow-step">
-          <div class="node">/spec-from-workitem</div>
+          <div class="node">/hap-sd-spec-wi</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
@@ -1276,7 +1297,7 @@ flowchart TB
         </div>
 
         <div class="flow-step validator">
-          <div class="node">/spec-validator</div>
+          <div class="node">/hap-sd-validate</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
@@ -1292,7 +1313,7 @@ flowchart TB
         </div>
 
         <div class="flow-step">
-          <div class="node">/spec-publish-snapshot</div>
+          <div class="node">/hap-sd-snapshot</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
@@ -1308,7 +1329,7 @@ flowchart TB
         </div>
 
         <div class="flow-step">
-          <div class="node">/design-from-spec</div>
+          <div class="node">/hap-sd-design</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
@@ -1323,7 +1344,7 @@ flowchart TB
         </div>
 
         <div class="flow-step">
-          <div class="node">/tasks-from-design</div>
+          <div class="node">/hap-sd-tasks</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
@@ -1340,12 +1361,13 @@ flowchart TB
         </div>
 
         <div class="flow-step implementation">
-          <div class="node">Implementação</div>
+          <div class="node">/hap-sd-implement</div>
           <div class="arrow-and-output">
             <span class="arrow">→</span>
             <div class="output">
               <div class="actor-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
-                <span class="actor user">TL implementa + commits</span>
+                <span class="actor user">TL invoca + T&lt;N&gt;</span>
+                <span class="actor llm">LLM planeja + implementa</span>
                 <span class="actor user">TL: PR / GMUD</span>
               </div>
               <span class="label">Saída</span>
@@ -1362,14 +1384,15 @@ flowchart TB
       <h2>Descrição detalhada por comando</h2>
       <p style="color:var(--text-muted);font-size:13.5px;">
         Cada cartão abaixo descreve o que <strong>de fato</strong> é executado: inputs, MCPs/skills invocados,
-        passos do agente, arquivos materializados e guardrails. Origem: <code>prompts/*.prompt.md</code> e
-        <code>scripts/init-spec-project.ps1</code>.
+        passos do agente, arquivos materializados e guardrails. Arquivo de prompt:
+        <code>prompts/hap-sd-&lt;nome&gt;.prompt.md</code> (ex.: <code>hap-sd-spec-wi.prompt.md</code>).
+        Bootstrap via <code>scripts/init-spec-project.ps1</code>.
       </p>
 
-      <!-- ============== /project-init ============== -->
-      <article class="prompt-card" id="project-init">
+      <!-- ============== /hap-sd-init ============== -->
+      <article class="prompt-card" id="hap-sd-init">
         <header>
-          <h3>/project-init <span class="tag req">Bootstrap</span></h3>
+          <h3>/hap-sd-init <span class="tag req">Bootstrap</span></h3>
           <p class="purpose">
             Bootstrap do framework no repo do squad. Dispara o script
             <code>scripts/init-spec-project.ps1</code> e materializa apenas o que é responsabilidade do squad —
@@ -1455,10 +1478,10 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /map-codebase ============== -->
-      <article class="prompt-card optional" id="map-codebase">
+      <!-- ============== /hap-sd-map ============== -->
+      <article class="prompt-card optional" id="hap-sd-map">
         <header>
-          <h3>/map-codebase <span class="tag opt">Opcional · Brownfield</span></h3>
+          <h3>/hap-sd-map <span class="tag opt">Opcional · Brownfield</span></h3>
           <p class="purpose">
             Análise estática do código fonte do workspace para gerar 7 documentos de contexto em
             <code>.specs/codebase/</code>. Sem ele, o contexto precisa ser fornecido manualmente em cada conversa.
@@ -1509,15 +1532,15 @@ flowchart TB
             </tbody>
           </table>
           <div class="branch-callout">
-            <strong>Por que importa:</strong> <code>TESTING.md</code> é input direto de <code>/tasks-from-design</code> (Test Coverage Matrix + Parallelism Assessment para marcar tasks <code>[P]</code>).
+            <strong>Por que importa:</strong> <code>TESTING.md</code> é input direto de <code>/hap-sd-tasks</code> (Test Coverage Matrix + Parallelism Assessment para marcar tasks <code>[P]</code>).
           </div>
         </div>
       </article>
 
-      <!-- ============== /baseline-reverse-engineering ============== -->
-      <article class="prompt-card required" id="baseline-re">
+      <!-- ============== /hap-sd-re-plsql ============== -->
+      <article class="prompt-card required" id="hap-sd-re-plsql">
         <header>
-          <h3>/baseline-reverse-engineering <span class="tag req">Obrigatório PL/SQL</span></h3>
+          <h3>/hap-sd-re-plsql <span class="tag req">Obrigatório PL/SQL</span></h3>
           <p class="purpose">
             Produz o <strong>artefato canônico de engenharia reversa</strong> de uma rotina PL/SQL Oracle, persistido
             como baseline cacheado em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/</code> (ADR-011).
@@ -1616,12 +1639,12 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /baseline-reverse-engineering-forms ============== -->
-      <article class="prompt-card required" id="baseline-re-forms">
+      <!-- ============== /hap-sd-re-forms ============== -->
+      <article class="prompt-card required" id="hap-sd-re-forms">
         <header>
-          <h3>/baseline-reverse-engineering-forms <span class="tag req">Oracle Forms · Experimental</span></h3>
+          <h3>/hap-sd-re-forms <span class="tag req">Oracle Forms · Experimental</span></h3>
           <p class="purpose">
-            Espelho Oracle Forms do <a href="#baseline-re"><code>/baseline-reverse-engineering</code></a>:
+            Espelho Oracle Forms do <a href="#hap-sd-re-plsql"><code>/hap-sd-re-plsql</code></a>:
             orquestra o tool <a href="https://github.com/rawelcl/hap-spec-driven/tree/main/tools/forms-extractor"><code>tools/forms-extractor</code></a>
             (pipeline 2 etapas) + skill <code>engenharia-reversa-forms</code> e produz artefato canônico em
             <code>.specs/reverse-engineering/forms/&lt;MODULO&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/</code>.
@@ -1747,14 +1770,87 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /spec-from-workitem ============== -->
-      <article class="prompt-card" id="spec-from-workitem">
+      <!-- ============== /hap-sd-specify ============== -->
+      <article class="prompt-card" id="hap-sd-specify">
         <header>
-          <h3>/spec-from-workitem <span class="tag" style="background:#dbeafe;color:#1e40af;">Entry · ADO</span></h3>
+          <h3>/hap-sd-specify <span class="tag" style="background:#dbeafe;color:#1e40af;">Entry · Genérico</span></h3>
+          <p class="purpose">
+            Entry point genérico para criação de spec — não exige work item ADO existente.
+            Aceita descrição livre da feature, conduz escuta ativa, detecta gray areas e dispara
+            <code>/hap-sd-discuss</code> se necessário. Alternativa ao <a href="#hap-sd-spec-wi"><code>/hap-sd-spec-wi</code></a>
+            quando o WI ainda não foi criado no ADO.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL descreve a feature</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM clarifica + detecta gray areas</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM gera spec.md</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor user">TL refina [REVISAO]</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Descrição livre da feature ("o que preciso construir")</li>
+              <li><code>work_item_id</code> (opcional — se já houver WI ADO)</li>
+              <li>Demand Type × Value Area (ou TL responde perguntas da LLM)</li>
+              <li>Criticidade (para Incident/Defect)</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title tools">Quando preferir este vs. /hap-sd-spec-wi</h4>
+            <p style="font-size:12.5px;color:var(--text-muted);">
+              Use <code>/hap-sd-specify</code> quando a ideia ainda não está formalizada em WI ADO.<br>
+              Use <a href="#hap-sd-spec-wi"><code>/hap-sd-spec-wi</code></a> quando já existe
+              WI ADO com campos preenchidos — a LLM extrai dados via MCP automaticamente.
+            </p>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li><strong>Clarifica requisitos</strong> — escuta ativa com perguntas abertas: problema, usuário, dor, definição de sucesso. Desafia vagueza — nunca aceita respostas difusas.</li>
+            <li><strong>Detecta gray areas</strong> — se há comportamento user-facing ambíguo, dispara <a href="#hap-sd-discuss"><code>/hap-sd-discuss</code></a> (cria <code>context.md</code>) antes de prosseguir.</li>
+            <li><strong>Identifica template</strong> pela matriz Demand Type × Value Area.</li>
+            <li><strong>Cria <code>.specs/features/[feature]/spec.md</code></strong> com frontmatter YAML + User Stories (P1/P2/P3) + AC no formato WHEN/THEN/SHALL + restrições <code>[ANS]</code> onde aplicável.</li>
+            <li><strong>Checa risco regulatório</strong> — Alto (<code>[ANS]</code> + Project): TL + Arquiteto + Compliance; Médio: TL + Arquiteto.</li>
+            <li><strong>Orienta próximo passo</strong>: Design (Grande/Complexo) ou Tasks direto.</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivos materializados</h4>
+            <ul class="file-list">
+              <li class="created"><code>.specs/features/[feature]/spec.md</code></li>
+              <li><code>.specs/features/[feature]/context.md</code> <em>(se gray areas detectadas)</em></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails ativos</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Anonimizar PII de beneficiário pessoa física (CPF, nome, matrícula, dados de saúde)</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Marcar <code>[ANS]</code> em qualquer regra que toca regulação ANS/Lei 9.656/98</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Decisão sem ADR corporativa → <code>[ADR-AUSENTE]</code> + bloquear até ADR proposta</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> PL/SQL: exige baseline RE em <code>.specs/reverse-engineering/</code> via CVS tag PRODUCAO (ADR-011)</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== /hap-sd-spec-wi ============== -->
+      <article class="prompt-card" id="hap-sd-spec-wi">
+        <header>
+          <h3>/hap-sd-spec-wi <span class="tag" style="background:#dbeafe;color:#1e40af;">Entry · ADO</span></h3>
           <p class="purpose">
             Cria <code>spec.md</code> a partir de um Work Item Azure DevOps existente. Entry point principal —
-            há duas alternativas: <a href="#spec-from-lecom">/spec-from-lecom</a> (BPM Lecom) e
-            <a href="#spec-from-baseline-plsql">/spec-from-baseline-plsql</a> (refatoração PL/SQL).
+            há duas alternativas: <a href="#hap-sd-spec-lecom"><code>/hap-sd-spec-lecom</code></a> (BPM Lecom) e
+            <a href="#hap-sd-spec-plsql"><code>/hap-sd-spec-plsql</code></a> (refatoração PL/SQL).
           </p>
         </header>
 
@@ -1818,10 +1914,10 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /spec-from-lecom (alt) ============== -->
-      <article class="prompt-card" id="spec-from-lecom">
+      <!-- ============== /hap-sd-spec-lecom (alt) ============== -->
+      <article class="prompt-card" id="hap-sd-spec-lecom">
         <header>
-          <h3>/spec-from-lecom <span class="tag" style="background:#fce7f3;color:#9d174d;">Entry · BPM</span></h3>
+          <h3>/hap-sd-spec-lecom <span class="tag" style="background:#fce7f3;color:#9d174d;">Entry · BPM</span></h3>
           <p class="purpose">
             Variante de entry point: cria <code>spec.md</code> a partir de um documento Lecom (BPM corporativo)
             anexado pelo TL — PDF, DOCX ou texto colado.
@@ -1873,10 +1969,10 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /spec-from-baseline-plsql (alt) ============== -->
-      <article class="prompt-card required" id="spec-from-baseline-plsql">
+      <!-- ============== /hap-sd-spec-plsql (alt) ============== -->
+      <article class="prompt-card required" id="hap-sd-spec-plsql">
         <header>
-          <h3>/spec-from-baseline-plsql <span class="tag req">Entry · PL/SQL</span></h3>
+          <h3>/hap-sd-spec-plsql <span class="tag req">Entry · PL/SQL</span></h3>
           <p class="purpose">
             Variante de entry point para refatoração PL/SQL: gera <code>spec.md</code> tipo
             <strong>Improvement+Tunning</strong> a partir de baseline reverso já produzido.
@@ -1889,7 +1985,7 @@ flowchart TB
           <span class="arrow-mini">→</span>
           <span class="actor llm">LLM verifica RE cacheada</span>
           <span class="arrow-mini">→</span>
-          <span class="actor mcp">(se ausente) /baseline-reverse-engineering</span>
+          <span class="actor mcp">(se ausente) /hap-sd-re-plsql</span>
           <span class="arrow-mini">→</span>
           <span class="actor llm">LLM gera spec Improvement+Tunning</span>
           <span class="arrow-mini">→</span>
@@ -1909,7 +2005,7 @@ flowchart TB
             <h4 class="block-title tools">Dependência</h4>
             <p style="font-size:12.5px;color:var(--text-muted);">
               Requer RE cacheada em <code>.specs/reverse-engineering/plsql/&lt;NOME&gt;/v&lt;VERSAO_CVS&gt;-rev-NNN/</code>. Se ausente/stale,
-              dispara antes <a href="#baseline-re"><code>/baseline-reverse-engineering</code></a>.
+              dispara antes <a href="#hap-sd-re-plsql"><code>/hap-sd-re-plsql</code></a>.
             </p>
           </div>
         </div>
@@ -1918,7 +2014,7 @@ flowchart TB
           <h4 class="block-title steps">Execução real</h4>
           <ol class="steps-list">
             <li><strong>Verifica guardrail</strong> — confirma origem CVS tag PRODUCAO.</li>
-            <li><strong>Verifica RE cacheada</strong> — se tag bate na PRODUCAO atual, usa como baseline (<code>[REF]</code>); senão dispara <code>/baseline-reverse-engineering</code>.</li>
+            <li><strong>Verifica RE cacheada</strong> — se tag bate na PRODUCAO atual, usa como baseline (<code>[REF]</code>); senão dispara <code>/hap-sd-re-plsql</code>.</li>
             <li><strong>Identifica</strong> regras de negócio, gargalos de performance, pontos <code>[MIGRACAO]</code>.</li>
             <li><strong>Aplica Knowledge Verification Chain</strong> (cita ADR-22 Padrão Repositório, ADR-74 DDD).</li>
             <li><strong>Gera spec</strong> usando template <code>spec-improvement-tunning</code>.</li>
@@ -1934,14 +2030,88 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /spec-validator ============== -->
-      <article class="prompt-card validator" id="spec-validator">
+      <!-- ============== /hap-sd-discuss ============== -->
+      <article class="prompt-card optional" id="hap-sd-discuss">
         <header>
-          <h3>/spec-validator <span class="tag val">Gate · Loop</span></h3>
+          <h3>/hap-sd-discuss <span class="tag opt">Opcional · Gray Areas</span></h3>
+          <p class="purpose">
+            Captura COMO o usuário imagina a feature nas áreas ambíguas (gray areas), produzindo
+            <code>context.md</code> com decisões locked. Normalmente disparado automaticamente
+            dentro de <code>/hap-sd-specify</code> ou <code>/hap-sd-spec-wi</code>, mas pode ser
+            invocado diretamente com "discuss feature" ou "capture context".
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca (ou automático via /hap-sd-specify)</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM identifica 3–4 gray areas</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor gate">GATE — TL escolhe e decide</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM gera context.md</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Quando usar</h4>
+            <ul class="input-list">
+              <li>Comportamento user-facing com múltiplas interpretações válidas</li>
+              <li>Layout, estados vazios, hierarquia visual não especificados</li>
+              <li>Formato de resposta de API, erros, auth ambíguos</li>
+              <li>Critérios de agrupamento ou naming não definidos</li>
+            </ul>
+            <div class="branch-callout">
+              <strong>NÃO usar para:</strong> infraestrutura, CRUD simples, contratos API bem-definidos,
+              refatoração PL/SQL pura, mudanças regulatórias estritas.
+            </div>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Feature em foco (nome/slug ou path do <code>spec.md</code>)</li>
+              <li><code>spec.md</code> deve existir em <code>.specs/features/[feature]/</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li>Lê <code>spec.md</code> e identifica áreas ambíguas por domínio: UI (layout, estados vazios), API (formato, erros), CLI (flags, output), organização (agrupamento, naming).</li>
+            <li>Apresenta <strong>3–4 gray areas específicas</strong> desta feature — não categorias genéricas. TL escolhe quais discutir.</li>
+            <li><strong>Deep-dive em cada área</strong>: apresenta o tradeoff real, compartilha perspectiva com razão, registra a decisão do TL.</li>
+            <li>Cria <code>context.md</code> com decisões locked: cada entrada tem <code>GA-NNN</code>, contexto, opções consideradas, decisão, razão, implicações para Design/Tasks.</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivos materializados</h4>
+            <ul class="file-list">
+              <li class="created"><code>.specs/features/[feature]/context.md</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title output">Handoff</h4>
+            <p style="font-size:13.5px;">
+              Decisões em <code>context.md</code> são <strong>invioláveis</strong> em
+              <code>/hap-sd-design</code> e <code>/hap-sd-tasks</code> — a LLM não
+              pode contradizê-las em nenhuma circunstância.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== /hap-sd-validate ============== -->
+      <article class="prompt-card validator" id="hap-sd-validate">
+        <header>
+          <h3>/hap-sd-validate <span class="tag val">Gate · Loop</span></h3>
           <p class="purpose">
             Roda a spec contra um <strong>checklist completo</strong> e devolve uma tabela de issues com severidade
             e instrução de correção. Repete-se em loop até score = 100% antes de avançar para
-            <code>/spec-publish-snapshot</code>.
+            <code>/hap-sd-snapshot</code>.
           </p>
         </header>
 
@@ -1986,10 +2156,10 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /spec-publish-snapshot ============== -->
-      <article class="prompt-card" id="spec-publish">
+      <!-- ============== /hap-sd-snapshot ============== -->
+      <article class="prompt-card" id="hap-sd-snapshot">
         <header>
-          <h3>/spec-publish-snapshot <span class="tag" style="background:#cffafe;color:#155e75;">Publica · ADO</span></h3>
+          <h3>/hap-sd-snapshot <span class="tag" style="background:#cffafe;color:#155e75;">Publica · ADO</span></h3>
           <p class="purpose">
             Após spec atingir <code>Approved</code>: gera snapshot consolidado (spec + design + tasks + context),
             faz upload como attachment no work item ADO via MCP, atualiza campos customizados, posta comentário com
@@ -2063,15 +2233,15 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /design-from-spec ============== -->
-      <article class="prompt-card" id="design-from-spec">
+      <!-- ============== /hap-sd-design ============== -->
+      <article class="prompt-card" id="hap-sd-design">
         <header>
-          <h3>/design-from-spec <span class="tag opt">Auto-skip · Pequeno/Médio</span></h3>
+          <h3>/hap-sd-design <span class="tag opt">Auto-skip · Pequeno/Médio</span></h3>
           <p class="purpose">
             Gera <code>design.md</code> a partir de <code>spec.md</code> aprovada. Aplica Code Reuse Analysis para
             identificar código reutilizável e marca pontos <code>[MIGRACAO]</code> em refatorações PL/SQL.
             <strong>Auto-skip</strong> em escopo Pequeno/Médio (ver <a href="#auto-sizing">Auto-Sizing</a>) —
-            nesse caso, <code>/tasks-from-design</code> lê direto a <code>spec.md</code>.
+            nesse caso, <code>/hap-sd-tasks</code> lê direto a <code>spec.md</code>.
           </p>
         </header>
 
@@ -2134,10 +2304,10 @@ flowchart TB
         </div>
       </article>
 
-      <!-- ============== /tasks-from-design ============== -->
-      <article class="prompt-card" id="tasks-from-design">
+      <!-- ============== /hap-sd-tasks ============== -->
+      <article class="prompt-card" id="hap-sd-tasks">
         <header>
-          <h3>/tasks-from-design <span class="tag impl">Sync ADO</span></h3>
+          <h3>/hap-sd-tasks <span class="tag impl">Sync ADO</span></h3>
           <p class="purpose">
             Gera <code>tasks.md</code> com decomposição atômica + grafo de dependências + paralelismo, e
             <strong>cria 1 work item Task no Azure DevOps por item</strong> via MCP, vinculando ao <code>wi_pai</code>
@@ -2232,18 +2402,297 @@ flowchart TB
           </div>
         </div>
       </article>
+
+      <!-- ============== /hap-sd-implement ============== -->
+      <article class="prompt-card implementation" id="hap-sd-implement">
+        <header>
+          <h3>/hap-sd-implement <span class="tag impl">Execute · Uma task por vez</span></h3>
+          <p class="purpose">
+            Implementa UMA task por vez do <code>tasks.md</code>: planejar → implementar →
+            verificar → commit. Exige que <code>ADO Task ID</code> esteja preenchido em todas
+            as tasks antes de iniciar. Mudanças cirúrgicas — apenas o que a task exige.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + T&lt;N&gt;</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM declara premissas + arquivos + critério</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM implementa + verifica</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM faz commit + reporta</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Checklist pré-implementação (hard gates)</h4>
+            <ul class="input-list">
+              <li><code>tasks.md</code> existe na pasta da feature</li>
+              <li>Status do <code>tasks.md</code> é <code>Synced</code> ou <code>In Progress</code></li>
+              <li>Task escolhida tem <code>ADO Task ID</code> preenchido</li>
+              <li>Dependências da task estão satisfeitas (tasks anteriores concluídas)</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title tools">Insumos lidos</h4>
+            <ul class="file-list">
+              <li><code>spec.md</code></li>
+              <li><code>design.md</code> <em>(se existir)</em></li>
+              <li><code>context.md</code> <em>(se existir)</em></li>
+              <li>Task específica do <code>tasks.md</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title steps">Execução real</h4>
+          <ol class="steps-list">
+            <li><strong>Declara obrigatoriamente</strong>: premissas, arquivos a tocar (apenas os da task), critério de sucesso. NÃO prossegue sem isso.</li>
+            <li><strong>Carrega contexto</strong> — lê <code>spec.md</code>, <code>design.md</code> (se existir), <code>context.md</code> (se existir) e a task específica do <code>tasks.md</code>.</li>
+            <li><strong>Verifica dependências</strong> — confirma que tasks pré-requisito estão concluídas.</li>
+            <li><strong>Implementa</strong> — mudanças cirúrgicas, apenas o que a task exige. Para PL/SQL: cabeçalho de comentário com <code>WI-####</code> + <code>SPEC-####</code>.</li>
+            <li><strong>Verifica</strong> — roda testes do escopo afetado; checklist PL/SQL (sem DML em produção, sem PII direto); confirma critério de sucesso declarado.</li>
+            <li><strong>Commita</strong> — formato <code>WI-&lt;ADO Task ID&gt;: &lt;type&gt;(&lt;scope&gt;): &lt;descrição&gt;</code>; atualiza status da task no <code>tasks.md</code> para <code>done</code>.</li>
+            <li><strong>Reporta</strong> — resumo do que foi implementado, testes que passaram, próxima task sugerida.</li>
+          </ol>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Artefatos produzidos</h4>
+            <ul class="file-list">
+              <li class="updated">Código implementado (arquivos da task)</li>
+              <li class="updated"><code>tasks.md</code> com task marcada <code>done</code></li>
+              <li>Commit <code>WI-&lt;ADO Task ID&gt;: type(scope): desc</code></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title guardrails">Guardrails ativos</h4>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Sem <code>ADO Task ID</code> preenchido → PARE e rode <code>/hap-sd-tasks</code> primeiro</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Mudanças cirúrgicas — apenas os arquivos da task, nada além</div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> PL/SQL: nunca DML em produção; cabeçalho obrigatório com <code>WI-####</code> + <code>SPEC-####</code></div>
+            <div class="guardrail"><span class="gr-label">[GUARDRAIL]</span> Verificação é parte obrigatória — não pular testes</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== Seção Utilitários ============== -->
+      <h3 style="margin-top:42px;font-size:19px;color:var(--primary);border-top:2px solid var(--border);padding-top:28px;">
+        Utilitários e gestão de estado
+      </h3>
+      <p style="color:var(--text-muted);font-size:13.5px;margin-bottom:22px;">
+        Prompts de suporte ao ciclo de vida do squad — usados ao longo de todas as fases, mas fora
+        do pipeline principal de feature.
+      </p>
+
+      <!-- ============== /hap-sd-roadmap ============== -->
+      <article class="prompt-card optional" id="hap-sd-roadmap">
+        <header>
+          <h3>/hap-sd-roadmap <span class="tag opt">Utilitário · Planejamento</span></h3>
+          <p class="purpose">
+            Cria ou atualiza <code>.specs/project/hap-sd-roadmap.md</code> com visão de médio prazo do
+            squad: milestones, features planejadas (Now/Next/Later) e links para work items ADO.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + informa milestones/features</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor mcp">MCP ADO — confirma WIs ativos (opcional)</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM cria/atualiza ROADMAP.md</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Milestone atual e objetivo</li>
+              <li>Features planejadas (Now / Next / Later ou por versão)</li>
+              <li>Links para work items ADO (Epics/Features correspondentes)</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title mcp">MCP invocado</h4>
+            <ul class="mcp-list">
+              <li><code>@azure-devops/mcp</code> — consulta Features/Epics ativos (se disponível)</li>
+            </ul>
+            <div class="branch-callout">
+              <strong>Complementar:</strong> muitos squads usam ADO Boards nativos como roadmap.
+              <code>ROADMAP.md</code> é complementar para narrativa de longo prazo e visão de squad.
+            </div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title artifacts">Arquivo materializado</h4>
+          <ul class="file-list">
+            <li class="created"><code>.specs/project/hap-sd-roadmap.md</code> <em>(criado ou atualizado)</em></li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- ============== /hap-sd-concerns ============== -->
+      <article class="prompt-card optional" id="hap-sd-concerns">
+        <header>
+          <h3>/hap-sd-concerns <span class="tag opt">Utilitário · Tech Debt</span></h3>
+          <p class="purpose">
+            Analisa o codebase e produz ou atualiza <code>.specs/codebase/hap-sd-concerns.md</code> com
+            tech debt, áreas frágeis, gaps de cobertura de testes e ADRs ausentes.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL invoca + escopo da análise</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM analisa codebase (ast-grep &gt; ripgrep &gt; grep)</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM gera CONCERNS.md</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Input esperado</h4>
+            <ul class="input-list">
+              <li>Escopo: módulo, package, serviço ou codebase completo</li>
+              <li>Stack: PL/SQL, Java, .NET (para direcionar a análise)</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title steps">Tipos de análise por stack</h4>
+            <ul class="input-list">
+              <li><strong>PL/SQL:</strong> packages sem utPLSQL, cursores implícitos, SQL não-parametrizado</li>
+              <li><strong>Java/.NET:</strong> God Objects, dependências cíclicas, ausência de interfaces</li>
+              <li><strong>Qualquer:</strong> touchpoints regulatórios sem <code>[ANS]</code>, decisões sem ADR</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title artifacts">Arquivo materializado</h4>
+          <ul class="file-list">
+            <li class="created"><code>.specs/codebase/hap-sd-concerns.md</code> <em>(criado ou atualizado)</em></li>
+          </ul>
+          <p style="font-size:12.5px;color:var(--text-muted);margin:8px 0 0;">
+            Estrutura: Áreas frágeis · Tech Debt (TD-NNN) · Gaps de cobertura · ADRs ausentes (<code>[ADR-AUSENTE]</code>)
+          </p>
+        </div>
+      </article>
+
+      <!-- ============== /hap-sd-decision ============== -->
+      <article class="prompt-card optional" id="hap-sd-decision">
+        <header>
+          <h3>/hap-sd-decision <span class="tag opt">Utilitário · STATE.md</span></h3>
+          <p class="purpose">
+            Registra decisão local (AD-NNN), blocker (B-NNN), lição aprendida (L-NNN) ou item
+            de acompanhamento no <code>.specs/project/STATE.md</code> do squad. A LLM identifica
+            o tipo pelo contexto da frase.
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Fluxo:</span>
+          <span class="actor user">TL descreve o que registrar</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM identifica tipo + próximo número sequencial</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM atualiza STATE.md</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title input">Disparadores reconhecidos</h4>
+            <ul class="input-list">
+              <li><em>"Decidimos usar X porque Y"</em> → Decisão local (AD-NNN)</li>
+              <li><em>"Estou bloqueado por X"</em> → Blocker (B-NNN)</li>
+              <li><em>"Aprendi que X causa Y"</em> → Lição aprendida (L-NNN)</li>
+              <li><em>"Ideia para depois: X"</em> → Deferred Idea</li>
+              <li><em>"Feito: X (commit: Y)"</em> → Quick Task Completed</li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title artifacts">Arquivo atualizado</h4>
+            <ul class="file-list">
+              <li class="updated"><code>.specs/project/STATE.md</code></li>
+            </ul>
+            <p style="font-size:12.5px;color:var(--text-muted);margin:6px 0 0;">
+              STATE.md é memória persistente do squad — obrigatório em projeto individual (ADR-009).
+              Cada entrada preserva contexto entre sessões.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============== /hap-sd-handoff ============== -->
+      <article class="prompt-card optional" id="hap-sd-handoff">
+        <header>
+          <h3>/hap-sd-handoff <span class="tag opt">Utilitário · Continuidade</span></h3>
+          <p class="purpose">
+            Pausa o trabalho atual preservando o contexto (cria <code>HANDOFF.md</code>), ou
+            retoma uma sessão pausada anteriormente (lê <code>HANDOFF.md</code> e reconstrói
+            o contexto para continuar de onde parou).
+          </p>
+        </header>
+
+        <div class="trigger-bar">
+          <span class="label">Modo PAUSE:</span>
+          <span class="actor user">"pause work" / "end session"</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM lê STATE.md + tasks.md</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM atualiza STATE.md + cria HANDOFF.md</span>
+        </div>
+        <div class="trigger-bar" style="margin-top:8px;">
+          <span class="label">Modo RESUME:</span>
+          <span class="actor user">"resume work" / "where were we"</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM lê HANDOFF.md + reconstrói contexto</span>
+          <span class="arrow-mini">→</span>
+          <span class="actor llm">LLM informa o que foi feito + próximo passo</span>
+        </div>
+
+        <div class="card-grid">
+          <div class="card-block">
+            <h4 class="block-title artifacts">Modo PAUSE — arquivos</h4>
+            <ul class="file-list">
+              <li class="created"><code>.specs/project/hap-sd-handoff.md</code></li>
+              <li class="updated"><code>.specs/project/STATE.md</code> <em>(Last Updated + decisões da sessão)</em></li>
+            </ul>
+          </div>
+          <div class="card-block">
+            <h4 class="block-title output">Modo RESUME — output</h4>
+            <p style="font-size:12.5px;color:var(--text-muted);">
+              Reconstrói: feature em foco, fase atual, task em andamento, decisões pendentes,
+              blockers abertos. Informa o que foi feito e sugere próximo passo imediato.
+            </p>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h4 class="block-title guardrails">Lembra ao TL antes de pausar</h4>
+          <p style="font-size:13.5px;">
+            Fazer <strong>commit em branch de trabalho</strong> ou <strong>stash</strong> antes de encerrar.
+            O <code>HANDOFF.md</code> não substitui o commit — é contexto de continuidade, não backup de código.
+          </p>
+        </div>
+      </article>
+
     </section>
 
     <!-- ===================== ARTEFATOS ===================== -->
     <section id="artefatos">
       <h2>Artefatos produzidos por feature</h2>
 <pre><code>.specs/features/WI-XXXX-&lt;slug&gt;/
-  spec.md          ← /spec-from-workitem + /spec-validator
-  design.md        ← /design-from-spec
-  tasks.md         ← /tasks-from-design  (Status = Synced após criar Tasks ADO)
+  spec.md          ← /hap-sd-spec-wi + /hap-sd-validate
+  design.md        ← /hap-sd-design
+  tasks.md         ← /hap-sd-tasks  (Status = Synced após criar Tasks ADO)
   context.md       ← decisões locked (opcional, gerado ao longo do ciclo)
 
-WI-XXXX-spec-vN.md ← snapshot consolidado (/spec-publish-snapshot, anexado ao ADO)</code></pre>
+WI-XXXX-spec-vN.md ← snapshot consolidado (/hap-sd-snapshot, anexado ao ADO)</code></pre>
     </section>
 
     <!-- ===================== COMMITS ===================== -->

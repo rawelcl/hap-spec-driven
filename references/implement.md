@@ -48,7 +48,7 @@ Checklist nao-negociavel:
 - [ ] Toda task tem `ADO Task ID` preenchido (nao `<preenchido apos sync via MCP>`)
 - [ ] Campo `Commit` de cada task usa `WI-<ADO Task ID>`, nao placeholder
 
-Se algum item falhar: **PARE** e rode [`prompts/tasks-from-design.prompt.md`](../prompts/tasks-from-design.prompt.md)
+Se algum item falhar: **PARE** e rode [`/hap-sd-tasks`](../prompts/hap-sd-tasks.prompt.md)
 antes de prosseguir. Nao improvise plano inline - o processo Hapvida exige Task no ADO para
 toda mudanca.
 
@@ -253,7 +253,7 @@ usados.
 ### 10. (Hapvida) Snapshot via MCP quando spec atinge Approved
 
 Quando a feature inteira atinge estado `Approved` no work item ADO (todas as tasks da spec
-completadas e gates passaram), o TL aciona o prompt file [`spec-publish-snapshot.prompt.md`](../prompts/spec-publish-snapshot.prompt.md)
+completadas e gates passaram), o TL aciona o prompt file [`/hap-sd-snapshot`](../prompts/hap-sd-snapshot.prompt.md)
 para anexar snapshot da spec/design/tasks ao work item via MCP do Azure DevOps.
 
 Ver [`mcp-integration.md`](mcp-integration.md) para detalhes operacionais.

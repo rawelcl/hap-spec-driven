@@ -21,17 +21,17 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
    - Maintenance + Business -> [`spec-maintenance-business.md`](templates/spec-maintenance-business.md)
    - Maintenance + Tunning -> [`spec-maintenance-tunning.md`](templates/spec-maintenance-tunning.md)
    - Incident criticidade alta/media -> [`spec-incident-fast-track.md`](templates/spec-incident-fast-track.md)
-3. Use o prompt file: [`prompts/spec-from-workitem.prompt.md`](prompts/spec-from-workitem.prompt.md)
-4. Valide com: [`prompts/spec-validator.prompt.md`](prompts/spec-validator.prompt.md)
-5. Quando aprovada, publique com: [`prompts/spec-publish-snapshot.prompt.md`](prompts/spec-publish-snapshot.prompt.md)
+3. Use o prompt file: [`/hap-sd-spec-wi`](prompts/hap-sd-spec-wi.prompt.md)
+4. Valide com: [`/hap-sd-validate`](prompts/hap-sd-validate.prompt.md)
+5. Quando aprovada, publique com: [`/hap-sd-snapshot`](prompts/hap-sd-snapshot.prompt.md)
 
 ### "Vou refatorar uma procedure PL/SQL legada"
 
 1. **Antes da spec**: garantir RE cacheada em `.specs/reverse-engineering/plsql/<X>/v<VERSAO_CVS>-rev-NNN/`. Se
-   ausente ou stale, dispare [`prompts/baseline-reverse-engineering.prompt.md`](prompts/baseline-reverse-engineering.prompt.md) - ver
+   ausente ou stale, dispare [`/hap-sd-re-plsql`](prompts/hap-sd-re-plsql.prompt.md) - ver
    [ADR-011](adr/011-engenharia-reversa-como-baseline.md) e [`references/reverse-engineering.md`](references/reverse-engineering.md)
 2. Use o template: [`templates/spec-improvement-tunning.md`](templates/spec-improvement-tunning.md)
-3. Use o prompt file especifico: [`prompts/spec-from-baseline-plsql.prompt.md`](prompts/spec-from-baseline-plsql.prompt.md)
+3. Use o prompt file especifico: [`/hap-sd-spec-plsql`](prompts/hap-sd-spec-plsql.prompt.md)
 4. Skills internas do framework: [`skills/engenharia-reversa-sigo`](skills/engenharia-reversa-sigo/SKILL.md), [`skills/plsql-oracle-expert`](skills/plsql-oracle-expert/SKILL.md)
 5. Skill externa complementar quando disponivel: `sigo-refatoracao-workflow`
 6. Veja exemplo end-to-end: [`examples/.specs/features/exemplo-cotacao-pme/`](examples/.specs/features/exemplo-cotacao-pme/)
@@ -39,7 +39,7 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 ### "Vou analisar um modulo Oracle Forms legado"
 
 1. **Pre-requisito**: modulo `.fmb` versionado em CVS tag PRODUCAO; Oracle Forms Developer 10g+ instalado
-2. **Prompt**: [`prompts/baseline-reverse-engineering-forms.prompt.md`](prompts/baseline-reverse-engineering-forms.prompt.md) - orquestra tool + skill end-to-end
+2. **Prompt**: [`/hap-sd-re-forms`](prompts/hap-sd-re-forms.prompt.md) - orquestra tool + skill end-to-end
 3. Skill: [`skills/engenharia-reversa-forms`](skills/engenharia-reversa-forms/SKILL.md) (experimental v0.1)
 4. Tool de extracao: [`tools/forms-extractor/`](tools/forms-extractor/) - pipeline 2 etapas (.fmb -> .xml -> 12 relatorios .txt/.md). Ver [`tools/README.md`](tools/README.md)
 5. Saida: artefato canonico em `.specs/reverse-engineering/forms/<MODULO>/v<VERSAO_CVS>-rev-NNN/reversa-<MODULO>.md`
@@ -47,14 +47,14 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 ### "Vou desenhar arquitetura para uma feature"
 
 1. Pre-requisito: spec aprovada
-2. Use: [`prompts/design-from-spec.prompt.md`](prompts/design-from-spec.prompt.md)
+2. Use: [`/hap-sd-design`](prompts/hap-sd-design.prompt.md)
 3. Template: [`templates/design-template.md`](templates/design-template.md)
 4. Referencia: [`references/design.md`](references/design.md)
 
 ### "Vou quebrar em tasks"
 
 1. Pre-requisito: design aprovado (quando aplicavel) ou spec aprovada
-2. Use: [`prompts/tasks-from-design.prompt.md`](prompts/tasks-from-design.prompt.md) - **cria
+2. Use: [`/hap-sd-tasks`](prompts/hap-sd-tasks.prompt.md) - **cria
    automaticamente 1 work item Task no Azure DevOps por item de `tasks.md`** ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md))
 3. Template: [`templates/tasks-template.md`](templates/tasks-template.md)
 4. Referencia: [`references/tasks.md`](references/tasks.md)
@@ -86,6 +86,11 @@ Mapa para encontrar rapidamente o arquivo certo no framework.
 
 1. Lista completa de adaptacoes: [`CHANGELOG.md`](CHANGELOG.md)
 2. ADRs especificas das adaptacoes: pasta [`adr/`](adr/)
+
+### "Quero ver o fluxo completo dos prompts"
+
+1. Diagrama e descricao de cada prompt: [`references/prompt-flow.md`](references/prompt-flow.md)
+2. Apresentacao visual interativa: [`workspace/prompt-flow.html`](workspace/prompt-flow.html)
 
 ## Por papel
 
@@ -138,6 +143,6 @@ Leitura recomendada:
 
 ---
 
-**Versao:** 0.5.0 (piloto Onda 1 - area Comercial)
+**Versao:** 0.5.2 (piloto Onda 1 - area Comercial)
 **Repositorio:** https://github.com/rawelcl/hap-spec-driven
 **Base:** TLC Spec-Driven 2.0.0 (CC-BY-4.0)
