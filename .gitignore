@@ -38,6 +38,10 @@ Thumbs.db
 # habilitar autocomplete de slash-commands no Copilot Chat.
 /.github/prompts/
 
+# Workspace local - avaliacoes, reviews, customizacoes e materiais de uso
+# interno do tech lead durante o piloto. Nao vai para o repo.
+/workspace/
+
 
 # Credenciais - NUNCA commitar
 .env

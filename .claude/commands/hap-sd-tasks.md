@@ -23,7 +23,7 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
 
 1. Ler design.md (ou spec.md se ausente) completo
 2. Ler TESTING.md se existir - obter Test Coverage Matrix e Parallelism Assessment
-3. Decompor em tasks atomicas (1 task = 1 deliverable)
+3. Decompor em tasks atomicas (1 task = 1 deliverable) - **excluir itens de GMUD e deploy** (ver Guardrails)
 4. Identificar dependencias - construir grafo
 5. Marcar tasks paralelas com `[P]` respeitando paralelismo de testes
 6. Para cada task: definir Done when, Tests, Gate, Commit (Conventional Commits + WI-#### prefix
@@ -57,6 +57,11 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
   orfas no ADO
 - `[GUARDRAIL]` MCP `@azure-devops/mcp` indisponivel: instruir TL a criar Tasks manualmente no
   ADO e preencher os IDs em `tasks.md` antes de iniciar Execute
+- `[GUARDRAIL]` **Fora de escopo:** tasks de **GMUD** (RFC, aprovacao CAB, agendamento de janela,
+  comunicacao de stakeholders, evidencias de mudanca) e de **deploy** (build de release, promocao
+  entre ambientes DEV/HML/PRD, execucao em PRD, rollback, smoke test pos-deploy) **NAO entram em
+  `tasks.md`** - sao responsabilidade do TL fora do fluxo spec-driven. Nao listar, nao decompor,
+  nao sincronizar com ADO. Se o design.md mencionar esses passos, ignorar na decomposicao.
 
 # Output
 

@@ -48,6 +48,20 @@ e ambiguo sem essa decisao - nao fica claro se o ID e da User Story ou da Task f
 6. **Design continua auto-skip** para escopos Pequeno e Medio - a decisao toca apenas a fase
    Tasks.
 
+7. **Escopo da palavra "mudanca":** "toda mudanca" nesta ADR refere-se a **deliverable de
+   codigo** (procedure PL/SQL, classe Java/.NET, endpoint, migracao de schema, etc.). Atos
+   operacionais ficam **fora** do `tasks.md` e **nao geram Task ADO** via este fluxo, pois
+   possuem dono proprio (TL / sustentacao), ferramenta propria e nao sao verificaveis pelo
+   padrao Done-when do framework:
+   - **GMUD:** RFC, aprovacao CAB, agendamento de janela, comunicacao de stakeholders,
+     evidencias de mudanca.
+   - **Deploy:** build de release, promocao entre ambientes (DEV -> HML -> PRD), execucao em
+     PRD, rollback, smoke test pos-deploy.
+
+   A enforcement vive no guardrail "Fora de escopo" do skill
+   [hap-sd-tasks.prompt.md](../prompts/hap-sd-tasks.prompt.md) e e documentada em
+   [references/tasks.md](../references/tasks.md) (secao "Fora de escopo").
+
 ## Justificativa
 
 - **Alinhamento ao processo Hapvida 2.0:** toda mudanca passa a ter Task ADO sem excecao - o
@@ -106,3 +120,8 @@ e ambiguo sem essa decisao - nao fica claro se o ID e da User Story ou da Task f
 - [adr/005](005-conventional-commits-com-prefixo-wi.md) - esclarecer que `WI-####` no commit de
   implementacao refere-se a Task ADO filha.
 - [adr/008](008-quick-mode-fora-do-escopo-piloto.md) - cross-reference reforcando o veto.
+- [references/tasks.md](../references/tasks.md) - secao "Fora de escopo (nao entram em
+  tasks.md)" delimitando GMUD e deploy.
+- [prompts/hap-sd-tasks.prompt.md](../prompts/hap-sd-tasks.prompt.md) e
+  [.claude/commands/hap-sd-tasks.md](../.claude/commands/hap-sd-tasks.md) - guardrail "Fora de
+  escopo" enforcing a exclusao de GMUD e deploy na decomposicao.

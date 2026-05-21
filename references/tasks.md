@@ -23,15 +23,7 @@ toda mudanca, pequena ou complexa, exige Task no ADO. Para escopo Pequeno o `tas
 
 | Vague Task (RUIM) | Granular Tasks (BOM) |
 |---|---|
-| "Criar formulario" | T1: Criar componente de input email |
-| | T2: Adicionar validacao de email |
-| | T3: Criar botao submit |
-| | T4: Adicionar gerenciamento de estado do form |
-| | T5: Conectar form a API |
-| "Implementar autenticacao" | T1: Criar interface de servico de auth |
-| | T2: Implementar refresh de token |
-| | T3: Criar componente de login |
-| | T4: Adicionar protecao de rotas |
+| x
 
 **Beneficios:**
 
@@ -46,6 +38,28 @@ toda mudanca, pequena ou complexa, exige Task no ADO. Para escopo Pequeno o `tas
 - Uma funcao
 - Um endpoint API
 - Uma alteracao de arquivo
+
+---
+
+## Fora de escopo (nao entram em tasks.md)
+
+Os itens abaixo **nao sao decompostos em tasks** pelo skill [`/hap-sd-tasks`](../prompts/hap-sd-tasks.prompt.md)
+e **nao sao sincronizados como Tasks no ADO**. Sao responsabilidade do TL, fora do fluxo
+spec-driven, gerenciados pelos processos corporativos proprios.
+
+| Categoria | Exemplos do que NAO vira task |
+|---|---|
+| **GMUD** | Abertura de RFC, aprovacao CAB, agendamento de janela, comunicacao de stakeholders, evidencias de mudanca |
+| **Deploy** | Build de release, promocao entre ambientes (DEV -> HML -> PRD), execucao de script em PRD, rollback, smoke test pos-deploy |
+
+**Como o skill se comporta:** se `design.md` mencionar passos de GMUD ou deploy, o agente
+**ignora** esses passos ao decompor. Se o TL pedir explicitamente para incluir, o agente
+**recusa e aponta este guardrail**.
+
+**Por que esta fora:** GMUD e deploy nao sao deliverables de codigo verificaveis por gate de
+teste - sao atos operacionais com fluxo proprio, dono proprio (TL / sustentacao) e ferramenta
+propria. Inclui-los em `tasks.md` polui o sync ADO, distorce metrica de progresso da feature
+e cria tasks que ninguem consegue "verificar" no padrao Done-when do framework.
 
 ---
 
