@@ -36,12 +36,14 @@ pode ser tao importante quanto o que esta. Sinalize toda ambiguidade com `[ATENC
 
 ## Guardrails
 
-- `[GUARDRAIL]` Codigo PL/SQL e sempre lido da **WinCVS tag PRODUCAO**. Nunca de banco produtivo
-  como fonte primaria.
+- `[GUARDRAIL]` Codigo PL/SQL e sempre obtido via tool `tools/cvs-fetch-producao/cvs-fetch-producao.ps1`.
+  O agente executa o tool diretamente — nunca instrui o TL a buscar manualmente.
+  Se o tool retornar `[BLOQUEADO]` (exit 1): parar e notificar o TL sem fallback.
+  ver [ADR-007](../../adr/007-guardrail-acesso-producao.md) emendada por [ADR-011](../../adr/011-engenharia-reversa-como-baseline.md).
 - `[GUARDRAIL]` MCP Oracle autorizado **somente para leitura do dicionario** (`dba_objects`,
   `dba_dependencies`, `dba_constraints`, `dba_indexes`, `dba_scheduler_jobs`).
-  **Proibido**: `dba_source`, SELECT em tabelas de negocio, qualquer DML/DDL, leitura de dados de beneficiario.
-  Fonte de codigo e **exclusivamente o WinCVS tag PRODUCAO** - ver ADR-007 emendada por ADR-011.
+  **Proibido**: `dba_source`, qualquer DML/DDL.
+  Fonte de codigo e **exclusivamente o OutputDir gerado pelo tool cvs-fetch-producao** - ver ADR-007.
 - `[GUARDRAIL]` Anonimizar PII de beneficiario pessoa fisica (CPF, nome, matricula, dados de
   saude) em comentarios, snippets ou exemplos de massa. Dados comerciais (razao social de
   empresa, numero de contrato) NAO precisam ser anonimizados.
@@ -75,8 +77,13 @@ A skill espera encontrar (ou criar se ausente) os seguintes catalogos em
 [ ] Verificar se a rotina ou sub-rotinas ja constam em catalogo-objetos-plsql.md
 [ ] Verificar pendencias relacionadas em pendencias-abertas.md
 [ ] Confirmar nome e tipo do objeto com o usuario (se nao informado no prompt)
+[ ] Obter codigo-fonte via tool (obrigatorio antes de ler qualquer arquivo):
+      -> Executar via terminal:
+         .\.specs\framework\tools\cvs-fetch-producao\cvs-fetch-producao.ps1 -Module "<SCHEMA>/<OBJETO>.<EXT>"
+      -> Se tool retornar [BLOQUEADO] (exit 1): PARAR e notificar o TL sem fallback
+      -> Anotar OutputDir e tag do cvs-fetch-evidence.json gerado
 [ ] Resolver automaticamente a tag CVS:
-      -> Localizar a ultima versao do objeto com tag PRODUCAO no repositorio CVS
+      -> Usar a tag registrada no cvs-fetch-evidence.json (campo "tag")
       -> Registrar a tag resolvida no frontmatter (campo tag_cvs)
       -> Se nenhuma tag PRODUCAO existir: PARAR -> [BLOQUEADO] e notificar
 [ ] Verificar se ja existe analise para esta tag em catalogo-objetos-plsql.md

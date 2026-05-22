@@ -52,6 +52,30 @@ Pre-requisitos: Oracle Forms Developer 10g+ instalado **OU** acesso aos JARs
 `frmxmltools.jar`, `frmjdapi.jar`, `xmlparserv2.jar` em um `ORACLE_HOME` valido.
 Detalhes em [`forms-extractor/README-forms-extractor.md`](forms-extractor/README-forms-extractor.md).
 
+### `cvs-fetch-producao/`
+
+Busca um modulo PL/SQL do WinCVS usando a tag `PRODUCAO_*` mais recente.
+Etapa obrigatoria (Passo 0) do fluxo de engenharia reversa PL/SQL.
+Consumido pelas skills [`engenharia-reversa-sigo`](../skills/engenharia-reversa-sigo/SKILL.md)
+e pelo prompt [`hap-sd-re-plsql`](../prompts/hap-sd-re-plsql.prompt.md).
+
+| Parametro | Obrigatorio | Descricao |
+|---|---|---|
+| `-Module` | Sim | Ex: `HUMASTER/PK_VENDA_JSON.pkb` |
+| `-Tag` | Nao | Tag especifica; omitir para resolver automaticamente a mais recente |
+| `-OutputDir` | Nao | Default: `.cvs-checkout/<OBJETO>/<TAG>/` |
+| `-CvsHost` | Nao | Default: `$env:HAPVIDA_CVS_HOST` |
+| `-CvsUser` | Nao | Default: `$env:HAPVIDA_CVS_USER` |
+
+**Saida:** arquivo fonte + `cvs-fetch-evidence.json` (host, tag, SHA-256).
+
+**Setup interativo:** na primeira execucao sem credenciais, o tool solicita host/usuario/senha
+iterativamente, executa `cvs login` e oferece persistir host/usuario em `.cvs-env.ps1`
+(sem senha; arquivo no `.gitignore`). Ate 3 tentativas antes de emitir `[BLOQUEADO]`.
+
+Pre-requisitos: `cvs.exe` no PATH, conectividade TCP na porta 2401.
+Detalhes em [`cvs-fetch-producao/README-cvs-fetch-producao.md`](cvs-fetch-producao/README-cvs-fetch-producao.md).
+
 ## Como uma skill invoca um tool
 
 A skill referencia o tool no seu `SKILL.md` na secao **Pre-requisitos** ou **Passos**, com
