@@ -51,12 +51,16 @@ e ambiguo sem essa decisao - nao fica claro se o ID e da User Story ou da Task f
 7. **Escopo da palavra "mudanca":** "toda mudanca" nesta ADR refere-se a **deliverable de
    codigo** (procedure PL/SQL, classe Java/.NET, endpoint, migracao de schema, etc.). Atos
    operacionais ficam **fora** do `tasks.md` e **nao geram Task ADO** via este fluxo, pois
-   possuem dono proprio (TL / sustentacao), ferramenta propria e nao sao verificaveis pelo
-   padrao Done-when do framework:
+   possuem dono proprio (TL / sustentacao / QA), ferramenta propria e nao sao verificaveis
+   pelo padrao Done-when do framework:
    - **GMUD:** RFC, aprovacao CAB, agendamento de janela, comunicacao de stakeholders,
      evidencias de mudanca.
    - **Deploy:** build de release, promocao entre ambientes (DEV -> HML -> PRD), execucao em
      PRD, rollback, smoke test pos-deploy.
+   - **QA manual end-to-end:** execucao de homologacao por testador humano, abertura de
+     Task ADO type=Testing pelo proprio QA, registro de defeitos. O dev produz o **test
+     artifact** em `.specs/features/[feature]/tests/` (ver [ADR-013](013-modelo-testes-co-localizado-por-task.md));
+     QA reaproveita esse artifact em seu fluxo proprio.
 
    A enforcement vive no guardrail "Fora de escopo" do skill
    [hap-sd-tasks.prompt.md](../prompts/hap-sd-tasks.prompt.md) e e documentada em
@@ -124,4 +128,7 @@ e ambiguo sem essa decisao - nao fica claro se o ID e da User Story ou da Task f
   tasks.md)" delimitando GMUD e deploy.
 - [prompts/hap-sd-tasks.prompt.md](../prompts/hap-sd-tasks.prompt.md) e
   [.claude/commands/hap-sd-tasks.md](../.claude/commands/hap-sd-tasks.md) - guardrail "Fora de
-  escopo" enforcing a exclusao de GMUD e deploy na decomposicao.
+  escopo" enforcing a exclusao de GMUD, deploy e QA manual na decomposicao.
+- [adr/013-modelo-testes-co-localizado-por-task.md](013-modelo-testes-co-localizado-por-task.md) -
+  ADR irmao que formaliza o modelo de testes co-localizado por task; declara QA manual
+  end-to-end como categoria fora de escopo.
