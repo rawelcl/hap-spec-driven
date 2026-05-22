@@ -53,11 +53,25 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
    **Evidence** (comando/screenshot/query/justificativa), Gate, Commit (Conventional Commits +
    WI-#### prefix da Task ADO filha que sera criada no passo 10).
    Ver [ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md).
+   - **Para tasks PL/SQL com `Approach: automated|hybrid`**: `Tests Artifact` deve apontar
+     para bloco anonimo `verifica_<rotina>.sql` per
+     [ADR-014](../adr/014-execucao-testes-plsql-blocos-anonimos-dev.md). Template canonico
+     em [references/brownfield-mapping.md](../references/brownfield-mapping.md) secao
+     "Bloco anonimo PL/SQL — template canonico". Cada AC do `Requirement: FEAT-NN` da task
+     vira sub-bloco `-- AC-NN: <descricao>` nomeado dentro do `.sql`. Pacote standalone ou
+     objeto criado no schema DEV NAO eh aceito como test artifact.
 7. **Rodar 4 checks pre-aprovacao** (hard gates - se algum falha, reestruture):
    - Granularity Check
    - Diagram-Definition Cross-Check
    - Test Co-location Validation (valida Tests Approach/Artifact/Evidence contra TESTING.md)
+     - **Para PL/SQL**: bloco anonimo declara `SAVEPOINT sp_test_start` no inicio E
+       `ROLLBACK TO sp_test_start` antes de cada `RAISE_APPLICATION_ERROR` e no `END`.
+       Ausente = bloqueio hard (per ADR-014).
    - AC Coverage Check (toda FEAT-NN da spec §9 tem >=1 task com Requirement: FEAT-NN)
+     - **Para PL/SQL**: alem de "toda FEAT-NN tem >=1 task com Requirement: FEAT-NN",
+       validar que o `verifica_<rotina>.sql` da task contem **um sub-bloco nomeado por
+       AC** com header `-- AC-NN: <descricao>` e expressao PASS/FAIL correspondente. AC
+       sem sub-bloco no `.sql` = bloqueio hard (per ADR-014).
 8. **GATE DE APROVACAO EXPLICITA (hard stop).** Apresentar tasks com **as quatro** tabelas de
    validacao ao TL e fazer **literalmente** esta pergunta como ultima linha do output:
 
@@ -117,6 +131,11 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
   orfas no ADO
 - `[GUARDRAIL]` MCP `@azure-devops/mcp` indisponivel: instruir TL a criar Tasks manualmente no
   ADO e preencher os IDs em `tasks.md` antes de iniciar Execute
+- `[GUARDRAIL]` **PL/SQL Tests Artifact** deve ser bloco anonimo per
+  [ADR-014](../adr/014-execucao-testes-plsql-blocos-anonimos-dev.md). Pacote standalone
+  ou objeto criado no schema DEV NAO eh aceito como test artifact (poluiria schema entre
+  execucoes). Bloco sem `SAVEPOINT sp_test_start` no inicio e `ROLLBACK TO sp_test_start`
+  no fim = bloqueio hard.
 - `[GUARDRAIL]` **Fora de escopo:** tasks de **GMUD** (RFC, aprovacao CAB, agendamento de janela,
   comunicacao de stakeholders, evidencias de mudanca), **deploy** (build de release, promocao
   entre ambientes DEV/HML/PRD, execucao em PRD, rollback, smoke test pos-deploy) e **QA manual
