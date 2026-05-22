@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 **Data:** 2026-05-06
-**Emendas:** 2026-05-22 (Excecao 1 atualizada — tool cvs-fetch-producao; Excecao 2 — SELECT read-only em dados de negocio)
+**Emendas:** 2026-05-22 (Excecao 1 atualizada — tool cvs-fetch-producao; Excecao 2 — SELECT read-only em dados de negocio; Excecao 3 — execucao bloco anonimo PL/SQL em DEV per [ADR-014](014-execucao-testes-plsql-blocos-anonimos-dev.md))
 
 ## Contexto
 
@@ -52,6 +52,21 @@ Condicoes obrigatorias:
 `[GUARDRAIL]` Permanecem proibidos: qualquer DML/DDL, acesso sem anonimizacao a PII de
 beneficiario pessoa fisica.
 
+### Excecao 3 — Execucao de bloco anonimo PL/SQL em DEV (emendada em 2026-05-22, ver [ADR-014](014-execucao-testes-plsql-blocos-anonimos-dev.md))
+
+Execucao de **bloco anonimo PL/SQL** (`DECLARE ... BEGIN ... END;`) em schemas DEV via
+MCP Oracle e autorizada **exclusivamente** para fins de teste de task per ADR-014:
+
+- Bloco anonimo apenas — proibido `CREATE`, `ALTER`, `DROP` de objetos via MCP em DEV
+- `SAVEPOINT sp_test_start` inicial + `ROLLBACK TO sp_test_start` final sao **obrigatorios**
+  dentro do bloco
+- Apenas schemas DEV declarados em `TESTING.md` do squad — proibido HML/UAT/PRD
+- Massa de teste anonimizada — proibido manipular PII real mesmo em DEV
+- Resultado (`DBMS_OUTPUT` + exit) registrado como `Evidence` em `tasks.md`
+
+`[GUARDRAIL]` Permanecem proibidos: `DML/DDL` fora do bloco anonimo, execucao em
+ambiente nao-DEV, PII real em massa de teste.
+
 ## Justificativa
 
 - **LGPD**: dados pessoais (PII) e sensiveis (medicos) protegidos
@@ -78,3 +93,5 @@ Este guardrail **NAO se aplica a**:
   `plsql-oracle-expert` (ver Excecao 1)
 - SELECT read-only em dados de negocio para evidencia/rastreio/debug com anonimizacao PII
   obrigatoria (ver Excecao 2)
+- Execucao de bloco anonimo PL/SQL em schema DEV declarado em `TESTING.md`, com
+  `SAVEPOINT`/`ROLLBACK` obrigatorios e sem PII real (ver Excecao 3 + ADR-014)
