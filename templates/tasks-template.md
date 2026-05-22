@@ -52,9 +52,12 @@ T8 -> T9
 
 **Done when:**
 - [ ]
-- [ ] Test count: [N] passa
+- [ ] Tests Artifact criado/atualizado em `.specs/features/[feature]/tests/`
+- [ ] Evidence registrada (ver campo abaixo)
 
-**Tests:** unit | integration | e2e | none
+**Tests Approach:** automated | manual | hybrid | none
+**Tests Artifact:** `.specs/features/[feature]/tests/<arquivo>` (ou `N/A` se Approach=none)
+**Evidence:** [comando + output esperado | screenshot path | query de validacao | justificativa se none]
 **Gate:** quick | full | build
 **Commit:** `WI-<ADO Task ID>: feat(<scope>): <description>`
 
@@ -66,4 +69,7 @@ T8 -> T9
 
 ## Validacao pre-aprovacao
 
-[3 checks: Granularity, Diagram-Definition Cross-Check, Test Co-location]
+[4 checks: Granularity, Diagram-Definition Cross-Check, Test Co-location, AC Coverage]
+
+Ver [references/tasks.md](../../references/tasks.md) e
+[ADR-013](../../adr/013-modelo-testes-co-localizado-por-task.md) para detalhamento.

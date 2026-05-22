@@ -51,15 +51,17 @@ spec-driven, gerenciados pelos processos corporativos proprios.
 |---|---|
 | **GMUD** | Abertura de RFC, aprovacao CAB, agendamento de janela, comunicacao de stakeholders, evidencias de mudanca |
 | **Deploy** | Build de release, promocao entre ambientes (DEV -> HML -> PRD), execucao de script em PRD, rollback, smoke test pos-deploy |
+| **QA manual end-to-end** ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)) | Execucao de homologacao por testador humano, abertura de Task ADO type=Testing pelo proprio QA, registro de defeitos. **O dev produz o test artifact** em `.specs/features/[feature]/tests/`; QA reaproveita no fluxo proprio. |
 
-**Como o skill se comporta:** se `design.md` mencionar passos de GMUD ou deploy, o agente
-**ignora** esses passos ao decompor. Se o TL pedir explicitamente para incluir, o agente
+**Como o skill se comporta:** se `design.md` mencionar passos de GMUD, deploy ou QA manual, o
+agente **ignora** esses passos ao decompor. Se o TL pedir explicitamente para incluir, o agente
 **recusa e aponta este guardrail**.
 
-**Por que esta fora:** GMUD e deploy nao sao deliverables de codigo verificaveis por gate de
-teste - sao atos operacionais com fluxo proprio, dono proprio (TL / sustentacao) e ferramenta
-propria. Inclui-los em `tasks.md` polui o sync ADO, distorce metrica de progresso da feature
-e cria tasks que ninguem consegue "verificar" no padrao Done-when do framework.
+**Por que esta fora:** GMUD, deploy e QA manual nao sao deliverables de codigo verificaveis
+por gate de teste - sao atos operacionais com fluxo proprio, dono proprio (TL / sustentacao /
+QA) e ferramenta propria. Inclui-los em `tasks.md` polui o sync ADO, distorce metrica de
+progresso da feature e cria tasks que ninguem consegue "verificar" no padrao Done-when do
+framework.
 
 ---
 
@@ -71,26 +73,28 @@ Leia `.specs/[feature]/design.md` antes de criar tasks.
 
 ### 1.5. Carregar Test Coverage Matrix
 
-Leia `.specs/codebase/TESTING.md` (se existir) antes de criar tasks. A Test Coverage Matrix e a
-Parallelism Assessment direcionam duas decisoes criticas:
+Leia `.specs/codebase/TESTING.md` (se existir) antes de criar tasks. A Test Coverage Matrix
+hibrida ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)) e a Parallelism
+Assessment direcionam duas decisoes criticas:
 
-**Tests co-localizados:** Toda task que cria ou modifica uma camada de codigo com tipo de teste
-exigido DEVE incluir escrita/atualizacao desses testes na mesma task. Tests NAO sao tasks separadas.
+**Tests co-localizados:** Toda task que cria ou modifica uma camada de codigo com cobertura
+exigida DEVE declarar `Tests Approach`, `Tests Artifact` e `Evidence`, e incluir a
+escrita/atualizacao do artifact na mesma task. Tests NAO sao tasks separadas.
 
-| Task cria... | "Done When" deve incluir... |
-|---|---|
-| Camada de codigo com requisito "unit" | Teste unitario escrito + gate quick passa |
-| Camada de codigo com requisito "e2e" | Teste e2e escrito + gate full passa |
-| Camada de codigo com requisito "integration" | Teste de integracao escrito + gate full passa |
-| Camada de codigo com requisito "none" | Gate check no nivel apropriado |
+| Task cria... | "Tests Approach" esperado | Artifact em `.specs/features/[feature]/tests/` |
+|---|---|---|
+| Camada de codigo com cobertura `automated` exigida | `automated` | Script executavel (ex: `.sql` via MCP, `Test*.java`, `*.test.ts`) |
+| Camada de codigo com cobertura `manual` exigida (ex: UI Forms) | `manual` | Procedimento documentado (`.md`) com passos numerados + resultado esperado |
+| Camada de codigo com cobertura mista | `hybrid` | Script + procedimento |
+| Doc / refactor sem mudanca de comportamento | `none` | `N/A` no `Tests Artifact`, justificativa em `Evidence` |
 
 **Flags de paralelismo:** Cruze com a Parallelism Assessment ao marcar tasks `[P]`:
 
-- Se o tipo de teste exigido pela task e marcado "Parallel-Safe: No" -> retire flag `[P]`
-- Se o tipo de teste e "Parallel-Safe: Yes" -> `[P]` permitido
-- Se a task nao tem testes -> `[P]` depende so de dependencias de codigo
+- Se o approach exigido pela task e marcado "Parallel-Safe: No" -> retire flag `[P]`
+- Se o approach e "Parallel-Safe: Yes" -> `[P]` permitido
+- Se a task tem `Tests Approach: none` -> `[P]` depende so de dependencias de codigo
 
-Se TESTING.md nao existe (projeto greenfield), pergunte ao usuario quais tipos de teste e comandos
+Se TESTING.md nao existe (projeto greenfield), pergunte ao usuario qual approach e tooling
 o projeto usara antes de criar tasks.
 
 ### 2. Quebrar em Tasks Atomicas
@@ -110,19 +114,26 @@ Agrupe tasks em fases. Identifique o que pode rodar em paralelo.
 
 ### 5. Validar Antes de Apresentar (OBRIGATORIO)
 
-Antes de mostrar tasks ao usuario, rode TRES checks pre-aprovacao. Estes NAO sao opcionais - sao
-gates. Se algum check falha, reestruture e re-rode ate todos passarem.
+Antes de mostrar tasks ao usuario, rode QUATRO checks pre-aprovacao. Estes NAO sao opcionais - sao
+gates hard. Se algum check falha, reestruture e re-rode ate todos passarem.
 
 **Check 1: Granularidade da Task** - verifique cada task atomica (ver secao Granularity Check).
 
 **Check 2: Cross-Check Diagrama-Definicao** - verifique que o diagrama de execucao bate com o
 campo `Depends on` de cada task.
 
-**Check 3: Validacao de Test Co-location** - verifique que o campo `Tests` de cada task bate com a
-matriz de cobertura do TESTING.md.
+**Check 3: Validacao de Test Co-location** - verifique que cada task com mudanca de codigo tem
+`Tests Approach != none` (quando a camada exige cobertura per TESTING.md), `Tests Artifact`
+apontando para arquivo em `.specs/features/[feature]/tests/` (existente ou a criar na propria
+task) e `Evidence` definida.
 
-**Apresente as duas tabelas de validacao com as tasks** para o usuario ver os resultados. Qualquer
-X significa que voce DEVE reestruturar antes de apresentar.
+**Check 4: AC Coverage Check** ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)) -
+para cada `FEAT-NN` declarada em `spec.md §9`, verifique que existe **pelo menos uma task** em
+`tasks.md` com `Requirement: FEAT-NN`. FEATs sem cobertura = bloqueio hard. Tasks de
+suporte/refactor sem `Requirement` correspondente sao aceitas.
+
+**Apresente as quatro tabelas de validacao com as tasks** para o usuario ver os resultados.
+Qualquer X significa que voce DEVE reestruturar antes de apresentar.
 
 ### 6. PERGUNTAR sobre MCPs e Skills
 
@@ -141,7 +152,7 @@ via MCP `@azure-devops/mcp`.
 **Pre-requisitos:**
 
 - Spec aprovada com `wi_pai` declarado no frontmatter (ID da User Story ou Feature pai).
-- `tasks.md` com todos os 3 checks pre-aprovacao verdes.
+- `tasks.md` com todos os 4 checks pre-aprovacao verdes.
 - MCP `@azure-devops/mcp` conectado.
 
 **Acao automatizada (ver [`/hap-sd-tasks`](../prompts/hap-sd-tasks.prompt.md)):**
@@ -235,9 +246,12 @@ T8 -> T9
 - [ ] Interface definida com todos os metodos do design
 - [ ] Tipos exportados corretamente
 - [ ] Sem erros de compilacao
-- [ ] Test count: [N] testes passam (sem deletes silenciosos)
+- [ ] Tests Artifact criado em `.specs/features/[feature]/tests/`
+- [ ] Evidence registrada
 
-**Tests:** unit
+**Tests Approach:** automated
+**Tests Artifact:** `.specs/features/comercial-cotacao/tests/test_servico_cotacao_interface.ts`
+**Evidence:** `npm test -- test_servico_cotacao_interface` exit 0; relatorio JUnit/Vitest com [N] testes passando
 **Gate:** quick
 **Commit:** `WI-<ADO Task ID>: feat(comercial): criar interface de servico de cotacao`
 
@@ -260,10 +274,13 @@ T8 -> T9
 
 - [ ] Implementa interface da T1
 - [ ] Trata casos de erro do design
-- [ ] Gate check passa: `[comando do quick gate do TESTING.md]`
-- [ ] Test count: [N] testes passam
+- [ ] Tests Artifact criado/atualizado em `.specs/features/[feature]/tests/`
+- [ ] Gate check passa: `[comando do quick gate do TESTING.md, se automated]`
+- [ ] Evidence registrada
 
-**Tests:** unit
+**Tests Approach:** automated
+**Tests Artifact:** `.specs/features/comercial-cotacao/tests/test_servico_cotacao.ts`
+**Evidence:** `npm test -- test_servico_cotacao` exit 0; relatorio com [N] testes passando, sem deletes silenciosos
 **Gate:** quick
 **Commit:** `WI-12345: feat(comercial): implementar servico de cotacao`
 
@@ -351,20 +368,56 @@ Para cada task, verifique:
 
 ## Test Co-location Validation
 
-Antes de aprovar tasks, verifique TODA task contra a Test Coverage Matrix do TESTING.md.
-Hard gate - tasks que falham DEVEM ser corrigidas.
+Antes de aprovar tasks, verifique TODA task contra a Test Coverage Matrix hibrida do TESTING.md
+([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)). Hard gate - tasks que
+falham DEVEM ser corrigidas.
 
-| Task | Camada criada/modificada | Matrix exige | Task diz | Status |
-|---|---|---|---|---|
-| T[N]: [name] | [camada] | [tipo de teste] | [campo Tests] | OK ou X VIOLACAO |
+A validacao tem **tres dimensoes** por task de mudanca de codigo:
+
+| Task | Camada modificada | TESTING.md exige (Approach) | Task declara (Approach) | Tests Artifact existe/sera criado? | Evidence verificavel? | Status |
+|---|---|---|---|---|---|---|
+| T[N]: [name] | [camada] | automated\|manual\|hybrid\|none | [campo Tests Approach] | path em `.specs/features/[feature]/tests/` valido? | comando/screenshot/query definida? | OK ou X VIOLACAO |
 
 **Regras:**
 
-- "Testado em outra task" NAO e justificativa valida para `Tests: none`. Isso e deferimento
-  de teste - exatamente o anti-pattern que esta validacao previne.
-- `Tests: none` so e valido quando a matrix diz "none" para aquela camada
-- Se uma task cria MULTIPLAS camadas, use o tipo de teste mais alto exigido por qualquer uma
-- Qualquer X VIOLACAO -> reestrutura a task para incluir testes exigidos
+- "Testado em outra task" NAO e justificativa valida para `Tests Approach: none`. Isso e
+  deferimento de teste - exatamente o anti-pattern que esta validacao previne.
+- `Tests Approach: none` so e valido quando a matrix diz "none" para aquela camada **OU** a
+  task e doc/refactor sem mudanca de comportamento (justificativa textual em `Evidence`).
+- `Tests Artifact` DEVE apontar para arquivo em `.specs/features/[feature]/tests/` que (a)
+  exista no momento da decomposicao OU (b) sera criado pela propria task durante
+  `hap-sd-implement`. Path generico tipo "TBD" e violacao.
+- `Evidence` DEVE ser concretamente verificavel:
+  - `automated` -> comando + output esperado (exit code, contagem de testes, JUnit XML path)
+  - `manual` -> caminho de screenshot/log final + nome de quem conferiu
+  - `hybrid` -> ambos
+  - `none` -> justificativa textual ("refactor de renomeacao, sem mudanca de comportamento")
+- Se uma task cria MULTIPLAS camadas, use o approach mais alto exigido por qualquer uma.
+- Qualquer X VIOLACAO -> reestrutura a task para incluir os campos exigidos.
+
+---
+
+## AC Coverage Check
+
+Quarto gate hard pre-aprovacao ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)).
+Garante que toda FEAT-NN da spec tem cobertura no `tasks.md`.
+
+| FEAT (spec.md §9) | Tasks que satisfazem (`Requirement: FEAT-NN`) | Status |
+|---|---|---|
+| FEAT-01 | T1, T3 | OK |
+| FEAT-02 | T2 | OK |
+| FEAT-03 | (nenhuma) | **X VIOLACAO — bloqueio hard** |
+
+**Regras:**
+
+- Toda `FEAT-NN` declarada em `spec.md §9` DEVE ter pelo menos uma task com
+  `Requirement: FEAT-NN`.
+- Tasks de suporte (setup de infra, refactor preparatorio, etc.) podem existir sem
+  `Requirement` correspondente — nao sao violacao.
+- Tasks com `Requirement` apontando para FEAT inexistente na spec sao violacao (referencia
+  fantasma).
+- Qualquer X VIOLACAO -> decompor task nova cobrindo a FEAT orfa, ou questionar com o TL
+  se a FEAT deveria estar de fato fora do escopo.
 
 ---
 
