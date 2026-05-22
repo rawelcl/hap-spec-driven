@@ -56,7 +56,8 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "git checkout $Ref falhou" }
 
   # Se for branch, faz pull para HEAD remoto
-  $isBranch = (& git show-ref --verify --quiet "refs/heads/$Ref"; $LASTEXITCODE -eq 0)
+  & git show-ref --verify --quiet "refs/heads/$Ref" 2>$null
+  $isBranch = ($LASTEXITCODE -eq 0)
   if ($isBranch) {
     & git pull --ff-only origin $Ref
     if ($LASTEXITCODE -ne 0) { throw "git pull falhou" }
