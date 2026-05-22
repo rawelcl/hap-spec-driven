@@ -21,6 +21,28 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
 
 # Passos
 
+0. **Re-execucao em feature com `tasks.md` existente.** Se `.specs/features/[feature]/tasks.md`
+   ja existe, **nao assumir validade**. Ler o conteudo atual e revalidar contra os guardrails
+   atuais antes de qualquer decomposicao:
+
+   - Rodar os **4 gates** do step 7 (Granularity, Diagram-Definition Cross-Check, Test
+     Co-location Validation com schema atual de `Tests Approach`/`Tests Artifact`/`Evidence`,
+     AC Coverage Check) contra o `tasks.md` lido.
+   - Verificar guardrail **"Fora de escopo"**: detectar tasks que mencionem GMUD, deploy
+     (promocao DEV/HML/PRD, rollback, smoke pos-deploy) ou QA manual end-to-end. Presenca = violacao.
+   - Verificar **`Status:`** declarado no `tasks.md`. Valores aceitos: `Draft`, `Approved`,
+     `Synced`, `In Progress`, `Done`. Outro valor (`Pending Sync` em particular) = violacao.
+
+   Decisao:
+   - **Tudo passa** -> reportar ao TL o resultado dos 4 gates + fora-de-escopo + status, todos
+     OK, e encerrar **sem reescrever o arquivo**. Nao prosseguir para steps 1+.
+   - **Qualquer falha** -> reportar ao TL **o que falhou** (gate + razao), declarar que o
+     `tasks.md` existente sera descartado, e prosseguir para o step 1 (decomposicao do zero).
+     Apresentar diff (tasks removidas / adicionadas / campos novos) ao lado das 4 tabelas no
+     step 8.
+
+   **Se `tasks.md` nao existe**: pular este step e ir direto para o step 1 (fluxo fresh-run).
+
 1. Ler design.md (ou spec.md se ausente) completo
 2. Ler TESTING.md se existir - obter Test Coverage Matrix hibrida (Approach por camada) e Parallelism Assessment
 3. Decompor em tasks atomicas (1 task = 1 deliverable) - **excluir itens de GMUD, deploy e QA manual** (ver Guardrails)
@@ -79,6 +101,12 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
 - `[GUARDRAIL]` AC Coverage Check e hard gate ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md))
   - toda `FEAT-NN` declarada em `spec.md §9` DEVE ter pelo menos uma task em `tasks.md` com
   `Requirement: FEAT-NN`. FEAT orfa = bloqueio hard.
+- `[GUARDRAIL]` **Re-execucao nao e no-op silencioso.** Em feature com `tasks.md` ja existente,
+  o agente DEVE executar o step 0 (revalidacao contra guardrails atuais). Declarar "no-op" sem
+  rodar os 4 gates + fora-de-escopo + status contra o conteudo lido viola este guardrail.
+  Resultado da revalidacao DEVE ser reportado ao TL — no-op legitimo (tudo passa) ou descarte
+  (alguma falha). Idempotencia preguicosa (transcrever conteudo antigo como valido sem checar)
+  e proibida.
 - `[GUARDRAIL]` Step 8 e **gate de aprovacao com hard stop**. Output do step 8 contem
   **apenas** as 4 tabelas de validacao + a pergunta literal "Aprova as tasks como estao?
   (sim / ajustes / cancelar)". Mencionar Sync ADO, MCP, IDs, fallback, status `Pending Sync`

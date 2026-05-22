@@ -65,6 +65,66 @@ framework.
 
 ---
 
+## Re-execucao em feature ja decomposta
+
+Quando `/hap-sd-tasks` e invocado em feature que **ja tem** `.specs/features/[feature]/tasks.md`,
+o skill **NAO pode** assumir que o conteudo continua valido. Guardrails evoluem (C001, C002,
+C003, …) e features decompostas antes dessas mudancas ficam fora de conformidade silenciosamente
+se o skill apenas le-las e devolver "sem mudancas".
+
+**Step 0 obrigatorio antes da decomposicao**:
+
+1. Detectar se `tasks.md` existe.
+2. Se nao existe, ir direto para `## Process` -> step 1 (fluxo fresh-run).
+3. Se existe, **revalidar** contra os guardrails atuais:
+   - Os 4 gates pre-aprovacao (Granularity, Diagram-Definition, Test Co-location, AC Coverage).
+   - O guardrail "Fora de escopo" (sem tasks de GMUD, deploy, QA manual).
+   - O contrato de `Status:` (`Draft` | `Approved` | `Synced` | `In Progress` | `Done`).
+4. Decidir:
+
+| Resultado da revalidacao | Acao do agente |
+|---|---|
+| **Todos os checks OK** | Reportar ao TL "no-op legitimo: `tasks.md` atual passa os 4 gates da versao atual. Status: `<status>`. Nenhuma reescrita necessaria." Encerrar. |
+| **Qualquer check falha** | Reportar **o que falhou** (gate + razao), declarar que o `tasks.md` sera descartado, e prosseguir para `## Process` -> step 1. Apresentar diff (tasks removidas / novas / campos novos) no step 8 ao lado das 4 tabelas de validacao. |
+
+**Anti-pattern proibido:** idempotencia preguicosa — o agente le `tasks.md`, ve que spec nao
+mudou, e declara "sem mudancas" sem rodar os 4 gates contra o conteudo lido. Isso esconde
+divergencias e impede que guardrails novos alcancem features antigas.
+
+**Exemplo de output do Step 0 — desfecho com violacao:**
+
+```
+Revalidacao do tasks.md existente:
+
+- Granularity Check: OK
+- Diagram-Definition Cross-Check: OK
+- Test Co-location Validation: X VIOLACAO — tasks T1..T9 nao declaram
+  Tests Approach/Tests Artifact/Evidence
+- AC Coverage Check: X VIOLACAO — gate ausente no documento
+- Fora de escopo: X VIOLACAO — T5/T7/T8/T9 contem GMUD/deploy/smoke
+- Status: X VIOLACAO — `Pending Sync` antes de aprovacao do TL desta sessao
+
+Descartando tasks.md atual e re-decompondo do zero. Diff sera apresentado
+no step 8.
+```
+
+**Exemplo de output do Step 0 — desfecho no-op:**
+
+```
+Revalidacao do tasks.md existente:
+
+- Granularity Check: OK
+- Diagram-Definition Cross-Check: OK
+- Test Co-location Validation: OK
+- AC Coverage Check: OK
+- Fora de escopo: OK
+- Status: OK (Draft)
+
+Nenhuma decomposicao nova necessaria. tasks.md atual permanece intacto.
+```
+
+---
+
 ## Process
 
 ### 1. Revisar Design
