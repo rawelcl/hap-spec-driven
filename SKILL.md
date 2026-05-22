@@ -41,7 +41,10 @@ qualquer feature, avalie escopo e aplique apenas o necessario:
 - Specify, Tasks e Execute sao **sempre obrigatorios** - precisamos saber O QUE, COMO QUEBRAR e FAZER.
 - **Tasks e sempre obrigatorio** - toda mudanca no Hapvida tem Task no Azure DevOps. `tasks.md` e
   sincronizado 1:1 com work items Task no ADO via MCP, vinculados a User Story / Feature pai
-  ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md)).
+  ([REF: ADR-010](adr/010-tasks-obrigatorias-com-sync-ado.md)). Cada task declara
+  `Tests Approach` / `Tests Artifact` / `Evidence` com artifact co-localizado em
+  `.specs/features/[feature]/tests/` ([REF: ADR-013](adr/013-modelo-testes-co-localizado-por-task.md)).
+  GMUD, deploy e QA manual end-to-end ficam fora de `tasks.md`.
 - Design e **auto-skip** quando a mudanca e direta (Pequeno / Medio).
 - Discuss e disparado **dentro de Specify** quando ha gray areas em comportamento user-facing.
 - UAT interativo e disparado **dentro de Execute** apenas para features user-facing complexas.

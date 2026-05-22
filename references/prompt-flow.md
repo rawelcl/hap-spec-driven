@@ -1,7 +1,7 @@
 # Fluxo dos Prompts - Framework Spec-Driven Hapvida
 
-**Versao:** v0.5.2
-**Referencia:** SKILL.md, ADR-009, ADR-010, ADR-011, ADR-012
+**Versao:** v0.5.3 (C002 aplicada - ADR-013)
+**Referencia:** SKILL.md, ADR-009, ADR-010, ADR-011, ADR-012, ADR-013
 
 ---
 
@@ -99,7 +99,7 @@ Analisa o codigo fonte presente no workspace e gera os 7 documentos de mapeament
 | 2 | `ARCHITECTURE.md` | Componentes, fluxo de dados, dependencias |
 | 3 | `STRUCTURE.md` | Layout de pastas, convencoes de naming |
 | 4 | `CONVENTIONS.md` | Padroes de codigo, estilo, idiomas do time |
-| 5 | `TESTING.md` | Frameworks, cobertura, gate check commands |
+| 5 | `TESTING.md` | Tooling por approach (matriz hibrida stack-agnostic - ADR-013), Test Coverage Matrix (automated/manual/hybrid/none), Gate Check Commands, Parallelism Assessment |
 | 6 | `INTEGRATIONS.md` | ServiceNow, Lecom, GMUD, APIs externas |
 | 7 | `CONCERNS.md` | Tech debt, areas frageis, ADRs ausentes |
 
@@ -173,17 +173,20 @@ Passos executados:
 ### `/hap-sd-tasks`
 
 Passos executados:
-1. Le `design.md` + `TESTING.md` (Test Coverage Matrix, Parallelism Assessment)
-2. Decompoem em tasks atomicas com dependencias (1 task = 1 deliverable)
-3. Marca tasks paralelas com `[P]`
-4. Executa 3 checks pre-aprovacao: Granularity, Diagram-Definition Cross-Check, Test Co-location
-5. Aguarda aprovacao explicita do TL
-6. Cria 1 Task ADO por item via MCP (`create_work_item`, type=Task, vinculada ao `wi_pai`)
-7. Grava IDs retornados em `tasks.md`; status = `Synced`
+1. Le `design.md` (incluindo `## Estrategia de verificacao`) + `TESTING.md` (matriz hibrida Approach + Parallelism Assessment)
+2. Decompoem em tasks atomicas com dependencias (1 task = 1 deliverable, **excluindo GMUD/deploy/QA manual**)
+3. Para cada task: declara `Tests Approach` (automated|manual|hybrid|none), `Tests Artifact` (path em `.specs/features/[feature]/tests/`) e `Evidence` (ADR-013)
+4. Marca tasks paralelas com `[P]`
+5. Executa **4 checks pre-aprovacao**: Granularity, Diagram-Definition Cross-Check, Test Co-location (reframed), AC Coverage Check
+6. Aguarda aprovacao explicita do TL
+7. Cria 1 Task ADO por item via MCP (`create_work_item`, type=Task, vinculada ao `wi_pai`)
+8. Grava IDs retornados em `tasks.md`; status = `Synced`
 
 Guardrails ativos:
 - `[GUARDRAIL]` Sem `wi_pai` valido -> bloqueado (ADR-010)
 - `[GUARDRAIL]` Todos os `ADO Task ID` devem estar preenchidos antes de iniciar implementacao
+- `[GUARDRAIL]` AC Coverage Check e hard gate - toda FEAT-NN da spec §9 tem >=1 task (ADR-013)
+- `[GUARDRAIL]` Fora de escopo: GMUD, deploy e QA manual end-to-end (ADR-010 item 7)
 
 ---
 
