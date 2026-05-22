@@ -47,17 +47,33 @@ Se algum item falhar: PARE e rode `/hap-sd-tasks` antes de prosseguir.
    - Para PL/SQL: cabecalho de comentario com `WI-####` e `SPEC-####`
    - Para Java/.NET: commits atomicos com `WI-<ADO Task ID>: <type>(<scope>): <descricao>`
 
-4. **Verificar** (parte obrigatoria de cada task):
-   - Rodar testes do escopo afetado
+4. **Criar/atualizar Tests Artifact** ([ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)):
+   - Conforme `Tests Approach` declarado na task:
+     - `automated` -> criar/atualizar script executavel em `Tests Artifact` (ex: `.sql` via MCP, `Test*.java`, `*.test.ts`)
+     - `manual` -> criar/atualizar procedimento documentado em `Tests Artifact` (`.md` com passos numerados + resultado esperado)
+     - `hybrid` -> ambos
+     - `none` -> apenas justificar (refactor / doc sem mudanca de comportamento)
+   - Artifact vive em `.specs/features/[feature]/tests/` conforme path declarado na task.
+
+5. **Verificar** (parte obrigatoria de cada task):
+   - Para `automated`/`hybrid`: rodar o Tests Artifact e capturar output (exit code, contagem, JUnit XML)
+   - Para `manual`/`hybrid`: executar procedimento, capturar screenshot/log da etapa final
    - Checklist de codigos PL/SQL: sem DML em producao, sem acesso a dados PII direto
    - Confirmar criterio de sucesso declarado no passo pre-implementacao
 
-5. **Commit**:
+6. **Registrar Evidence em tasks.md (OBRIGATORIO antes do commit):**
+   - Preencher o campo `Evidence` da task com a saida real (nao placeholder):
+     - `automated` -> comando real + exit code + contagem ("`./mvnw test -Dtest=UserServiceTest` exit 0; 14 testes passam")
+     - `manual` -> path do screenshot ou log + assinatura ("`tests/screenshots/cadastro_passo5.png` + dev: rawelcl")
+     - `hybrid` -> ambos
+     - `none` -> justificativa textual final
+
+7. **Commit**:
    - Formato: `WI-<ADO Task ID>: <type>(<scope>): <descricao>`
    - Exemplos: `WI-12345: feat(proposta): calcula carencia por acomodacao`
    - Atualizar status da task em `tasks.md` para `done`
 
-6. **Reportar** - resumo do que foi implementado, testes que passaram, proxima task sugerida
+8. **Reportar** - resumo do que foi implementado, evidencia registrada, proxima task sugerida
 
 # Guardrails
 

@@ -77,10 +77,14 @@ ultima_atualizacao: YYYY-MM-DD
 
 ## 6. Plano de validacao
 
-| Acao | Como verificar |
-|---|---|
-| Hot-fix em HML | Reproducir cenario, verificar correcao |
-| Hot-fix em PROD | Monitoramento pos-deploy 30 minutos |
+Para incidentes, o plano em HML/PROD foca em reproduzir o cenario afetado. Quando aplicavel,
+cada task gera um `Tests Artifact` co-localizado em `.specs/features/[feature]/tests/` que
+codifica a verificacao da correcao ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)).
+
+| Acao | Como verificar | Tests Artifact (se aplicavel) |
+|---|---|---|
+| Hot-fix em HML | Reproducir cenario, verificar correcao | `verifica_<cenario>.sql` ou `procedimento_<cenario>.md` |
+| Hot-fix em PROD | Monitoramento pos-deploy 30 minutos | (acao operacional fora de tasks.md - QA/sustentacao) |
 
 ## 7. Comunicacao
 

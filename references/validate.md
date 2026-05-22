@@ -57,7 +57,29 @@ Para cada user story em spec.md:
 | FEAT-02 | WHEN [A] THEN [B] | OK PASS / X FAIL |
 ```
 
-Sincronize com Test Cases ADO correspondentes.
+Sincronize com os `Tests Artifact` declarados em `tasks.md` (cada `FEAT-NN` aponta para o
+artifact em `.specs/features/[feature]/tests/` que o satisfaz).
+
+### 2.5. AC Coverage Check
+
+Quarto gate hard pre-aprovacao do `tasks.md` ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)).
+Na fase Validate, **revalide** a cobertura antes de marcar a feature como Resolved:
+
+Para cada `FEAT-NN` em `spec.md §9`, liste as tasks que a satisfazem:
+
+| FEAT (spec.md §9) | Tasks com `Requirement: FEAT-NN` (em tasks.md) | Status Tasks | Tests Artifact existe? | Evidence registrada? | Cobertura |
+|---|---|---|---|---|---|
+| FEAT-01 | T1, T3 | T1=done, T3=done | OK / X | OK / X | OK / X |
+| FEAT-02 | T2 | T2=done | OK / X | OK / X | OK / X |
+| FEAT-03 | (nenhuma) | — | — | — | **X — FEAT orfa** |
+
+**Regras:**
+
+- FEAT orfa (sem task) -> bloqueio. Voltar a fase Tasks e reabrir decomposicao.
+- FEAT coberta mas alguma task em `done` sem `Tests Artifact` no disco -> bloqueio. Implementar
+  artifact ou justificar `Approach: none` com evidencia textual.
+- FEAT coberta mas `Evidence` ausente -> bloqueio. Registrar evidencia (comando + output,
+  screenshot, query) antes de fechar feature.
 
 ### 3. Cheque Edge Cases
 

@@ -63,6 +63,25 @@ graph TD
 
 ---
 
+## Estrategia de verificacao
+
+> Declarada por componente para alimentar a fase Tasks ([ADR-013](../../adr/013-modelo-testes-co-localizado-por-task.md)).
+> Aponta o **Approach esperado** (automated / manual / hybrid / none), o **tooling** que sera
+> usado e o **artifact path** que o `hap-sd-tasks` espera ver em `Tests Artifact` no `tasks.md`.
+
+| Componente | Approach | Tooling | Artifact path em `.specs/features/[feature]/tests/` |
+|---|---|---|---|
+| [ex: UserService] | automated | JUnit 5 + Mockito | `UserServiceTest.java` |
+| [ex: Tela cadastro Forms] | manual | Procedimento documentado | `procedimento_cadastro.md` |
+| [ex: package PKG_X PL/SQL] | automated | Script `.sql` via MCP Oracle | `verifica_pkg_x.sql` |
+| [ex: DTO de request] | none | — | `N/A` (sem mudanca de comportamento) |
+
+Alinhar com `TESTING.md` do squad ([REF: brownfield-mapping](../../references/brownfield-mapping.md)).
+Quando aprovado, este mapa alimenta diretamente os campos `Tests Approach` e `Tests Artifact`
+de cada task.
+
+---
+
 ## Decisoes tecnicas (so as nao-obvias)
 
 | Decisao | Escolha | Racional | ADR |

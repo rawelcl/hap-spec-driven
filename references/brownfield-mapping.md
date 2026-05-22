@@ -33,45 +33,78 @@
 5. **Identificar lacunas** -> criar `[REVISAO]` markers em areas confusas
 6. **Validar com TL e Arquiteto** antes de marcar como base de trabalho
 
-## TESTING.md - estrutura especial
+## TESTING.md - estrutura especial (matriz hibrida stack-agnostic)
+
+A estrutura abaixo segue o modelo definido em
+[ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md). Cada squad declara seu
+**tooling especifico** por approach; o schema (Approach / Coverage Matrix / Gate Check /
+Parallelism) e estavel.
 
 ```markdown
 # Testing
 
-## Frameworks
-- Java: JUnit 5
-- .NET: xUnit
-- PL/SQL: utPLSQL (quando disponivel)
+## Tooling por approach
+
+Declarar **por stack do squad**. Exemplos validos:
+
+| Approach | Stack | Tooling sugerido | Default artifact path |
+|---|---|---|---|
+| `automated` | PL/SQL | Scripts `.sql` executaveis via MCP Oracle (DEV) | `.specs/features/[feature]/tests/verifica_<nome>.sql` |
+| `automated` | Java/Spring | JUnit 5 + Mockito (`Test*.java`); RestAssured/MockMvc (`*IT.java`) | `.specs/features/[feature]/tests/<Nome>Test.java` |
+| `automated` | .NET | xUnit + Moq (`<Nome>Tests.cs`); WebApplicationFactory (`<Nome>IntegrationTests.cs`) | `.specs/features/[feature]/tests/<Nome>Tests.cs` |
+| `automated` | Frontend | Jest/Vitest + Testing Library (`<nome>.test.tsx`); Playwright/Cypress (`*.spec.ts`) | `.specs/features/[feature]/tests/<nome>.test.tsx` |
+| `manual` | Qualquer | Procedimento documentado em markdown com passos numerados | `.specs/features/[feature]/tests/procedimento_<nome>.md` |
+| `hybrid` | Qualquer | Combinacao: script automated + procedimento manual | Ambos paths |
+| `none` | Qualquer | Sem artifact (doc / refactor sem mudanca de comportamento) | `N/A` no campo Tests Artifact |
 
 ## Test Coverage Matrix
 
-| Camada | Tipo de teste | Co-located? |
-|---|---|---|
-| Service / Business Logic | Unit | Sim |
-| API Controllers | Integration | Sim |
-| Persistencia | Integration | Sim |
-| Stored Procedures (PL/SQL) | utPLSQL ou test manual | Sim quando viavel |
-| End-to-end UI | E2E | Separado |
-| Configuracao / DTOs | none | - |
+Define qual **Approach** e exigido por camada de mudanca. Substitui o schema antigo
+`unit/integration/e2e/none`.
+
+| Camada de mudanca | Approach default | Co-located? | Notas |
+|---|---|---|---|
+| [ex: Service / Business Logic Java] | `automated` | Sim | JUnit 5 + Mockito |
+| [ex: API Controllers] | `automated` | Sim | RestAssured ou MockMvc |
+| [ex: Persistencia / Repository] | `automated` | Sim | Testcontainers (banco real isolado) |
+| [ex: Stored Procedures / Packages PL/SQL] | `automated` | Sim | Script `.sql` executavel via MCP Oracle |
+| [ex: Trigger / Constraint / Indice PL/SQL] | `automated` | Sim | Script `.sql` confirmando estado pos-DDL |
+| [ex: Forms `.fmb` / UI Oracle] | `manual` | Sim | Procedimento `.md` com screenshot |
+| [ex: UI Web (Thymeleaf / React / Blazor)] | `manual` ou `automated` | Sim | Procedimento OU Playwright/Cypress |
+| [ex: Configuracao / DTOs / Constantes] | `none` | - | Justificar em Evidence |
 
 ## Gate Check Commands
 
-| Nivel | Comando |
-|---|---|
-| Quick | `./mvnw test -Dtest='*Spec*' -q` |
-| Full | `./mvnw verify` |
-| Build | `./mvnw clean verify -P all-tests` |
+Comandos executaveis para approach `automated`. Manual usa "Evidence registrada".
+
+| Nivel | Approach | Comando / Verificacao |
+|---|---|---|
+| Quick | automated | `[comando que roda subset rapido — ex: ./mvnw test -Dtest='*Spec*' -q]` |
+| Full | automated | `[comando que roda suite completa — ex: ./mvnw verify]` |
+| Build | automated | `[comando final pre-merge — ex: ./mvnw clean verify -P all-tests]` |
+| Quick/Full/Build | manual | Evidence anexada em tasks.md (screenshot path + assinatura do dev) |
+| Quick/Full/Build | hybrid | Comando automated retorna exit 0 **E** Evidence manual anexada |
+| Quick/Full/Build | none | Justificativa em Evidence (refactor/doc sem mudanca de comportamento) |
 
 ## Parallelism Assessment
 
-| Tipo de teste | Parallel-Safe |
+Tipo de teste que **executa concorrentemente em CI/MCP/maquina do dev sem race condition**.
+
+| Approach + escopo | Parallel-Safe |
 |---|---|
-| Unit | Yes |
-| Integration (com banco mock) | Yes |
-| Integration (com banco real compartilhado) | No |
-| E2E | No |
-| utPLSQL | No (banco compartilhado) |
+| automated unit (sem estado compartilhado) | Yes |
+| automated integration com banco mock / em memoria | Yes |
+| automated integration com banco real compartilhado (DEV unico) | No |
+| automated end-to-end (UI compartilhada) | No |
+| automated PL/SQL via MCP em schema compartilhado | No (banco unico) |
+| manual | No (humano sequencial) |
+| hybrid | Dominado pelo lado nao-paralelo |
 ```
+
+> **Stack-agnostic:** as linhas da `Test Coverage Matrix` acima sao exemplos. Cada squad popula
+> a sua matriz com as camadas reais que existem em seu repo, usando o tooling do `Tooling por
+> approach`. O **schema** (colunas + valores de Approach + path padronizado em `tests/`) e
+> estavel e nao depende de stack.
 
 ## Adaptacoes especificas Hapvida
 

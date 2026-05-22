@@ -34,7 +34,9 @@ Validar que `spec.md` da feature em foco atende todos os criterios obrigatorios.
 - [ ] Acceptance Criteria em formato WHEN/THEN/SHALL
 - [ ] IDs de Requirement Traceability (FEAT-NN)
 - [ ] Edge Cases identificados
-- [ ] Plano de validacao com mapeamento para Test Cases ADO
+- [ ] Plano de validacao com mapeamento `FEAT-NN -> .specs/features/[feature]/tests/<artifact>` ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md))
+- [ ] **AC Coverage:** quando `tasks.md` existe, toda `FEAT-NN` declarada em §9 tem >=1 task com `Requirement: FEAT-NN`
+- [ ] **Tests Approach** declarado em cada task (automated|manual|hybrid|none) coerente com TESTING.md
 - [ ] Anexos e rastreio de fontes
 
 ## Marcadores regulatorios

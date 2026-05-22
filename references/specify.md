@@ -277,17 +277,24 @@ Para cada regra:
 
 ## 13. Plano de validacao
 
-| Criterio | Test Case ADO | Massa de teste |
-|---|---|---|
-| FEAT-01 | TC-#### | [descricao] |
-| FEAT-02 | TC-#### | [descricao] |
+Cobertura de cada criterio por `Tests Artifact` co-localizado em
+`.specs/features/[feature]/tests/` ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)).
 
-**Tipos de teste necessarios:**
+| Criterio | Tests Approach | Tests Artifact (em `tests/`) | Tasks (T<n>) | Massa de teste |
+|---|---|---|---|---|
+| FEAT-01 | automated\|manual\|hybrid\|none | `<artifact>` | T<n> | [descricao] |
+| FEAT-02 | | | | [descricao] |
 
-- [ ] Unit
-- [ ] Integration
-- [ ] E2E
-- [ ] UAT (interativa - se feature user-facing complexa)
+**Approaches em uso nesta feature:**
+
+- [ ] `automated` (script executavel: PL/SQL via MCP, JUnit, xUnit, Vitest, etc.)
+- [ ] `manual` (procedimento `.md` com passos numerados)
+- [ ] `hybrid` (combinacao)
+- [ ] `none` (raro - apenas refactor/doc sem mudanca de comportamento)
+
+**Nota:** QA manual end-to-end (homologacao por testador humano) NAO entra em tasks.md - fluxo
+proprio do QA, conforme [ADR-010 item 7](../adr/010-tasks-obrigatorias-com-sync-ado.md). QA
+reaproveita os artifacts declarados acima.
 
 ## 14. Anexos e rastreio de fontes
 

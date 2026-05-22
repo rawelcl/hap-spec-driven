@@ -65,9 +65,15 @@ ultima_atualizacao: YYYY-MM-DD
 
 ## 7. Plano de validacao
 
-| Criterio | Test Case ADO |
-|---|---|
-| FEAT-01 | TC-#### |
+Cobertura de cada criterio por `Tests Artifact` co-localizado em
+`.specs/features/[feature]/tests/` ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)).
+
+| Criterio | Tests Approach | Tests Artifact (em `tests/`) | Tasks (T<n>) |
+|---|---|---|---|
+| FEAT-01 | automated\|manual\|hybrid\|none | `<artifact>` | T<n> |
+
+**Nota:** QA manual end-to-end fica fora do escopo de `tasks.md` — QA reaproveita os artifacts
+declarados acima ([REF: ADR-010 item 7](../adr/010-tasks-obrigatorias-com-sync-ado.md)).
 
 ## 8. Anexos e rastreio
 

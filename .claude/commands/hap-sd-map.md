@@ -53,7 +53,7 @@ Formato sugerido de pergunta ao TL (envie em uma so mensagem):
    | 2 | `ARCHITECTURE.md` | Componentes principais, fluxo de dados, dependencias |
    | 3 | `STRUCTURE.md` | Layout de pastas, convencoes de naming |
    | 4 | `CONVENTIONS.md` | Padroes de codigo, estilo, comentarios, idiomas Hapvida |
-   | 5 | `TESTING.md` | Frameworks de teste, Test Coverage Matrix, Gate Check Commands |
+   | 5 | `TESTING.md` | Tooling por approach (matriz hibrida stack-agnostic per [ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)), Test Coverage Matrix (automated/manual/hybrid/none por camada), Gate Check Commands, Parallelism Assessment |
    | 6 | `INTEGRATIONS.md` | APIs externas, ServiceNow, Lecom, GMUD, SACTI |
    | 7 | `CONCERNS.md` | Tech debt, areas frageis, gaps, ADRs ausentes |
 

@@ -161,17 +161,26 @@ Termos canonicos do dominio (ancorados em `[REF: ADR-21]` Linguagem Onipresente)
 
 ## 13. Plano de validacao
 
-| Criterio | Test Case ADO | Massa de teste |
-|---|---|---|
-| FEAT-01 | TC-#### | |
-| FEAT-02 | TC-#### | |
+Cobertura de cada criterio de aceitacao por `Tests Artifact` co-localizado em
+`.specs/features/[feature]/tests/` ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)).
+Tasks que satisfazem cada FEAT sao listadas para rastreio forward AC -> task -> artifact.
 
-**Tipos de teste necessarios:**
+| Criterio | Tests Approach esperado | Tests Artifact (em `tests/`) | Tasks (T<n>) | Massa de teste |
+|---|---|---|---|---|
+| FEAT-01 | automated\|manual\|hybrid\|none | `verifica_X.sql` ou `procedimento_X.md` ou `Test*.java` etc. | T1, T3 | |
+| FEAT-02 | | | T2 | |
 
-- [ ] Unit
-- [ ] Integration
-- [ ] E2E
-- [ ] UAT (interativa - tipicamente sim em Project+Business)
+**Approaches em uso nesta feature:**
+
+- [ ] `automated` (script executavel: PL/SQL via MCP, JUnit, xUnit, Vitest, etc. — declarado em TESTING.md por squad)
+- [ ] `manual` (procedimento documentado em `.md` com passos numerados)
+- [ ] `hybrid` (combinacao)
+- [ ] `none` (raro - apenas refactor/doc sem mudanca de comportamento, justificar em Evidence da task)
+
+**Nota:** QA manual end-to-end (homologacao por testador humano) NAO entra em tasks.md - fluxo
+proprio do QA, conforme [ADR-010 item 7](../adr/010-tasks-obrigatorias-com-sync-ado.md) e
+[ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md). QA reaproveita os artifacts
+declarados acima.
 
 ## 14. Anexos e rastreio de fontes
 

@@ -22,8 +22,13 @@ Gerar `.specs/features/[feature]/design.md` a partir da spec.md ja aprovada (est
 4. Aplicar Knowledge Verification Chain
 5. Citar ADRs aplicaveis via `[REF: ADR-XX]`
 6. Para refatoracao PL/SQL: identificar `[MIGRACAO]` points
-7. Gerar design.md usando template
-8. Confirmar com TL: "Design gerado em `.specs/features/[feature]/design.md`. Revisar antes de
+7. **Preencher secao `## Estrategia de verificacao`** ([ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md)):
+   para cada componente declarado em `## Components`, atribuir Approach esperado
+   (automated|manual|hybrid|none), tooling (alinhado com TESTING.md do squad) e artifact path
+   esperado em `.specs/features/[feature]/tests/`. Esse mapa alimenta diretamente o
+   `hap-sd-tasks` na proxima fase.
+8. Gerar design.md usando template
+9. Confirmar com TL: "Design gerado em `.specs/features/[feature]/design.md`. Revisar antes de
    ir para Tasks?"
 
 # Guardrails
