@@ -10,11 +10,11 @@ description: 'Mapear codebase existente em 7 documentos em .specs/codebase/ (bro
 Executar o brownfield mapping do codebase atual, produzindo os 7 documentos canônicos em
 `.specs/codebase/` para que o framework opere com contexto real do projeto.
 
-# Input obrigatorio - se ausente, PARE e pergunte ao TL antes de qualquer analise
+# Input obrigatorio - se ausente, PARE e colete via vscode_askQuestions antes de qualquer analise
 
-Antes de executar qualquer passo abaixo, confirme os itens 1-5 em **uma unica mensagem** ao TL e
-aguarde resposta. **Nao prossiga com defaults silenciosos** - se o TL nao respondeu ou respondeu
-parcialmente, repita a pergunta apenas para os campos faltantes.
+Antes de executar qualquer passo abaixo, colete os itens 1-5 usando `vscode_askQuestions`
+(interacao interativa no chat). **Nao prossiga com defaults silenciosos** - se algum campo
+obrigatorio vier vazio, repita a chamada apenas para os campos faltantes.
 
 | # | Campo | Obrigatorio? | Default permitido |
 |---|---|---|---|
@@ -24,14 +24,57 @@ parcialmente, repita a pergunta apenas para os campos faltantes.
 | 4 | **Para PL/SQL**: TAG DE PRODUCAO no WinCVS (`cvs log` ou explicita) | Sim se stack=PLSQL/Mista | Nenhum |
 | 5 | **Areas de foco** (modulos, packages, servicos prioritarios) | Nao | Vazio = varrer tudo dentro da raiz |
 
-Formato sugerido de pergunta ao TL (envie em uma so mensagem):
+Use a ferramenta `vscode_askQuestions` para coletar os inputs de forma interativa.
+Monte o array `questions` com as 5 perguntas abaixo (omita a pergunta 4 se stack
+for Java ou DotNet):
 
-> Para rodar o brownfield mapping, preciso confirmar:
-> 1. Stack predominante? (PLSQL | Java | DotNet | Mista)
-> 2. Raiz do codebase? (padrao `.` - confirma?)
-> 3. Paths a ignorar alem do `.gitignore`? (ex: `examples/`, `workspace/`)
-> 4. [se PL/SQL] Qual tag PRODUCAO do WinCVS usar como baseline?
-> 5. Areas de foco prioritarias? (opcional)
+```json
+[
+  {
+    "header": "Stack predominante",
+    "question": "Qual é a stack predominante do projeto?",
+    "options": [
+      { "label": "PLSQL", "description": "Oracle PL/SQL / Oracle Forms" },
+      { "label": "Java", "description": "Java / Spring / Maven" },
+      { "label": "DotNet", "description": ".NET / C# / ASP.NET" },
+      { "label": "Mista", "description": "Combinação de stacks (ex: PLSQL + Java)" }
+    ],
+    "allowFreeformInput": false
+  },
+  {
+    "header": "Raiz do codebase",
+    "question": "Qual é a raiz do codebase a mapear? (padrão: . = workspace atual)",
+    "options": [
+      { "label": ".", "description": "Diretório atual (workspace root)", "recommended": true }
+    ],
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Paths a ignorar",
+    "question": "Paths adicionais a ignorar além do .gitignore? (separe por vírgula)",
+    "options": [
+      { "label": ".specs/, workspace/, examples/, templates/, prompts/, references/", "description": "Sugestão para o próprio framework", "recommended": true }
+    ],
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Tag PRODUCAO WinCVS",
+    "question": "[PL/SQL] Qual tag de PRODUCAO usar como baseline no WinCVS?",
+    "message": "Exemplo: `PRODUCAO_22052026`. Obrigatório para stacks PLSQL e Mista.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Areas de foco",
+    "question": "Áreas de foco prioritárias? (opcional — deixe em branco para varrer tudo)",
+    "message": "Exemplo: `pkg_contrato, pkg_beneficiario`. Separe por vírgula.",
+    "allowFreeformInput": true
+  }
+]
+```
+
+Aguarde a resposta antes de prosseguir. Se algum campo obrigatorio (1-3, e 4 quando
+stack=PLSQL/Mista) vier vazio, chame `vscode_askQuestions` novamente apenas com as
+perguntas faltantes.
 
 # Passos
 
