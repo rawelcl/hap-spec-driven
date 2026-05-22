@@ -29,15 +29,25 @@ no diretorio do objeto e incrementando 1.
 
 # Passos
 
+0. **Obter codigo-fonte via tool CVS** (obrigatorio antes de qualquer outra etapa):
+   ```powershell
+   cd <RAIZ_DO_PROJETO>
+   .\.specs\framework\tools\cvs-fetch-producao\cvs-fetch-producao.ps1 `
+     -Module "<SCHEMA>/<NOME_OBJETO>.<EXT>"
+   ```
+   - Se o tool retornar `[BLOQUEADO]` (exit 1): parar imediatamente e notificar o TL.
+     Nao prosseguir com nenhuma outra fonte.
+   - Anotar o `OutputDir` e a `tag` gravados no `cvs-fetch-evidence.json` — usar como
+     `VERSAO_CVS` no nome da pasta de RE.
 1. **Verificar guardrails**:
-   - `[GUARDRAIL]` Codigo lido **exclusivamente do CVS tag PRODUCAO** - se nao localizado: `[BLOQUEADO]` (sem fallback)
-   - `[GUARDRAIL]` MCP Oracle so para dicionario (dba_*) - `dba_source` proibido como fonte de codigo
+   - `[GUARDRAIL]` Codigo lido **exclusivamente do OutputDir gerado pelo tool** no passo 0
+   - `[GUARDRAIL]` MCP Oracle so para dicionario (`dba_*`) - `dba_source` proibido como fonte de codigo
 2. **Invocar a skill** [`engenharia-reversa-sigo`](../skills/engenharia-reversa-sigo/SKILL.md)
    seguindo seu protocolo de execucao (Passos 0 a 6)
 3. **Materializar pre-requisitos** se ausentes em `.specs/codebase/knowledge-base/`:
    - `indice.md`, `catalogo-conceitos-negocio.md`, `catalogo-objetos-plsql.md`,
      `pendencias-abertas.md`, `riscos-ans.md`
-4. **Resolver tag CVS PRODUCAO** e gravar no frontmatter do artefato
+4. **Resolver tag CVS PRODUCAO** — usar a tag registrada no `cvs-fetch-evidence.json` (passo 0)
 5. **Calcular NNN** - sequencial zero-padded (listar `v*-rev-*` em
    `.specs/reverse-engineering/plsql/<NOME>/`, incrementar 1; primeira analise = `001`)
 6. **Gerar artefato** a partir de
