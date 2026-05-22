@@ -49,7 +49,7 @@ Declarar **por stack do squad**. Exemplos validos:
 
 | Approach | Stack | Tooling sugerido | Default artifact path |
 |---|---|---|---|
-| `automated` | PL/SQL | Scripts `.sql` executaveis via MCP Oracle (DEV) | `.specs/features/[feature]/tests/verifica_<nome>.sql` |
+| `automated` | PL/SQL | Bloco anonimo `.sql` via MCP Oracle DEV (template canonico abaixo, per [ADR-014](../adr/014-execucao-testes-plsql-blocos-anonimos-dev.md)) | `.specs/features/[feature]/tests/verifica_<rotina>.sql` |
 | `automated` | Java/Spring | JUnit 5 + Mockito (`Test*.java`); RestAssured/MockMvc (`*IT.java`) | `.specs/features/[feature]/tests/<Nome>Test.java` |
 | `automated` | .NET | xUnit + Moq (`<Nome>Tests.cs`); WebApplicationFactory (`<Nome>IntegrationTests.cs`) | `.specs/features/[feature]/tests/<Nome>Tests.cs` |
 | `automated` | Frontend | Jest/Vitest + Testing Library (`<nome>.test.tsx`); Playwright/Cypress (`*.spec.ts`) | `.specs/features/[feature]/tests/<nome>.test.tsx` |
@@ -99,12 +99,80 @@ Tipo de teste que **executa concorrentemente em CI/MCP/maquina do dev sem race c
 | automated PL/SQL via MCP em schema compartilhado | No (banco unico) |
 | manual | No (humano sequencial) |
 | hybrid | Dominado pelo lado nao-paralelo |
+
+## Schema DEV autorizado para bloco anonimo via MCP Oracle
+
+Aplicavel a squads com stack PL/SQL per [ADR-014](../adr/014-execucao-testes-plsql-blocos-anonimos-dev.md).
+
+| Stack | Schema DEV | Connection MCP | Observacao |
+|---|---|---|---|
+| PL/SQL | <SCHEMA_DEV> (ex: HUMASTER_DEV) | <alias_mcp_oracle_dev> | Apontar para producao = HARD STOP |
 ```
 
 > **Stack-agnostic:** as linhas da `Test Coverage Matrix` acima sao exemplos. Cada squad popula
 > a sua matriz com as camadas reais que existem em seu repo, usando o tooling do `Tooling por
 > approach`. O **schema** (colunas + valores de Approach + path padronizado em `tests/`) e
 > estavel e nao depende de stack.
+
+## Bloco anonimo PL/SQL — template canonico (per ADR-014)
+
+Aplica-se a `Approach: automated|hybrid` com stack PL/SQL. Cada AC da `spec.md §9` vira um
+sub-bloco nomeado dentro do `.sql` — mapeamento 1:1 obrigatorio per
+[ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md) "AC Coverage Check" +
+[ADR-014](../adr/014-execucao-testes-plsql-blocos-anonimos-dev.md) "Decisao item 2".
+
+```sql
+-- verifica_<ROTINA>.sql
+-- Feature: [feature-slug]
+-- Rotina sob teste: <SCHEMA>.<ROTINA>
+-- Spec: ../spec.md
+-- ACs cobertos: AC-01, AC-02, ..., AC-NN
+
+DECLARE
+  -- Entradas
+  l_input_1       <tipo>;
+  l_input_2       <tipo>;
+  -- Saidas
+  l_out_real      <tipo>;
+  l_out_esperado  <tipo>;
+BEGIN
+  SAVEPOINT sp_test_start;
+
+  -- AC-01: <descricao curta do criterio de aceite>
+  l_input_1 := <valor_de_entrada_ac01>;
+  <SCHEMA>.<ROTINA>(l_input_1, l_out_real);
+  l_out_esperado := <valor_esperado_ac01>;
+  IF l_out_real = l_out_esperado THEN
+    DBMS_OUTPUT.PUT_LINE('PASS AC-01');
+  ELSE
+    ROLLBACK TO sp_test_start;
+    RAISE_APPLICATION_ERROR(-20001,
+      'FAIL AC-01: esperado=' || l_out_esperado || ' obtido=' || l_out_real);
+  END IF;
+
+  -- AC-02: <descricao curta>
+  -- ... mesmo padrao: setup -> chamada -> assert PASS/FAIL ...
+
+  ROLLBACK TO sp_test_start;
+  DBMS_OUTPUT.PUT_LINE('ALL ACs PASSED');
+END;
+/
+```
+
+Regras (validadas pelos gates de [hap-sd-tasks](../prompts/hap-sd-tasks.prompt.md) e
+executadas por [hap-sd-implement](../prompts/hap-sd-implement.prompt.md)):
+
+- `SAVEPOINT sp_test_start` no inicio e `ROLLBACK TO sp_test_start` antes de cada
+  `RAISE_APPLICATION_ERROR` **e** no `END` do bloco - **obrigatorios**. Bloco que persiste
+  mudancas em DEV viola ADR-014.
+- Mapeamento 1:1 obrigatorio: cada AC do `Requirement: FEAT-NN` da task tem um sub-bloco
+  `-- AC-NN: <descricao>` correspondente no `.sql`. AC sem sub-bloco ou sub-bloco sem AC
+  = violacao do "AC Coverage Check".
+- Schema DEV alvo declarado em `TESTING.md` do squad (secao "Schema DEV autorizado" acima).
+  MCP Oracle apontando para producao = HARD STOP no `hap-sd-implement`.
+- Massa de teste sempre anonimizada — proibido PII real mesmo em DEV (ver ADR-007
+  Excecao 3).
+- Bloco aborta no primeiro FAIL (trade-off do ADR-014 — forca fix incremental).
 
 ## Adaptacoes especificas Hapvida
 
