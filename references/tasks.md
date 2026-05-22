@@ -135,6 +135,53 @@ suporte/refactor sem `Requirement` correspondente sao aceitas.
 **Apresente as quatro tabelas de validacao com as tasks** para o usuario ver os resultados.
 Qualquer X significa que voce DEVE reestruturar antes de apresentar.
 
+### 5.1. Gate de aprovacao (step 8) — hard stop
+
+Apos apresentar as 4 tabelas, o agente DEVE fazer **literalmente** esta pergunta como
+ultima linha do output:
+
+> "Aprova as tasks como estao? (sim / ajustes / cancelar)"
+
+E **PARAR.** Nao escrever nada alem das tabelas e da pergunta.
+
+**Proibido** mencionar no step 8:
+
+- Sync ADO, MCP `@azure-devops/mcp`, ADO Task ID
+- Fallback de MCP indisponivel
+- "Proximo passo" ou roadmap pos-aprovacao
+- Status `Pending Sync` ou `Synced` do `tasks.md`
+- Placeholders tipo `WI-<TBD-Tn>` em commits
+
+Esses topicos ficam para steps 9 (metadados ADO) e 10 (criacao via MCP), **apos** a
+resposta `sim` explicita do TL.
+
+**Status flow do `tasks.md`:**
+
+| Momento | Status |
+|---|---|
+| Apos step 7 (4 checks passam) e antes de step 8 ser respondido | `Draft` |
+| Apos resposta `sim` no step 8 | `Approved` |
+| Apos step 10 (todos os `ADO Task ID` preenchidos) | `Synced` |
+| Durante execucao | `In Progress` |
+| Apos validate | `Done` |
+
+**Tratamento das outras respostas:**
+
+| Resposta | Acao do agente |
+|---|---|
+| `sim` | Prossegue para step 9 (confirmar metadados ADO). Status -> `Approved`. |
+| `ajustes <instrucao>` | Re-decompoem conforme instrucao, re-roda step 7 (4 checks), volta ao step 8 com nova apresentacao. Status continua `Draft`. |
+| `cancelar` | Interrompe o fluxo. `tasks.md` permanece em `Status: Draft` (ou e descartado se primeira execucao). |
+
+**Por que este gate existe** ([REF: A002 / C003 no review do framework]):
+
+- Step 8 antes de C003 dizia "aguardar aprovacao explicita" mas nao obrigava pergunta nem
+  proibia mencionar sync. Resultado pratico: agente atropelava o gate descrevendo a mecanica
+  de sync ADO logo apos as tabelas. TL via tasks.md ja com `Status: Pending Sync` antes de
+  decidir se aprovava.
+- Separar decisao tecnica (tasks corretas?) de decisao operacional (como sincronizar?) e o
+  ponto.
+
 ### 6. PERGUNTAR sobre MCPs e Skills
 
 **CRITICO:** Antes de execucao, pergunte ao usuario:

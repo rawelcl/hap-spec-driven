@@ -36,10 +36,30 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
    - Diagram-Definition Cross-Check
    - Test Co-location Validation (valida Tests Approach/Artifact/Evidence contra TESTING.md)
    - AC Coverage Check (toda FEAT-NN da spec §9 tem >=1 task com Requirement: FEAT-NN)
-8. Apresentar tasks com **as quatro** tabelas de validacao ao TL e aguardar aprovacao explicita.
-9. **Confirmar metadados de sync ADO** com o TL: `wi_pai`, `ado_project`, `ado_area_path`. Se
-   ausentes ou incertos, **pare e pergunte** - nao invente.
-10. **Para cada task aprovada**, chamar `mcp_azure-devops_create_work_item` com:
+8. **GATE DE APROVACAO EXPLICITA (hard stop).** Apresentar tasks com **as quatro** tabelas de
+   validacao ao TL e fazer **literalmente** esta pergunta como ultima linha do output:
+
+   > "Aprova as tasks como estao? (sim / ajustes / cancelar)"
+
+   **PARAR aqui.** Nao escrever nada alem das tabelas de validacao e da pergunta.
+   **Proibido** mencionar nesta etapa: Sync ADO, MCP `@azure-devops/mcp`, ADO Task ID,
+   fallback de MCP indisponivel, "proximo passo", status `Pending Sync` ou `Synced`,
+   placeholders `WI-<TBD-Tn>`, ou qualquer mecanica que pressuponha aprovacao.
+
+   Salvar `tasks.md` em disco com `Status: Draft`. **Nao** gravar `Pending Sync` ou
+   `Synced` aqui.
+
+   **So prosseguir para step 9** apos resposta `sim` explicita do TL. Tratamento de outras
+   respostas:
+   - `ajustes <instrucao>` -> re-decompor conforme instrucao, re-rodar step 7 (4 checks),
+     voltar ao step 8 com nova apresentacao.
+   - `cancelar` -> interromper o fluxo. `tasks.md` permanece em `Status: Draft`.
+
+9. **Apos `sim` no step 8**, confirmar metadados de sync ADO com o TL: `wi_pai`,
+   `ado_project`, `ado_area_path`. Se ausentes ou incertos, **pare e pergunte** - nao invente.
+   Atualizar `Status` do `tasks.md` para `Approved`.
+10. **Apos `sim` no step 8 e metadados confirmados no step 9**, para cada task aprovada,
+    chamar `mcp_azure-devops_create_work_item` com:
     - `type`: `Task`
     - `title`: `T<n> - <titulo da task>`
     - `parent`: `wi_pai`
@@ -59,6 +79,11 @@ MCP `@azure-devops/mcp`, vinculado a User Story / Feature pai. Ver
 - `[GUARDRAIL]` AC Coverage Check e hard gate ([REF: ADR-013](../adr/013-modelo-testes-co-localizado-por-task.md))
   - toda `FEAT-NN` declarada em `spec.md §9` DEVE ter pelo menos uma task em `tasks.md` com
   `Requirement: FEAT-NN`. FEAT orfa = bloqueio hard.
+- `[GUARDRAIL]` Step 8 e **gate de aprovacao com hard stop**. Output do step 8 contem
+  **apenas** as 4 tabelas de validacao + a pergunta literal "Aprova as tasks como estao?
+  (sim / ajustes / cancelar)". Mencionar Sync ADO, MCP, IDs, fallback, status `Pending Sync`
+  ou "proximo passo" antes da resposta `sim` viola este gate e DEVE ser corrigido. Status
+  do `tasks.md` antes da aprovacao = `Draft`; apos `sim` = `Approved`; apos sync = `Synced`.
 - `[GUARDRAIL]` **Nao prosseguir para Execute sem todos os `ADO Task ID` preenchidos em `tasks.md`**
 - `[GUARDRAIL]` Sem `wi_pai` valido na spec, **bloquear** a sincronizacao - nao criar Tasks
   orfas no ADO
