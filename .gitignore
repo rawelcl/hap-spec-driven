@@ -52,3 +52,6 @@ secrets/
 
 # Arquivos do MCP local com PAT inline
 .vscode/mcp.local.json
+
+# Config local do Claude Code (pessoal de cada maquina)
+.claude/settings.local.json
